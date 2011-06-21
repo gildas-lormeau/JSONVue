@@ -1,0 +1,54 @@
+body>div {
+	position: relative;
+	margin: 0px auto;
+	width: 320px;
+	font-family: sans-serif;
+	background-color: #F3F7FC;
+	border: 1px solid #D2DBED;
+	font-family: Arial, sans-serif;
+	font-size: 13px;
+}
+
+body>div>div {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.optionBlock {
+	overflow: hidden;
+	height: 35px;
+}
+
+h2 {
+	font-size: 17px;
+	font-weight: bold;
+	margin-bottom: 30px;
+}
+
+label {
+	display: inline-block;
+	width: 265px;
+}
+
+input[type="checkbox"] {
+	width: auto;
+	margin-left: 15px;
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+
+#main {
+	display: none;
+	border-radius: 5px;
+}
+
+#icon {
+	width: 25px;
+	padding-right: 10px;
+	vertical-align: bottom;
+}
+
+p {
+	font-style: italic;
+	text-align: justify;
+}

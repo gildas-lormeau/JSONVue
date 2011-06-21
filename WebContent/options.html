@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JSONView for chrome options</title>
+<script type="text/javascript" src="options.js"></script>
+<link rel="stylesheet" type="text/css" href="options.css" />
+</head>
+<body onload="initOptions()">
+	<div id="main">
+		<div>
+			<h2><img alt="icon" id="icon" src="jsonview48.png"/>JSONView options</h2>
+			<div class="optionBlock">
+				<label for="safeMethodInput">Use safe method to parse HTTP response (*)</label>
+				<input type="checkbox" id="safeMethodInput">
+			</div>
+			<hr />
+			<p> (*) : safe method forces the browser to send an extra HTTP request to get the raw HTTP content. </p>
+		</div>
+	</div>
+</body>
+</html>

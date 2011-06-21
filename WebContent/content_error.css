@@ -1,0 +1,18 @@
+.error {
+	background-color: #FEE;
+	border: 2px solid #933;
+	color: #933;
+	padding: 20px;
+	display: inline-block;
+	position: absolute;
+}
+
+.close-error {
+	background-image: url("close_icon.gif");
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	top: 3px;
+	right: 3px;
+	cursor: pointer;
+}

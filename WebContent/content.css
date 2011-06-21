@@ -1,0 +1,51 @@
+.prop {
+	font-weight: bold;
+}
+
+.null {
+	color: red;
+}
+
+.bool {
+	color: blue;
+}
+
+.num {
+	color: blue;
+}
+
+.string {
+	color: green;
+}
+
+.collapser {
+	position: absolute;
+	left: -1em;
+	cursor: pointer;
+}
+
+li {
+	position: relative;
+}
+
+li:after {
+	content: ',';
+}
+
+li:last-of-type:after {
+	content: '';
+}
+
+.fn {
+	color: gray;
+}
+
+ul {
+	list-style: none;
+	margin: 0 0 0 2em;
+	padding: 0;
+}
+
+h1 {
+	font-size: 1.2em;
+}
