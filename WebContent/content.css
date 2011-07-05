@@ -1,3 +1,7 @@
+body {
+	white-space: pre;
+}
+
 .prop {
 	font-weight: bold;
 }
