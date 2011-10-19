@@ -1,112 +1,8 @@
-function JSONFormatter() {
-}
-JSONFormatter.prototype = {
-	htmlEncode : function(t) {
-		return t != null ? t.toString().replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
-	},
-
-	decorateWithSpan : function(value, className) {
-		return '<span class="' + className + '">' + this.htmlEncode(value) + '</span>';
-	},
-
-	valueToHTML : function(value) {
-		var valueType = typeof value, output = "";
-		if (value == null) {
-			output += this.decorateWithSpan('null', 'null');
-		} else if (value && value.constructor == Array) {
-			output += this.arrayToHTML(value);
-		} else if (valueType == 'object') {
-			output += this.objectToHTML(value);
-		} else if (valueType == 'number') {
-			output += this.decorateWithSpan(value, 'num');
-		} else if (valueType == 'string') {
-			if (/^(http|https):\/\/[^\s]+$/.test(value)) {
-				output += this.decorateWithSpan('"', 'string') + '<a href="' + value + '">' + this.htmlEncode(value) + '</a>'
-						+ this.decorateWithSpan('"', 'string');
-			} else {
-				output += this.decorateWithSpan('"' + value + '"', 'string');
-			}
-		} else if (valueType == 'boolean') {
-			output += this.decorateWithSpan(value, 'bool');
-		}
-
-		return output;
-	},
-
-	arrayToHTML : function(json) {
-		var prop, output = '[<ul class="array collapsible">', hasContents = false;
-		for (prop in json) {
-			hasContents = true;
-			output += '<li>';
-			output += this.valueToHTML(json[prop]);
-			output += '</li>';
-		}
-		output += '</ul>]';
-
-		if (!hasContents) {
-			output = "[ ]";
-		}
-
-		return output;
-	},
-
-	objectToHTML : function(json) {
-		var prop, output = '{<ul class="obj collapsible">', hasContents = false;
-		for (prop in json) {
-			hasContents = true;
-			output += '<li>';
-			output += '<span class="prop">' + this.htmlEncode(prop) + '</span>: ';
-			output += this.valueToHTML(json[prop]);
-			output += '</li>';
-		}
-		output += '</ul>}';
-
-		if (!hasContents) {
-			output = "{ }";
-		}
-
-		return output;
-	},
-
-	jsonToHTML : function(json, fnName) {
-		var output = '';
-		if (fnName)
-			output += '<div class="fn">' + fnName + '(</div>';
-		output += '<div id="json">';
-		output += this.valueToHTML(json);
-		output += '</div>';
-		if (fnName)
-			output += '<div class="fn">)</div>';
-		return output;
-	}
-};
-
-/**
- * Click handler for collapsing and expanding objects and arrays
- * 
- * @param {Event} evt
- */
-function collapse(evt) {
-	var ellipsis, collapser = evt.target, target = collapser.parentNode.getElementsByClassName('collapsible')[0];
-	if (!target)
-		return;
-
-	if (target.style.display == 'none') {
-		ellipsis = target.parentNode.getElementsByClassName('ellipsis')[0];
-		target.parentNode.removeChild(ellipsis);
-		target.style.display = '';
-	} else {
-		target.style.display = 'none';
-		ellipsis = document.createElement('span');
-		ellipsis.className = 'ellipsis';
-		ellipsis.innerHTML = ' &hellip; ';
-		target.parentNode.insertBefore(ellipsis, target);
-	}
-	collapser.innerHTML = (collapser.innerHTML == '-') ? '+' : '-';
-}
+var port = chrome.extension.connect();
 
 function displayObject(jsonText, fnName) {
-	var parsedObject, errorBox, closeBox;
+	var parsedObject, errorBox, closeBox, worker;
+
 	if (!jsonText)
 		return;
 	try {
@@ -136,17 +32,10 @@ function displayObject(jsonText, fnName) {
 		}
 		return;
 	}
-	document.body.innerHTML = '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("content.css") + '">'
-			+ new JSONFormatter().jsonToHTML(parsedObject, fnName);
-	Array.prototype.forEach.call(document.getElementsByClassName('collapsible'), function(childItem) {
-		var collapser, item = childItem.parentNode;
-		if (item.nodeName == 'LI') {
-			collapser = document.createElement('div');
-			collapser.className = 'collapser';
-			collapser.innerHTML = '-';
-			collapser.addEventListener('click', collapse, false);
-			item.insertBefore(collapser, item.firstChild);
-		}
+	port.postMessage({
+		jsonToHTML : true,
+		parsedObject : parsedObject,
+		fnName : fnName
 	});
 }
 
@@ -182,10 +71,30 @@ function processData(data, options) {
 }
 
 function init(data) {
-	var port = chrome.extension.connect();
 	port.onMessage.addListener(function(msg) {
-		if (msg.init)
+		if (msg.oninit)
 			processData(data, msg.options);
+		if (msg.onjsonToHTML) {
+			document.body.innerHTML = '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("content.css") + '">' + msg.data;
+			document.body.addEventListener('click', function(event) {
+				var ellipsis, collapsed, target = event.target;
+				if (event.target.className == 'collapser') {
+					collapsed = target.parentNode.getElementsByClassName('collapsible')[0];
+					if (collapsed.style.display == 'none') {
+						ellipsis = collapsed.parentNode.getElementsByClassName('ellipsis')[0];
+						collapsed.parentNode.removeChild(ellipsis);
+						collapsed.style.display = '';
+					} else {
+						collapsed.style.display = 'none';
+						ellipsis = document.createElement('span');
+						ellipsis.className = 'ellipsis';
+						ellipsis.innerHTML = ' &hellip; ';
+						collapsed.parentNode.insertBefore(ellipsis, collapsed);
+					}
+					target.innerHTML = (target.innerHTML == '-') ? '+' : '-';
+				}
+			}, false);
+		}
 	});
 	port.postMessage({
 		init : true
