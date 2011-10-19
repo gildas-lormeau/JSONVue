@@ -1,15 +1,30 @@
 chrome.extension.onConnect.addListener(function(port) {
 	port.onMessage.addListener(function(msg) {
-		var worker;
+		var workerFormatter, workerJSONLint, json = msg.json;
 
-		function onWorkerMessage(event) {
-			var msg = event.data;
-			worker.removeEventListener("message", onmessage, false);
-			worker.terminate();
+		function onWorkerJSONLintMessage() {
+			workerJSONLint.removeEventListener("message", onWorkerJSONLintMessage, false);
+			workerJSONLint.terminate();
 			port.postMessage({
-				onjsonToHTML : true,
-				data : msg.data
+				ongetError : true,
+				error : event.data
 			});
+		}
+
+		function onWorkerFormatterMessage(event) {
+			var msg = event.data;
+			workerFormatter.removeEventListener("message", onWorkerFormatterMessage, false);
+			workerFormatter.terminate();
+			if (msg.html)
+				port.postMessage({
+					onjsonToHTML : true,
+					html : msg.html
+				});
+			if (msg.error) {
+				workerJSONLint = new Worker("workerJSONLint.js");
+				workerJSONLint.addEventListener("message", onWorkerJSONLintMessage, false);
+				workerJSONLint.postMessage(json);
+			}
 		}
 
 		if (msg.init)
@@ -18,10 +33,10 @@ chrome.extension.onConnect.addListener(function(port) {
 				options : localStorage.options ? JSON.parse(localStorage.options) : {}
 			});
 		if (msg.jsonToHTML) {
-			worker = new Worker("worker.js");
-			worker.addEventListener("message", onWorkerMessage, false);
-			worker.postMessage({
-				parsedObject : msg.parsedObject,
+			workerFormatter = new Worker("workerFormatter.js");
+			workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
+			workerFormatter.postMessage({
+				json : json,
 				fnName : msg.fnName
 			});
 		}

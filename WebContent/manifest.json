@@ -10,7 +10,7 @@
   "background_page" : "background.html",
   "content_scripts": [{
 	  "matches": ["http://*/*", "https://*/*", "ftp://*/*", "file:///*"],
-	  "js": ["jsonlint.js", "content.js"],
+	  "js": ["content.js"],
 	  "run_at" : "document_end"
   }],
   "permissions" : ["http://*/",  "https://*/", "ftp://*/"]
