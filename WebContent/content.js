@@ -84,7 +84,6 @@ function init(data) {
 			processData(data, msg.options);
 		if (msg.onjsonToHTML)
 			if (msg.html) {
-				document.body.style.fontFamily = "monospace"; // chrome bug : does not work in external CSS stylesheet
 				document.body.innerHTML = '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("content.css") + '">' + msg.html;
 				document.body.addEventListener('click', oncollapserClick, false);
 			} else if (msg.json)
