@@ -24,8 +24,10 @@ body {
 
 .collapser {
 	position: absolute;
+	top: 0em;
 	left: -1em;
 	cursor: pointer;
+	-webkit-user-select:	ignore;
 }
 
 li {
