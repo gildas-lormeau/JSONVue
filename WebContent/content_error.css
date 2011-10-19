@@ -4,7 +4,7 @@
 	color: #933;
 	padding: 20px;
 	display: inline-block;
-	position: absolute;
+	position: fixed;
 }
 
 .close-error {
