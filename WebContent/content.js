@@ -103,7 +103,7 @@ function init(data) {
 
 function load() {
 	var child, data;
-	if (document.body && document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0) {
+	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
 		child = document.body.children.length ? document.body.childNodes[0] : document.body;
 		data = extractData(child.innerText.trim());
 		if (data)
