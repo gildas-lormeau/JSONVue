@@ -398,3 +398,12 @@ if (typeof module !== 'undefined' && require.main === module) {
   exports.main(typeof process !== 'undefined' ? process.argv.slice(1) : require("system").args);
 }
 }
+
+addEventListener("message", function(event) {
+	var errorMessage;
+	try {
+		jsonlint.parse(event.data);
+	} catch (errorMessage) {
+		postMessage(errorMessage.toString());
+	}
+}, false);
