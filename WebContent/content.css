@@ -8,11 +8,11 @@ body {
 }
 
 .null {
-	color: red;
+	color: gray;
 }
 
 .bool {
-	color: blue;
+	color: fireBrick;
 }
 
 .num {
@@ -26,20 +26,22 @@ body {
 .collapser {
 	position: absolute;
 	top: 0em;
-	left: -1em;
-	cursor: pointer;
-	-webkit-user-select:	ignore;
+	left: -18px;
+	padding-right: 10px;
+	padding-left: 6px;
+	cursor: default;
+	-webkit-user-select: ignore;
 }
 
 li {
 	position: relative;
 }
 
-li:after {
+li>div:after {
 	content: ',';
 }
 
-li:last-of-type:after {
+li:last-of-type>div:after {
 	content: '';
 }
 
@@ -55,4 +57,88 @@ ul {
 
 h1 {
 	font-size: 1.2em;
+}
+
+.status {
+	position: fixed;
+	left: 0px;
+	bottom: 0px;
+	min-width: 628px;
+	border-color: #c2c2c2;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	border-style: solid;
+	border-top-right-radius: 4px;
+	height: 16px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-right: 7px;
+	padding-left: 4px;
+	font-family: sans-serif;
+	font-size: 12px;
+	opacity: 0;
+	background-color: #d2d2f6;
+	color: #696969;
+	-webkit-transition-delay: .2s;
+	-webkit-transition: opacity .2s ease-out;
+}
+
+.status:not(:empty ) {
+	opacity: 1;
+}
+
+.toolbox {
+	opacity: .25;
+	background-color: #d2d2f6;
+	position: fixed;
+	right: 0px;
+	top: 0px;
+	border-color: #c2c2c2;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	border-style: solid;
+	border-bottom-left-radius: 4px;
+	padding-bottom: 3px;
+	-webkit-transition: opacity .2s ease-out;
+	cursor: default;
+	-webkit-user-select: ignore;
+	padding-left: 2px;
+}
+
+.toolbox:hover {
+	opacity: 1;
+}
+
+.toolbox * {
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.toolbox a {
+	padding-left: 5px;
+}
+
+li>div {
+	-webkit-transition: background-color .2s ease-out;
+	padding: 1px;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+li>div {
+	display: inline-block;
+}
+
+.hover {
+	-webkit-transition-delay: .2s;
+	background-color: rgba(235, 238, 249, 1);
+	border-radius: 2px;
+}
+
+body {
+	margin-bottom: 23px;
 }

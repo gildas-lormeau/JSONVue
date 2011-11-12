@@ -33,9 +33,9 @@ function arrayToHTML(json) {
 	var prop, output = '<div class="collapser">-</div>[<ul class="array collapsible">', hasContents = false;
 	for (prop in json) {
 		hasContents = true;
-		output += '<li>';
+		output += '<li><div>';
 		output += valueToHTML(json[prop]);
-		output += '</li>';
+		output += '</div></li>';
 	}
 	output += '</ul>]';
 
@@ -50,10 +50,10 @@ function objectToHTML(json) {
 	var prop, output = '<div class="collapser">-</div>{<ul class="obj collapsible">', hasContents = false;
 	for (prop in json) {
 		hasContents = true;
-		output += '<li>';
+		output += '<li><div>';
 		output += '<span class="prop">' + htmlEncode(prop) + '</span>: ';
 		output += valueToHTML(json[prop]);
-		output += '</li>';
+		output += '</div></li>';
 	}
 	output += '</ul>}';
 

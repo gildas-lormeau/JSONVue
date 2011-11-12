@@ -4,7 +4,7 @@
 	"16": "jsonview16.png",
 	"48": "jsonview48.png",
     "128": "jsonview128.png"},
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "JSONView is an extension that helps you to parse and view JSON documents",
   "options_page": "options.html",
   "background_page" : "background.html",
