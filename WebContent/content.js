@@ -85,7 +85,7 @@ function onexpand() {
 			ellipsis = collapsed.previousSibling;
 			collapsed.parentNode.removeChild(ellipsis);
 			collapsed.style.display = '';
-			collapsed.previousSibling.previousSibling.innerHTML = '-';
+			collapsed.previousSibling.previousSibling.innerHTML = '+';
 		}
 	});
 }
@@ -99,7 +99,7 @@ function onreduce() {
 			ellipsis.className = 'ellipsis';
 			ellipsis.innerHTML = ' &hellip; ';
 			collapsed.parentNode.insertBefore(ellipsis, collapsed);
-			collapsed.previousSibling.previousSibling.innerHTML = '+';
+			collapsed.previousSibling.previousSibling.innerHTML = '-';
 		}
 	});
 }
