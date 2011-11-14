@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Style editor - JSONView</title>
+<link rel="stylesheet" type="text/css" href="csseditor.css" />
+<link rel="stylesheet" type="text/css" href="codemirror/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="codemirror/default.css" />
+</head>
+<body>
+<div>
+	<h2>Style editor</h2>
+	<hr>
+	<div class="panel">
+		<div class="panel-label">CSS</div>
+		<textarea id="editor"></textarea>
+	</div>
+	<div class="panel">
+		<div class="panel-label">Preview</div>
+		<iframe id="previewer" src="about:blank"></iframe>
+		<div class="buttons">
+			<button id="reset-button">Reset</button>
+			<button id="save-button">Save</button>
+		</div>
+	</div>
+</div>
+<script src="codemirror/codemirror.js"></script>
+<script src="codemirror/css.js"></script>
+<script type="text/javascript" src="csseditor.js"></script>
+</body>
+</html>

@@ -1,6 +1,3 @@
-/**
- * Initialize options.
- */
 function initOptions() {
 	var options = localStorage.options ? JSON.parse(localStorage.options) : {};
 	var safeMethodInput = document.getElementById("safeMethodInput");

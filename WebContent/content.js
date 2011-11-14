@@ -1,4 +1,4 @@
-var port = chrome.extension.connect();
+var port = chrome.extension.connect(), collapsers;
 
 function displayError(error) {
 	document.body.innerHTML += '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("content_error.css") + '">';
@@ -60,47 +60,27 @@ function processData(data, options) {
 }
 
 function ontoggle(event) {
-	var ellipsis, collapsed, target = event.target;
+	var collapsed, target = event.target;
 	if (event.target.className == 'collapser') {
 		collapsed = target.parentNode.getElementsByClassName('collapsible')[0];
-		if (collapsed.style.display == 'none') {
-			ellipsis = collapsed.parentNode.getElementsByClassName('ellipsis')[0];
-			collapsed.parentNode.removeChild(ellipsis);
-			collapsed.style.display = '';
-		} else {
-			collapsed.style.display = 'none';
-			ellipsis = document.createElement('span');
-			ellipsis.className = 'ellipsis';
-			ellipsis.innerHTML = ' &hellip; ';
-			collapsed.parentNode.insertBefore(ellipsis, collapsed);
-		}
-		target.innerHTML = (target.innerHTML == '-') ? '+' : '-';
+		if (collapsed.parentNode.classList.contains("collapsed"))
+			collapsed.parentNode.classList.remove("collapsed");
+		else
+			collapsed.parentNode.classList.add("collapsed");
 	}
 }
 
 function onexpand() {
-	Array.prototype.forEach.call(document.querySelectorAll("#json .collapsible .collapsible"), function(collapsed) {
-		var ellipsis;
-		if (collapsed.style.display == "none") {
-			ellipsis = collapsed.previousSibling;
-			collapsed.parentNode.removeChild(ellipsis);
-			collapsed.style.display = '';
-			collapsed.previousElementSibling.innerHTML = '-';
-		}
+	Array.prototype.forEach.call(collapsers, function(collapsed) {
+		if (collapsed.parentNode.classList.contains("collapsed"))
+			collapsed.parentNode.classList.remove("collapsed");
 	});
 }
 
 function onreduce() {
-	Array.prototype.forEach.call(document.querySelectorAll("#json .collapsible .collapsible"), function(collapsed) {
-		var ellipsis;
-		if (collapsed.style.display != "none") {
-			ellipsis = document.createElement('span');
-			collapsed.style.display = 'none';
-			ellipsis.className = 'ellipsis';
-			ellipsis.innerHTML = ' &hellip; ';
-			collapsed.parentNode.insertBefore(ellipsis, collapsed);
-			collapsed.previousElementSibling.previousElementSibling.innerHTML = '+';
-		}
+	Array.prototype.forEach.call(collapsers, function(collapsed) {
+		if (!collapsed.parentNode.classList.contains("collapsed"))
+			collapsed.parentNode.classList.add("collapsed");
 	});
 }
 
@@ -108,23 +88,23 @@ var onmouseMove = (function() {
 	var lastLI;
 
 	function onmouseOut() {
-		var pathElement = document.querySelector(".status");
+		var statusElement = document.querySelector(".status");
 		if (lastLI) {
-			lastLI.firstChild.classList.remove("hover");
+			lastLI.firstChild.classList.remove("hovered");
 			lastLI = null;
-			pathElement.innerText = "";
+			statusElement.innerText = "";
 		}
 	}
 
 	return function(event) {
-		var target = event.target, element = target, str = "", pathElement = document.querySelector(".status");
+		var target = event.target, element = target, str = "", statusElement = document.querySelector(".status");
 		if (element.tagName != "LI") {
 			while (element && element.tagName != "LI")
 				element = element.parentNode;
 			if (element && element.tagName == 'LI') {
 				if (lastLI && element != lastLI)
-					lastLI.firstChild.classList.remove("hover");
-				element.firstChild.classList.add("hover");
+					lastLI.firstChild.classList.remove("hovered");
+				element.firstChild.classList.add("hovered");
 				lastLI = element;
 				do {
 					if (element.parentNode.classList.contains("array")) {
@@ -138,7 +118,7 @@ var onmouseMove = (function() {
 				} while (element.tagName == "LI");
 				if (str.charAt(0) == '.')
 					str = str.substring(1);
-				pathElement.innerText = str;
+				statusElement.innerText = str;
 				return;
 			}
 		}
@@ -148,15 +128,20 @@ var onmouseMove = (function() {
 
 function init(data) {
 	port.onMessage.addListener(function(msg) {
-		var pathElement, toolboxElement, expandElement, reduceElement, viewSourceElement;
+		var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, content = "";
 		if (msg.oninit)
 			processData(data, msg.options);
 		if (msg.onjsonToHTML)
 			if (msg.html) {
-				document.body.innerHTML = '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("content.css") + '">' + msg.html;
-				pathElement = document.createElement("div");
-				pathElement.className = "status";
-				document.body.appendChild(pathElement);
+				content += '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("jsonview-core.css") + '">';
+				// content += '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("jsonview.css") + '">';
+				content += "<style>" + msg.theme + "</style>";
+				content += msg.html;
+				document.body.innerHTML = content;
+				collapsers = document.querySelectorAll("#json .collapsible .collapsible");
+				statusElement = document.createElement("div");
+				statusElement.className = "status";
+				document.body.appendChild(statusElement);
 				toolboxElement = document.createElement("div");
 				toolboxElement.className = "toolbox";
 				expandElement = document.createElement("span");
@@ -169,14 +154,21 @@ function init(data) {
 				viewSourceElement.innerText = "View source";
 				viewSourceElement.target = "_blank";
 				viewSourceElement.href = "view-source:" + location.href;
+				optionsElement = document.createElement("img");
+				optionsElement.title = "options";
+				optionsElement.src = chrome.extension.getURL("options.png");
 				toolboxElement.appendChild(expandElement);
 				toolboxElement.appendChild(reduceElement);
 				toolboxElement.appendChild(viewSourceElement);
+				toolboxElement.appendChild(optionsElement);
 				document.body.appendChild(toolboxElement);
 				document.body.addEventListener('click', ontoggle, false);
 				document.body.addEventListener('mouseover', onmouseMove, false);
 				expandElement.addEventListener('click', onexpand, false);
 				reduceElement.addEventListener('click', onreduce, false);
+				optionsElement.addEventListener("click", function() {
+					window.open(chrome.extension.getURL("options.html"));
+				}, false);
 			} else if (msg.json)
 				port.postMessage({
 					getError : true,

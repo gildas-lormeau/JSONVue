@@ -1,12 +1,18 @@
+body {
+	background-color: #EEE;
+	font-size: 10pt;
+}
+
 body>div {
 	position: relative;
 	margin: 0px auto;
 	width: 320px;
 	font-family: sans-serif;
-	background-color: #F3F7FC;
+	background-color: white;
 	border: 1px solid #D2DBED;
 	font-family: Arial, sans-serif;
 	font-size: 13px;
+	-webkit-box-shadow: #888 2px 2px 2px;
 }
 
 body>div>div {
@@ -16,25 +22,37 @@ body>div>div {
 
 .optionBlock {
 	overflow: hidden;
-	height: 35px;
+	height: 30px;
+	position: relative;
 }
 
 h2 {
 	font-size: 17px;
 	font-weight: bold;
-	margin-bottom: 30px;
+	margin-bottom: 20px;
 }
 
 label {
+	position: absolute;
+	top: 2px;
 	display: inline-block;
-	width: 265px;
 }
 
 input[type="checkbox"] {
-	width: auto;
+	position: absolute;
+	right: 0px; width : auto;
 	margin-left: 15px;
 	margin-bottom: 5px;
 	margin-top: 5px;
+	width: auto;
+}
+
+button {
+	position: absolute;
+	top: -2px; right : 0px;
+	background-color: #F3F3F3;
+	-webkit-border-radius: 3px;
+	right: 0px;
 }
 
 #main {
@@ -49,6 +67,8 @@ input[type="checkbox"] {
 }
 
 p {
+	margin-top: 5px;
 	font-style: italic;
 	text-align: justify;
+	color: gray;
 }
