@@ -3,7 +3,7 @@ body {
 	font-size: 10pt;
 }
 
-body>div {
+body > div {
 	position: relative;
 	margin: 0px auto;
 	width: 320px;
@@ -15,7 +15,7 @@ body>div {
 	-webkit-box-shadow: #888 2px 2px 2px;
 }
 
-body>div>div {
+body > div > div {
 	padding-left: 10px;
 	padding-right: 10px;
 }
@@ -40,7 +40,8 @@ label {
 
 input[type="checkbox"] {
 	position: absolute;
-	right: 0px; width : auto;
+	right: 0px;
+	width: auto;
 	margin-left: 15px;
 	margin-bottom: 5px;
 	margin-top: 5px;
@@ -49,7 +50,8 @@ input[type="checkbox"] {
 
 button {
 	position: absolute;
-	top: -2px; right : 0px;
+	top: -4px;
+	right: 0px;
 	background-color: #F3F3F3;
 	-webkit-border-radius: 3px;
 	right: 0px;
