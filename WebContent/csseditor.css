@@ -6,7 +6,7 @@ body {
 body>div {
 	margin-left: auto;
 	margin-right: auto;
-	width: 900px;
+	width: 950px;
 	background-color: white;
 	font-family: sans-serif;
 	margin-bottom: 10px;
@@ -27,8 +27,8 @@ h2 {
 }
 
 #previewer {
-	width: 370px;
-	height: 300px;
+	width: 420px;
+	height: 315px;
 	border-width: 1px;
 	border-style: solid;
 	border-color: #aaa;
