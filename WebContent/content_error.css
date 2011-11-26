@@ -1,10 +1,31 @@
-.error {
+.error-position {
+	display: inline-block;
+	color: fireBrick;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.error-position img {
+	padding-right: 3px;
+	height: .8em;
+}
+
+.container {
+	position: absolute;
+	left: 0px;
+	width: 100%;
+}
+
+.content {
+	top: 3px;
+	width: 30em;
+	margin: 0 auto;
 	background-color: #FEE;
 	border: 2px solid #933;
 	color: #933;
 	padding: 20px;
-	display: inline-block;
-	position: fixed;
+	position: relative;
+	-webkit-box-shadow: #888 3px 3px 5px;
 }
 
 .close-error {

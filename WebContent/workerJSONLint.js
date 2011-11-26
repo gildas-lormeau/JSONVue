@@ -304,7 +304,7 @@ next:function () {
                 this.yylloc = {first_line: this.yylloc.last_line,
                                last_line: this.yylineno+1,
                                first_column: this.yylloc.last_column,
-                               last_column: lines ? lines[lines.length-1].length-1 : this.yylloc.last_column + match[0].length}
+                               last_column: lines ? lines[lines.length-1].length-1 : this.yylloc.last_column + match[0].length};
                 this.yytext += match[0];
                 this.match += match[0];
                 this.matches = match;
@@ -343,7 +343,7 @@ _currentRules:function _currentRules() {
     }});
 lexer.performAction = function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
 
-var YYSTATE=YY_START
+var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
 case 0:/* skip whitespace */
 break;
@@ -351,27 +351,27 @@ case 1:return 6;
 break;
 case 2:yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 4;
 break;
-case 3: return 17 
+case 3: return 17;
 break;
-case 4: return 18 
+case 4: return 18;
 break;
-case 5:return 23
+case 5:return 23;
 break;
-case 6:return 24
+case 6:return 24;
 break;
-case 7:return 22
+case 7:return 22;
 break;
-case 8:return 21
+case 8:return 21;
 break;
-case 9:return 10
+case 9:return 10;
 break;
-case 10:return 11
+case 10:return 11;
 break;
-case 11:return 8
+case 11:return 8;
 break;
-case 12:return 14
+case 12:return 14;
 break;
-case 13:return 'INVALID'
+case 13:return 'INVALID';
 break;
 }
 };
@@ -404,6 +404,6 @@ addEventListener("message", function(event) {
 	try {
 		jsonlint.parse(event.data);
 	} catch (errorMessage) {
-		postMessage(errorMessage.toString());
+		postMessage(JSON.stringify({error: errorMessage.toString(), loc: jsonlint.lexer.yylloc}));
 	}
 }, false);

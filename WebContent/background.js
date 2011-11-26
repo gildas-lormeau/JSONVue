@@ -14,25 +14,28 @@ function init() {
 			var workerFormatter, workerJSONLint, json = msg.json;
 
 			function onWorkerJSONLintMessage() {
+				var message = JSON.parse(event.data);
 				workerJSONLint.removeEventListener("message", onWorkerJSONLintMessage, false);
 				workerJSONLint.terminate();
 				port.postMessage({
 					ongetError : true,
-					error : event.data
+					error : message.error,
+					loc : message.loc,
+					offset : msg.offset
 				});
 			}
 
 			function onWorkerFormatterMessage(event) {
-				var msg = event.data;
+				var message = event.data;
 				workerFormatter.removeEventListener("message", onWorkerFormatterMessage, false);
 				workerFormatter.terminate();
-				if (msg.html)
+				if (message.html)
 					port.postMessage({
 						onjsonToHTML : true,
-						html : msg.html,
+						html : message.html,
 						theme : localStorage.theme
 					});
-				if (msg.error) {
+				if (message.error) {
 					workerJSONLint = new Worker("workerJSONLint.js");
 					workerJSONLint.addEventListener("message", onWorkerJSONLintMessage, false);
 					workerJSONLint.postMessage(json);

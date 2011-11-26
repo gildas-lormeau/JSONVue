@@ -1,45 +1,76 @@
 var port = chrome.extension.connect(), collapsers;
 
-function displayError(error) {
-	document.body.innerHTML += '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("content_error.css") + '">';
-	errorBox = document.createElement("pre");
-	closeBox = document.createElement("div");
-	errorBox.className = "error";
-	closeBox.className = "close-error";
-	closeBox.onclick = function() {
-		errorBox.parentElement.removeChild(errorBox);
+function displayError(error, loc, offset) {
+	var link = document.createElement("link"), pre = document.body.firstChild.firstChild, text = pre.textContent.substring(offset), start = 0, ranges = [], idx = 0, end, range = document
+			.createRange(), imgError = document.createElement("img"), content = document.createElement("div"), errorPosition = document.createElement("span"), container = document
+			.createElement("div"), closeButton = document.createElement("div");
+	link.rel = "stylesheet";
+	link.type = "text/css";
+	link.href = chrome.extension.getURL("content_error.css");
+	document.head.appendChild(link);
+	while (idx != -1) {
+		idx = text.indexOf("\n", start);
+		ranges.push(start);
+		start = idx + 1;
+	}
+	start = ranges[loc.first_line - 1] + loc.first_column + offset;
+	end = ranges[loc.last_line - 1] + loc.last_column + offset;
+	range.setStart(pre, start);
+	if (start == end -1)
+		range.setEnd(pre, start);
+	else
+		range.setEnd(pre, end);
+	errorPosition.className = "error-position";
+	errorPosition.id = "error-position";
+	range.surroundContents(errorPosition);
+	imgError.src = "error.gif";
+	errorPosition.insertBefore(imgError, errorPosition.firstChild);
+	content.className = "content";
+	closeButton.className = "close-error";
+	closeButton.onclick = function() {
+		content.parentElement.removeChild(content);
 	};
-	errorBox.textContent = error;
-	errorBox.appendChild(closeBox);
-	setTimeout(function() {
-		document.body.appendChild(errorBox);
-		errorBox.style.pixelLeft = Math.max(0, Math.floor((window.innerWidth - errorBox.offsetWidth) / 2));
-		errorBox.style.pixelTop = Math.max(0, Math.floor((window.innerHeight - errorBox.offsetHeight) / 2));
-	}, 100);
+	content.textContent = error;
+	content.appendChild(closeButton);
+	container.className = "container";
+	container.appendChild(content);
+	errorPosition.parentNode.insertBefore(container, errorPosition.nextSibling);
+	location.hash = "error-position";
+	history.replaceState({}, "", "#");
 }
 
-function displayObject(json, fnName) {
+function displayObject(json, fnName, offset) {
 	if (!json)
 		return;
 	port.postMessage({
 		jsonToHTML : true,
 		json : json,
-		fnName : fnName
+		fnName : fnName,
+		offset : offset
 	});
 }
 
-function extractData(text) {
-	var tokens;
-	if ((text.charAt(0) == "{" || text.charAt(0) == "[") && (text.charAt(text.length - 1) == "}" || text.charAt(text.length - 1) == "]"))
+function extractData(rawText) {
+	var tokens, text = rawText.trim();
+
+	function test(text) {
+		return ((text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") || (text.charAt(0) == "{" && text.charAt(text.length - 1) == "}"));
+	}
+
+	if (test(text))
 		return {
-			text : text
+			text : rawText,
+			offset : 0
 		};
-	tokens = text.match(/^([^\s\(]*)\s*\(\s*([\[{].*[\]}])\s*\)(?:\s*;?)*\s*$/);
-	if (tokens && tokens[1] && tokens[2])
-		return {
-			fnName : tokens[1],
-			text : tokens[2]
-		};
+	tokens = text.match(/^([^\s\(]*)\s*\(([\s\S]*)\)\s*;?$/);
+	if (tokens && tokens[1] && tokens[2]) {
+		if (test(tokens[2].trim()))
+			return {
+				fnName : tokens[1],
+				text : tokens[2],
+				offset : rawText.indexOf(tokens[2])
+			};
+	}
 }
 
 function processData(data, options) {
@@ -50,13 +81,13 @@ function processData(data, options) {
 			if (this.readyState == 4) {
 				data = extractData(this.responseText);
 				if (data)
-					displayObject(data.text, data.fnName);
+					displayObject(data.text, data.fnName, data.offset);
 			}
 		};
 		xhr.open("GET", document.location.href, true);
 		xhr.send(null);
 	} else if (data)
-		displayObject(data.text, data.fnName);
+		displayObject(data.text, data.fnName, data.offset);
 }
 
 function ontoggle(event) {
@@ -134,7 +165,6 @@ function init(data) {
 		if (msg.onjsonToHTML)
 			if (msg.html) {
 				content += '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("jsonview-core.css") + '">';
-				// content += '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("jsonview.css") + '">';
 				content += "<style>" + msg.theme + "</style>";
 				content += msg.html;
 				document.body.innerHTML = content;
@@ -176,7 +206,7 @@ function init(data) {
 					fnName : fnName
 				});
 		if (msg.ongetError) {
-			displayError(msg.error);
+			displayError(msg.error, msg.loc, msg.offset);
 		}
 	});
 	port.postMessage({
@@ -188,7 +218,7 @@ function load() {
 	var child, data;
 	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
 		child = document.body.children.length ? document.body.childNodes[0] : document.body;
-		data = extractData(child.innerText.trim());
+		data = extractData(child.innerText);
 		if (data)
 			init(data);
 	}
