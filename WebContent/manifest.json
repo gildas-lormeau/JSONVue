@@ -11,7 +11,8 @@
   "content_scripts": [{
 	  "matches": ["http://*/*", "https://*/*", "ftp://*/*", "file:///*"],
 	  "js": ["content.js"],
-	  "run_at" : "document_end"
+	  "run_at" : "document_end",
+	  "all_frames" : true
   }],
   "permissions" : ["http://*/",  "https://*/", "ftp://*/"]
 }

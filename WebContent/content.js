@@ -16,7 +16,7 @@ function displayError(error, loc, offset) {
 	start = ranges[loc.first_line - 1] + loc.first_column + offset;
 	end = ranges[loc.last_line - 1] + loc.last_column + offset;
 	range.setStart(pre, start);
-	if (start == end -1)
+	if (start == end - 1)
 		range.setEnd(pre, start);
 	else
 		range.setEnd(pre, end);
@@ -75,19 +75,20 @@ function extractData(rawText) {
 
 function processData(data, options) {
 	var xhr;
-	if (options.safeMethod) {
-		xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if (this.readyState == 4) {
-				data = extractData(this.responseText);
-				if (data)
-					displayObject(data.text, data.fnName, data.offset);
-			}
-		};
-		xhr.open("GET", document.location.href, true);
-		xhr.send(null);
-	} else if (data)
-		displayObject(data.text, data.fnName, data.offset);
+	if (window == top || options.injectInFrame)
+		if (options.safeMethod) {
+			xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function() {
+				if (this.readyState == 4) {
+					data = extractData(this.responseText);
+					if (data)
+						displayObject(data.text, data.fnName, data.offset);
+				}
+			};
+			xhr.open("GET", document.location.href, true);
+			xhr.send(null);
+		} else if (data)
+			displayObject(data.text, data.fnName, data.offset);
 }
 
 function ontoggle(event) {
