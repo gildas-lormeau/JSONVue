@@ -38,7 +38,7 @@ li {
   top: 1px;
   left: -1.5em;
   cursor: default;
-  -user-select: none;
+  user-select: none;
   -webkit-user-select: none;
 }
 
