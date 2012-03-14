@@ -13,11 +13,13 @@ li {
 }
 
 .hoverable {
+  transition: background-color .2s ease-out 0s;
   -webkit-transition: background-color .2s ease-out 0s;
   display: inline-block;
 }
 
 .hovered {
+  transition-delay: .2s;
   -webkit-transition-delay: .2s;
 }
 
@@ -64,7 +66,9 @@ li {
   opacity: 0;
   background-color: #d2d2f6;
   color: #696969;
+  transition: opacity .2s ease-out;
   -webkit-transition: opacity .2s ease-out;
+  user-select: none;
   -webkit-user-select: none;
 }
 
@@ -88,8 +92,10 @@ li {
   border-style: solid;
   border-bottom-left-radius: 4px;
   padding-bottom: 3px;
+  transition: opacity .2s ease-out;
   -webkit-transition: opacity .2s ease-out;
   cursor: default;
+  user-select: none;
   -webkit-user-select: none;
   padding-left: 2px;
 }
