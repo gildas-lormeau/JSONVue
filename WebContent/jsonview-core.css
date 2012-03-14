@@ -38,7 +38,8 @@ li {
   top: 1px;
   left: -1.5em;
   cursor: default;
-  -webkit-user-select: ignore;
+  -user-select: none;
+  -webkit-user-select: none;
 }
 
 .status {
