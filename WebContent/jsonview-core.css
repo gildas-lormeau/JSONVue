@@ -72,7 +72,7 @@ li {
 	-webkit-user-select: none;
 }
 
-.status:not (:empty ) {
+.status:not(:empty ) {
 	opacity: 1;
 }
 
