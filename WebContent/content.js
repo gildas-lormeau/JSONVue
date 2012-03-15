@@ -208,7 +208,7 @@ function init(data) {
 					window.open(chrome.extension.getURL("options.html"));
 				}, false);
 				document.body.addEventListener("contextmenu", function() {
-					propertyPath = document.querySelector(".status").innerText;
+					propertyPath = statusElement.innerText;
 				}, true);
 			} else if (msg.json)
 				port.postMessage({
