@@ -1,3 +1,5 @@
+var tabPorts = [];
+
 function getDefaultTheme(callback) {
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
@@ -8,17 +10,25 @@ function getDefaultTheme(callback) {
 	xhr.send(null);
 }
 
+chrome.contextMenus.create({
+	title : "Copy path to clipboard",
+	contexts : [ "all" ],
+	onclick : function(info, tab) {
+		if (tabPorts[tab.id])
+			tabPorts[tab.id].postMessage({
+				getPropertyPath : true
+			});
+	}
+});
+
 function init() {
 	chrome.extension.onConnect.addListener(function(port) {
-		chrome.contextMenus.create({
-			title : "Copy path to clipboard",
-			contexts : [ "all" ],
-			onclick : function(info, tab) {
-				port.postMessage({
-					getPropertyPath : true
-				});
-			}
-		});
+		if (!tabPorts[port.sender.tab.id]) {
+			tabPorts[port.sender.tab.id] = port;
+			port.onDisconnect.addListener(function(msg) {
+				tabPorts[port.sender.tab.id] = null;
+			});
+		}
 		port.onMessage.addListener(function(msg) {
 			var workerFormatter, workerJSONLint, json = msg.json, selElement, selRange, selection;
 
