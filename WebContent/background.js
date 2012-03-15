@@ -10,8 +10,17 @@ function getDefaultTheme(callback) {
 
 function init() {
 	chrome.extension.onConnect.addListener(function(port) {
+		chrome.contextMenus.create({
+			title : "Copy path to clipboard",
+			contexts : [ "all" ],
+			onclick : function(info, tab) {
+				port.postMessage({
+					getPropertyPath : true
+				});
+			}
+		});
 		port.onMessage.addListener(function(msg) {
-			var workerFormatter, workerJSONLint, json = msg.json;
+			var workerFormatter, workerJSONLint, json = msg.json, selElement, selRange, selection;
 
 			function onWorkerJSONLintMessage() {
 				var message = JSON.parse(event.data);
@@ -47,6 +56,18 @@ function init() {
 					oninit : true,
 					options : localStorage.options ? JSON.parse(localStorage.options) : {}
 				});
+			if (msg.ongetPropertyPath) {
+				selElement = document.createElement("span");
+				selRange = document.createRange();
+				selElement.innerText = msg.path;
+				document.body.appendChild(selElement);
+				selRange.selectNodeContents(selElement);
+				selection = window.getSelection();
+				selection.removeAllRanges();
+				selection.addRange(selRange);
+				document.execCommand('Copy');
+				document.body.removeChild(selElement);
+			}
 			if (msg.jsonToHTML) {
 				workerFormatter = new Worker("workerFormatter.js");
 				workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);

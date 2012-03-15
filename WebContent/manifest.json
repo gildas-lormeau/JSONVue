@@ -14,5 +14,5 @@
 	  "run_at" : "document_end",
 	  "all_frames" : true
   }],
-  "permissions" : ["http://*/",  "https://*/", "ftp://*/"]
+  "permissions" : ["contextMenus", "clipboardWrite", "http://*/",  "https://*/", "ftp://*/"]
 }

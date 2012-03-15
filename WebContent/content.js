@@ -159,10 +159,17 @@ var onmouseMove = (function() {
 })();
 
 function init(data) {
+	var propertyPath = "";
+
 	port.onMessage.addListener(function(msg) {
 		var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, content = "";
 		if (msg.oninit)
 			processData(data, msg.options);
+		if (msg.getPropertyPath)
+			port.postMessage({
+				ongetPropertyPath : true,
+				path : propertyPath
+			});
 		if (msg.onjsonToHTML)
 			if (msg.html) {
 				content += '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("jsonview-core.css") + '">';
@@ -200,6 +207,9 @@ function init(data) {
 				optionsElement.addEventListener("click", function() {
 					window.open(chrome.extension.getURL("options.html"));
 				}, false);
+				document.body.addEventListener("contextmenu", function() {
+					propertyPath = document.querySelector(".status").innerText;
+				}, true);
 			} else if (msg.json)
 				port.postMessage({
 					getError : true,
