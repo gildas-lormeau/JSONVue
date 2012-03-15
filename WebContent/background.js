@@ -1,4 +1,4 @@
-var tabPorts = [];
+var tabPorts = [], menuEntryId, options = localStorage.options ? JSON.parse(localStorage.options) : {};
 
 function getDefaultTheme(callback) {
 	var xhr = new XMLHttpRequest();
@@ -9,17 +9,6 @@ function getDefaultTheme(callback) {
 	xhr.open("GET", "jsonview.css", true);
 	xhr.send(null);
 }
-
-chrome.contextMenus.create({
-	title : "Copy path to clipboard",
-	contexts : [ "all" ],
-	onclick : function(info, tab) {
-		if (tabPorts[tab.id])
-			tabPorts[tab.id].postMessage({
-				getPropertyPath : true
-			});
-	}
-});
 
 function init() {
 	chrome.extension.onConnect.addListener(function(port) {
@@ -89,7 +78,29 @@ function init() {
 		});
 	});
 }
+function addMenuEntry() {
+	if (!menuEntryId)
+		menuEntryId = chrome.contextMenus.create({
+			title : "Copy path to clipboard",
+			contexts : [ "all" ],
+			onclick : function(info, tab) {
+				if (tabPorts[tab.id])
+					tabPorts[tab.id].postMessage({
+						getPropertyPath : true
+					});
+			}
+		});
+}
 
+function removeMenuEntry() {
+	if (menuEntryId) {
+		chrome.contextMenus.remove(menuEntryId);
+		menuEntryId = null;
+	}
+}
+
+if (options.addMenuEntry)
+	addMenuEntry();
 if (!localStorage.theme)
 	getDefaultTheme(function(theme) {
 		localStorage.theme = theme;
