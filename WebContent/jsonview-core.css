@@ -1,5 +1,6 @@
 body {
 	margin-bottom: 23px;
+	white-space: normal !important;
 }
 
 ul {
@@ -21,6 +22,12 @@ li {
 .hovered {
 	transition-delay: .2s;
 	-webkit-transition-delay: .2s;
+}
+
+.selected {
+	outline-style: solid;
+	outline-width: 1px;
+	outline-style: dotted;
 }
 
 .collapsed>.collapsible {
@@ -62,11 +69,11 @@ li {
 	padding-right: 7px;
 	padding-left: 4px;
 	font-family: sans-serif;
-	font-size: 12px;
+	font-size: 12px;	
 	opacity: 0;
 	background-color: #d2d2f6;
 	color: #696969;
-	transition: opacity .2s ease-out;
+	transition: opacity .2s ease-out;	
 	-webkit-transition: opacity .2s ease-out;
 	user-select: none;
 	-webkit-user-select: none;
