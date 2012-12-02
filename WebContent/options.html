@@ -5,29 +5,28 @@
 <script type="text/javascript" src="options.js"></script>
 <link rel="stylesheet" type="text/css" href="options.css" />
 </head>
-<body onload="initOptions()">
+<body>
 	<div id="main">
 		<div>
 			<h2><img alt="icon" id="icon" src="jsonview48.png"/>JSONView options</h2>
 			<hr>
 			<div class="optionBlock">
-				<label for="safeMethodInput">Use safe method to parse HTTP response (*)</label>
-				<input type="checkbox" id="safeMethodInput">
+				<label for="addContextMenuInput">Add context menu entry</label>
+				<input type="checkbox" id="addContextMenuInput">
 			</div>
 			<div class="optionBlock">
-				<label for="safeMethodInput">Add context menu entry to get property path (**)</label>
-				<input type="checkbox" id="addMenuEntryInput">
-			</div>
+				<label for="safeMethodInput">Use safe method to parse HTTP response (*)</label>
+				<input type="checkbox" id="safeMethodInput">
+			</div>			
 			<div class="optionBlock">
 				<label for="injectInFrameInput">Inject into frames</label>
 				<input type="checkbox" id="injectInFrameInput">
 			</div>
 			<div class="optionBlock">
 				<label for="openStyleInput">Build custom theme with style editor</label>
-				<button onclick="location.href = 'csseditor.html'">Open</button>
+				<button id="open-editor">Open</button>
 			</div>
 			<p>(*) safe method forces the browser to send an extra HTTP request to get the raw HTTP content.</p>
-			<p>(**) you will need to refresh tabs.</p>
 		</div>
 	</div>
 </body>

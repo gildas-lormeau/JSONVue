@@ -1,4 +1,4 @@
-var tabPorts = [], menuEntryId, options = localStorage.options ? JSON.parse(localStorage.options) : {};
+var path, value, copyPathMenuEntryId, copyValueMenuEntryId;
 
 function getDefaultTheme(callback) {
 	var xhr = new XMLHttpRequest();
@@ -10,16 +10,49 @@ function getDefaultTheme(callback) {
 	xhr.send(null);
 }
 
+function copy(value) {
+	var selElement, selRange, selection;
+	selElement = document.createElement("span");
+	selRange = document.createRange();
+	selElement.innerText = value;
+	document.body.appendChild(selElement);
+	selRange.selectNodeContents(selElement);
+	selection = window.getSelection();
+	selection.removeAllRanges();
+	selection.addRange(selRange);
+	document.execCommand("Copy");
+	document.body.removeChild(selElement);
+}
+
+function refreshMenuEntry() {
+	var options = localStorage.options ? JSON.parse(localStorage.options) : {};
+	if (options.addContextMenu && !copyPathMenuEntryId) {
+		copyPathMenuEntryId = chrome.contextMenus.create({
+			title : "Copy path",
+			contexts : [ "page", "link" ],
+			onclick : function(info, tab) {
+				copy(path);				
+			}
+		});
+		copyValueMenuEntryId = chrome.contextMenus.create({
+			title : "Copy value",
+			contexts : [ "page", "link" ],
+			onclick : function(info, tab) {
+				copy(value);				
+			}
+		});
+	}
+	if (!options.addContextMenu && copyPathMenuEntryId) {
+		chrome.contextMenus.remove(copyPathMenuEntryId);
+		chrome.contextMenus.remove(copyValueMenuEntryId);
+		copyPathMenuEntryId = null;
+	}
+}
+
 function init() {
 	chrome.extension.onConnect.addListener(function(port) {
-		if (!tabPorts[port.sender.tab.id]) {
-			tabPorts[port.sender.tab.id] = port;
-			port.onDisconnect.addListener(function(msg) {
-				tabPorts[port.sender.tab.id] = null;
-			});
-		}
 		port.onMessage.addListener(function(msg) {
-			var workerFormatter, workerJSONLint, json = msg.json, selElement, selRange, selection;
+			var workerFormatter, workerJSONLint, json = msg.json;
 
 			function onWorkerJSONLintMessage() {
 				var message = JSON.parse(event.data);
@@ -55,17 +88,9 @@ function init() {
 					oninit : true,
 					options : localStorage.options ? JSON.parse(localStorage.options) : {}
 				});
-			if (msg.ongetPropertyPath) {
-				selElement = document.createElement("span");
-				selRange = document.createRange();
-				selElement.innerText = msg.path;
-				document.body.appendChild(selElement);
-				selRange.selectNodeContents(selElement);
-				selection = window.getSelection();
-				selection.removeAllRanges();
-				selection.addRange(selRange);
-				document.execCommand('Copy');
-				document.body.removeChild(selElement);
+			if (msg.copyPropertyPath) {
+				path = msg.path;
+				value = msg.value;
 			}
 			if (msg.jsonToHTML) {
 				workerFormatter = new Worker("workerFormatter.js");
@@ -77,30 +102,17 @@ function init() {
 			}
 		});
 	});
-}
-function addMenuEntry() {
-	if (!menuEntryId)
-		menuEntryId = chrome.contextMenus.create({
-			title : "Copy path to clipboard",
-			contexts : [ "all" ],
-			onclick : function(info, tab) {
-				if (tabPorts[tab.id])
-					tabPorts[tab.id].postMessage({
-						getPropertyPath : true
-					});
-			}
-		});
+	refreshMenuEntry();
 }
 
-function removeMenuEntry() {
-	if (menuEntryId) {
-		chrome.contextMenus.remove(menuEntryId);
-		menuEntryId = null;
-	}
+var options = {};
+if (localStorage.options)
+	options = JSON.parse(localStorage.options);
+if (typeof options.addContextMenu == "undefined") {
+	options.addContextMenu = true;
+	localStorage.options = JSON.stringify(options);
 }
 
-if (options.addMenuEntry)
-	addMenuEntry();
 if (!localStorage.theme)
 	getDefaultTheme(function(theme) {
 		localStorage.theme = theme;

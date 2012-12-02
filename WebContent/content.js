@@ -1,4 +1,4 @@
-var port = chrome.extension.connect(), collapsers;
+var port = chrome.extension.connect(), collapsers, options, jsonObject;
 
 function displayError(error, loc, offset) {
 	var link = document.createElement("link"), pre = document.body.firstChild.firstChild, text = pre.textContent.substring(offset), start = 0, ranges = [], idx = 0, end, range = document
@@ -23,7 +23,7 @@ function displayError(error, loc, offset) {
 	errorPosition.className = "error-position";
 	errorPosition.id = "error-position";
 	range.surroundContents(errorPosition);
-	imgError.src = "error.gif";
+	imgError.src = chrome.extension.getURL("error.gif");
 	errorPosition.insertBefore(imgError, errorPosition.firstChild);
 	content.className = "content";
 	closeButton.className = "close-error";
@@ -39,15 +39,54 @@ function displayError(error, loc, offset) {
 	history.replaceState({}, "", "#");
 }
 
-function displayObject(json, fnName, offset) {
-	if (!json)
-		return;
-	port.postMessage({
-		jsonToHTML : true,
-		json : json,
-		fnName : fnName,
-		offset : offset
-	});
+function displayUI(theme, html) {
+	var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, content = "";
+	content += '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("jsonview-core.css") + '">';
+	content += "<style>" + theme + "</style>";
+	content += html;
+	document.body.innerHTML = content;
+	collapsers = document.querySelectorAll("#json .collapsible .collapsible");
+	statusElement = document.createElement("div");
+	statusElement.className = "status";
+	copyPathElement = document.createElement("div");
+	copyPathElement.className = "copy-path";
+	statusElement.appendChild(copyPathElement);
+	document.body.appendChild(statusElement);
+	toolboxElement = document.createElement("div");
+	toolboxElement.className = "toolbox";
+	expandElement = document.createElement("span");
+	expandElement.title = "expand all";
+	expandElement.innerText = "+";
+	reduceElement = document.createElement("span");
+	reduceElement.title = "reduce all";
+	reduceElement.innerText = "-";
+	viewSourceElement = document.createElement("a");
+	viewSourceElement.innerText = "View source";
+	viewSourceElement.target = "_blank";
+	viewSourceElement.href = "view-source:" + location.href;
+	optionsElement = document.createElement("img");
+	optionsElement.title = "options";
+	optionsElement.src = chrome.extension.getURL("options.png");
+	toolboxElement.appendChild(expandElement);
+	toolboxElement.appendChild(reduceElement);
+	toolboxElement.appendChild(viewSourceElement);
+	toolboxElement.appendChild(optionsElement);
+	document.body.appendChild(toolboxElement);
+	document.body.addEventListener('click', ontoggle, false);
+	document.body.addEventListener('mouseover', onmouseMove, false);
+	document.body.addEventListener('click', onmouseClick, false);
+	document.body.addEventListener('contextmenu', onContextMenu, false);
+	expandElement.addEventListener('click', onexpand, false);
+	reduceElement.addEventListener('click', onreduce, false);
+	optionsElement.addEventListener("click", function() {
+		window.open(chrome.extension.getURL("options.html"));
+	}, false);
+	copyPathElement.addEventListener("click", function() {
+		port.postMessage({
+			copyPropertyPath : true,
+			path : statusElement.innerText
+		});
+	}, false);
 }
 
 function extractData(rawText) {
@@ -73,22 +112,42 @@ function extractData(rawText) {
 	}
 }
 
-function processData(data, options) {
-	var xhr;
+function processData(data) {
+	var xhr, jsonText;
+	
+	function formatToHTML(fnName, offset) {
+		if (!jsonText)
+			return;	
+		port.postMessage({
+			jsonToHTML : true,
+			json : jsonText,
+			fnName : fnName,
+			offset : offset
+		});
+		try {
+			jsonObject = JSON.parse(jsonText);
+		} catch (e) {
+		}
+	}
+
 	if (window == top || options.injectInFrame)
 		if (options.safeMethod) {
 			xhr = new XMLHttpRequest();
 			xhr.onreadystatechange = function() {
 				if (this.readyState == 4) {
 					data = extractData(this.responseText);
-					if (data)
-						displayObject(data.text, data.fnName, data.offset);
+					if (data) {
+						jsonText = data.text;
+						formatToHTML(data.fnName, data.offset);
+					}
 				}
 			};
 			xhr.open("GET", document.location.href, true);
 			xhr.send(null);
-		} else if (data)
-			displayObject(data.text, data.fnName, data.offset);
+		} else if (data) {
+			jsonText = data.text;
+			formatToHTML(data.fnName, data.offset);
+		}
 }
 
 function ontoggle(event) {
@@ -116,100 +175,90 @@ function onreduce() {
 	});
 }
 
+function getParentLI(element) {
+	if (element.tagName != "LI")
+		while (element && element.tagName != "LI")
+			element = element.parentNode;
+	if (element && element.tagName == "LI")
+		return element;
+}
+
 var onmouseMove = (function() {
-	var lastLI;
+	var hoveredLI;
 
 	function onmouseOut() {
 		var statusElement = document.querySelector(".status");
-		if (lastLI) {
-			lastLI.firstChild.classList.remove("hovered");
-			lastLI = null;
+		if (hoveredLI) {
+			hoveredLI.firstChild.classList.remove("hovered");
+			hoveredLI = null;
 			statusElement.innerText = "";
 		}
 	}
 
 	return function(event) {
-		var target = event.target, element = target, str = "", statusElement = document.querySelector(".status");
-		if (element.tagName != "LI") {
-			while (element && element.tagName != "LI")
-				element = element.parentNode;
-			if (element && element.tagName == 'LI') {
-				if (lastLI && element != lastLI)
-					lastLI.firstChild.classList.remove("hovered");
-				element.firstChild.classList.add("hovered");
-				lastLI = element;
-				do {
-					if (element.parentNode.classList.contains("array")) {
-						var index = [].indexOf.call(element.parentNode.children, element);
-						str = "[" + index + "]" + str;
-					}
-					if (element.parentNode.classList.contains("obj")) {
-						str = "." + element.firstChild.firstChild.innerText + str;
-					}
-					element = element.parentNode.parentNode.parentNode;
-				} while (element.tagName == "LI");
-				if (str.charAt(0) == '.')
-					str = str.substring(1);
-				statusElement.innerText = str;
-				return;
-			}
+		var str = "", statusElement = document.querySelector(".status");
+		element = getParentLI(event.target);
+		if (element) {
+			if (hoveredLI)
+				hoveredLI.firstChild.classList.remove("hovered");
+			hoveredLI = element;
+			element.firstChild.classList.add("hovered");
+			do {
+				if (element.parentNode.classList.contains("array")) {
+					var index = [].indexOf.call(element.parentNode.children, element);
+					str = "[" + index + "]" + str;
+				}
+				if (element.parentNode.classList.contains("obj")) {
+					str = "." + element.firstChild.firstChild.innerText + str;
+				}
+				element = element.parentNode.parentNode.parentNode;
+			} while (element.tagName == "LI");
+			if (str.charAt(0) == '.')
+				str = str.substring(1);
+			statusElement.innerText = str;
+			return;
 		}
 		onmouseOut();
 	};
 })();
 
-function init(data) {
-	var propertyPath = "";
+var selectedLI;
 
+function onmouseClick() {
+	if (selectedLI)
+		selectedLI.firstChild.classList.remove("selected");
+	selectedLI = getParentLI(event.target);
+	if (selectedLI) {
+		selectedLI.firstChild.classList.add("selected");
+	}
+}
+
+function onContextMenu() {
+	var currentLI, statusElement, selection = "", i, value;
+	currentLI = getParentLI(event.target);
+	statusElement = document.querySelector(".status");
+	if (currentLI) {
+		if (Array.isArray(jsonObject))
+			value = eval("(jsonObject" + statusElement.innerText + ")");
+		else
+			value = eval("(jsonObject." + statusElement.innerText + ")");
+		port.postMessage({
+			copyPropertyPath : true,
+			path : statusElement.innerText,
+			value : typeof value == "object" ? JSON.stringify(value) : value
+		});
+	}
+}
+
+function init(data) {
 	port.onMessage.addListener(function(msg) {
-		var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, content = "";
-		if (msg.oninit)
-			processData(data, msg.options);
-		if (msg.getPropertyPath)
-			port.postMessage({
-				ongetPropertyPath : true,
-				path : propertyPath
-			});
+		if (msg.oninit) {
+			options = msg.options;
+			processData(data);
+		}
 		if (msg.onjsonToHTML)
 			if (msg.html) {
-				content += '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("jsonview-core.css") + '">';
-				content += "<style>" + msg.theme + "</style>";
-				content += msg.html;
-				document.body.innerHTML = content;
-				collapsers = document.querySelectorAll("#json .collapsible .collapsible");
-				statusElement = document.createElement("div");
-				statusElement.className = "status";
-				document.body.appendChild(statusElement);
-				toolboxElement = document.createElement("div");
-				toolboxElement.className = "toolbox";
-				expandElement = document.createElement("span");
-				expandElement.title = "expand all";
-				expandElement.innerText = "+";
-				reduceElement = document.createElement("span");
-				reduceElement.title = "reduce all";
-				reduceElement.innerText = "-";
-				viewSourceElement = document.createElement("a");
-				viewSourceElement.innerText = "View source";
-				viewSourceElement.target = "_blank";
-				viewSourceElement.href = "view-source:" + location.href;
-				optionsElement = document.createElement("img");
-				optionsElement.title = "options";
-				optionsElement.src = chrome.extension.getURL("options.png");
-				toolboxElement.appendChild(expandElement);
-				toolboxElement.appendChild(reduceElement);
-				toolboxElement.appendChild(viewSourceElement);
-				toolboxElement.appendChild(optionsElement);
-				document.body.appendChild(toolboxElement);
-				document.body.addEventListener('click', ontoggle, false);
-				document.body.addEventListener('mouseover', onmouseMove, false);
-				expandElement.addEventListener('click', onexpand, false);
-				reduceElement.addEventListener('click', onreduce, false);
-				optionsElement.addEventListener("click", function() {
-					window.open(chrome.extension.getURL("options.html"));
-				}, false);
-				document.body.addEventListener("contextmenu", function() {
-					propertyPath = statusElement.innerText;
-				}, true);
+				displayUI(msg.theme, msg.html);
 			} else if (msg.json)
 				port.postMessage({
 					getError : true,
