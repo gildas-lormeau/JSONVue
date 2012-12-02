@@ -1,3 +1,9 @@
+/**
+ * Adapted the code in to order to run in a web worker. 
+ * 
+ * Original author: Benjamin Hollis
+ */
+
 function htmlEncode(t) {
 	return t != null ? t.toString().replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
 }
