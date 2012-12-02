@@ -42,8 +42,8 @@ h2 {
 	border-color: #aaa;
 }
 
-.CodeMirror-scroll {
-	height: 550px;
+.CodeMirror .CodeMirror-scroll {
+	height: 100%;
 }
 
 .panel {
