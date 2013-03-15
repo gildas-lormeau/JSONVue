@@ -1,5 +1,7 @@
 var port = chrome.extension.connect(), collapsers, options, jsonObject;
 
+var queryString = document.location.search;
+
 function displayError(error, loc, offset) {
 	var link = document.createElement("link"), pre = document.body.firstChild.firstChild, text = pre.textContent.substring(offset), start = 0, ranges = [], idx = 0, end, range = document
 			.createRange(), imgError = document.createElement("img"), content = document.createElement("div"), errorPosition = document.createElement("span"), container = document
@@ -122,7 +124,8 @@ function processData(data) {
 			jsonToHTML : true,
 			json : jsonText,
 			fnName : fnName,
-			offset : offset
+			offset : offset,
+                        queryString : queryString
 		});
 		try {
 			jsonObject = JSON.parse(jsonText);
@@ -254,6 +257,9 @@ function init(data) {
 	port.onMessage.addListener(function(msg) {
 		if (msg.oninit) {
 			options = msg.options;
+
+                        queryString = options.appendQs ? queryString : '';
+
 			processData(data);
 		}
 		if (msg.onjsonToHTML)

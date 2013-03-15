@@ -97,7 +97,8 @@ function init() {
 				workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
 				workerFormatter.postMessage({
 					json : json,
-					fnName : msg.fnName
+					fnName : msg.fnName,
+                                        queryString : msg.queryString
 				});
 			}
 		});
