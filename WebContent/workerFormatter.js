@@ -4,6 +4,8 @@
  * Original author: Benjamin Hollis
  */
 
+ var queryString = '';
+
 function htmlEncode(t) {
 	return t != null ? t.toString().replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
 }
@@ -23,10 +25,15 @@ function valueToHTML(value) {
 	else if (valueType == "number")
 		output += decorateWithSpan(value, "type-number");
 	else if (valueType == "string")
-		if (/^(http|https):\/\/[^\s]+$/.test(value))
-			output += decorateWithSpan('"', "type-string") + '<a href="' + value + '">' + htmlEncode(value) + '</a>' + decorateWithSpan('"', "type-string");
-		else
+                if( /^(http:\/|https:\/)?(\/[^\s"'<>]+)+\/?$/.test(value)) {
+                        // if we have a query string and there is already a query string in the link, do not append
+                        if(queryString != '' && /\?/.test(value)) {
+                            queryString = ''
+                        }
+			output += decorateWithSpan('"', "type-string") + '<a href="' + value + queryString + '">' + htmlEncode(value) + '</a>' + decorateWithSpan('"', "type-string")
+                } else {
 			output += decorateWithSpan('"' + value + '"', "type-string");
+                }
 	else if (valueType == "boolean")
 		output += decorateWithSpan(value, "type-boolean");
 
@@ -81,6 +88,7 @@ function jsonToHTML(json, fnName) {
 
 addEventListener("message", function(event) {
 	var object;
+        queryString = event.data.queryString;
 	try {
 		object = JSON.parse(event.data.json);
 	} catch (e) {
