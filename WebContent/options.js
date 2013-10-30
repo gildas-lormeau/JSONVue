@@ -1,5 +1,5 @@
 function initOptions() {
-	var bgPage = chrome.extension.getBackgroundPage(), options = localStorage.options ? JSON.parse(localStorage.options) : {};
+	var bgPage = chrome.runtime.getBackgroundPage(), options = localStorage.options ? JSON.parse(localStorage.options) : {};
 	var safeMethodInput = document.getElementById("safeMethodInput"), injectInFrameInput = document.getElementById("injectInFrameInput"), addContextMenuInput = document.getElementById("addContextMenuInput");
 	safeMethodInput.checked = options.safeMethod;
 	injectInFrameInput.checked = options.injectInFrame;
