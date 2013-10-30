@@ -50,7 +50,7 @@ function refreshMenuEntry() {
 }
 
 function init() {
-	chrome.extension.onConnect.addListener(function(port) {
+	chrome.runtime.onConnect.addListener(function(port) {
 		port.onMessage.addListener(function(msg) {
 			var workerFormatter, workerJSONLint, json = msg.json;
 
