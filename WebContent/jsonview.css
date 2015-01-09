@@ -23,6 +23,10 @@ body {
   color: green;
 }
 
+.type-date {
+  color: gray;
+}
+
 .callback-function {
   color: gray;
 }

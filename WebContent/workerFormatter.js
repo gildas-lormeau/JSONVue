@@ -12,8 +12,22 @@ function decorateWithSpan(value, className) {
 	return '<span class="' + className + '">' + htmlEncode(value) + '</span>';
 }
 
+function maybeDate(value) {
+	var valueType = typeof value;
+	if (valueType == "number") {
+		if (value > 946684800 && value < 2145916800)
+			return new Date(value * 1000);
+		else if (value > 946684800000 && value < 2145916800000)
+			return new Date(value);
+	} else if (valueType == "string") {
+		if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(value))
+			return new Date(value);
+	}
+	return false;
+}
+
 function valueToHTML(value) {
-	var valueType = typeof value, output = "";
+	var valueType = typeof value, output = "", asDate = maybeDate(value);
 	if (value == null)
 		output += decorateWithSpan("null", "type-null");
 	else if (value && value.constructor == Array)
@@ -30,6 +44,9 @@ function valueToHTML(value) {
 	else if (valueType == "boolean")
 		output += decorateWithSpan(value, "type-boolean");
 
+	if ( asDate ){
+		output +=  ' <span class="type-date">/* [<b>' + asDate.toUTCString() + '</b>], [<b>' + asDate.toLocaleString() + '</b>] */</span>';
+	}
 	return output;
 }
 
