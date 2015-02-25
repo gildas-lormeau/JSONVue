@@ -1,4 +1,4 @@
-var port = chrome.extension.connect(), collapsers, options, jsonObject;
+var port = chrome.runtime.connect(), collapsers, options, jsonObject;
 
 function displayError(error, loc, offset) {
 	var link = document.createElement("link"), pre = document.body.firstChild.firstChild, text = pre.textContent.substring(offset), start = 0, ranges = [], idx = 0, end, range = document
@@ -6,7 +6,7 @@ function displayError(error, loc, offset) {
 			.createElement("div"), closeButton = document.createElement("div");
 	link.rel = "stylesheet";
 	link.type = "text/css";
-	link.href = chrome.extension.getURL("content_error.css");
+	link.href = chrome.runtime.getURL("content_error.css");
 	document.head.appendChild(link);
 	while (idx != -1) {
 		idx = text.indexOf("\n", start);
@@ -23,7 +23,7 @@ function displayError(error, loc, offset) {
 	errorPosition.className = "error-position";
 	errorPosition.id = "error-position";
 	range.surroundContents(errorPosition);
-	imgError.src = chrome.extension.getURL("error.gif");
+	imgError.src = chrome.runtime.getURL("error.gif");
 	errorPosition.insertBefore(imgError, errorPosition.firstChild);
 	content.className = "content";
 	closeButton.className = "close-error";
@@ -41,7 +41,7 @@ function displayError(error, loc, offset) {
 
 function displayUI(theme, html) {
 	var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, content = "";
-	content += '<link rel="stylesheet" type="text/css" href="' + chrome.extension.getURL("jsonview-core.css") + '">';
+	content += '<link rel="stylesheet" type="text/css" href="' + chrome.runtime.getURL("jsonview-core.css") + '">';
 	content += "<style>" + theme + "</style>";
 	content += html;
 	document.body.innerHTML = content;
@@ -66,7 +66,7 @@ function displayUI(theme, html) {
 	viewSourceElement.href = "view-source:" + location.href;
 	optionsElement = document.createElement("img");
 	optionsElement.title = "options";
-	optionsElement.src = chrome.extension.getURL("options.png");
+	optionsElement.src = chrome.runtime.getURL("options.png");
 	toolboxElement.appendChild(expandElement);
 	toolboxElement.appendChild(reduceElement);
 	toolboxElement.appendChild(viewSourceElement);
@@ -79,7 +79,7 @@ function displayUI(theme, html) {
 	expandElement.addEventListener('click', onexpand, false);
 	reduceElement.addEventListener('click', onreduce, false);
 	optionsElement.addEventListener("click", function() {
-		window.open(chrome.extension.getURL("options.html"));
+		window.open(chrome.runtime.getURL("options.html"));
 	}, false);
 	copyPathElement.addEventListener("click", function() {
 		port.postMessage({
