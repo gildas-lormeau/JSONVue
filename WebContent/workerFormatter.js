@@ -14,6 +14,10 @@ function decorateWithSpan(value, className) {
 
 function maybeDate(value) {
 	var valueType = typeof value;
+	if (valueType == "string" && !isNaN(parseInt(value)) && isFinite(value) ){
+		value = parseInt(value);
+		valueType = "number";
+	}
 	if (valueType == "number") {
 		if (value > 946684800 && value < 2145916800)
 			return new Date(value * 1000);
@@ -66,13 +70,28 @@ function arrayToHTML(json) {
 	return output;
 }
 
+function keyToHTML(value) {
+	var valueType = typeof value, output = "", asDate = maybeDate(value);
+	if (valueType == "string"){
+		if (/^(http|https):\/\/[^\s]+$/.test(value))
+			output += '<a href="' + value + '">' + htmlEncode(value) + '</a>';
+		else
+			output += htmlEncode(value);
+	}
+	if (asDate) {
+		output += ' <span class="type-date">/* [<b>' + asDate.toUTCString() + '</b>], [<b>' + asDate.toLocaleString()
+				+ '</b>] */</span>';
+	}
+	return output;
+}
+
 function objectToHTML(json) {
 	var i, key, length, keys = Object.keys(json), output = '<div class="collapser"></div>{<span class="ellipsis"></span><ul class="obj collapsible">', hasContents = false;
 	for (i = 0, length = keys.length; i < length; i++) {
 		key = keys[i];
 		hasContents = true;
 		output += '<li><div class="hoverable">';
-		output += '<span class="property">' + htmlEncode(key) + '</span>: ';
+		output += '<span class="property">' + keyToHTML(key) + '</span>: ';
 		output += valueToHTML(json[key]);
 		if (i < length - 1)
 			output += ',';
