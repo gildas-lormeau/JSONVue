@@ -43,6 +43,8 @@ function valueToHTML(value) {
 	else if (valueType == "string")
 		if (/^(http|https):\/\/[^\s]+$/.test(value))
 			output += decorateWithSpan('"', "type-string") + '<a href="' + value + '">' + htmlEncode(value) + '</a>' + decorateWithSpan('"', "type-string");
+		else if ((value.match(/\n/g) || []).length > 2)
+			output += '<div class="type-string-multiline">' + htmlEncode(value) + '</div>';
 		else
 			output += decorateWithSpan('"' + value + '"', "type-string");
 	else if (valueType == "boolean")
