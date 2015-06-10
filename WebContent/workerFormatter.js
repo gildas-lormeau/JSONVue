@@ -4,6 +4,8 @@
  * Original author: Benjamin Hollis
  */
 
+var options;
+
 function htmlEncode(t) {
 	return t != null ? t.toString().replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
 }
@@ -13,6 +15,8 @@ function decorateWithSpan(value, className) {
 }
 
 function maybeDate(value) {
+	if ( !options.formatDates )
+		return false;
 	var valueType = typeof value;
 	if (valueType == "string" && !isNaN(parseInt(value)) && isFinite(value) ){
 		value = parseInt(value);
@@ -43,7 +47,7 @@ function valueToHTML(value) {
 	else if (valueType == "string")
 		if (/^(http|https):\/\/[^\s]+$/.test(value))
 			output += decorateWithSpan('"', "type-string") + '<a href="' + value + '">' + htmlEncode(value) + '</a>' + decorateWithSpan('"', "type-string");
-		else if ((value.match(/\n/g) || []).length > 2)
+		else if (options.formatMultilineStrings && (value.match(/\n/g) || []).length > 2)
 			output += '<div class="type-string-multiline">' + htmlEncode(value) + '</div>';
 		else
 			output += decorateWithSpan('"' + value + '"', "type-string");
@@ -119,6 +123,10 @@ function jsonToHTML(json, fnName) {
 
 addEventListener("message", function(event) {
 	var object;
+	console.log(event.data);
+	if (event.data.hasOwnProperty("options")){
+		options = event.data.options;
+	}
 	try {
 		object = JSON.parse(event.data.json);
 	} catch (e) {

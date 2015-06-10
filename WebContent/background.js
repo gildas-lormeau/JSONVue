@@ -86,7 +86,8 @@ function init() {
 				workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
 				workerFormatter.postMessage({
 					json : json,
-					fnName : msg.fnName
+					fnName : msg.fnName,
+					options : localStorage.options ? JSON.parse(localStorage.options) : {}
 				});
 			}
 		});
@@ -99,6 +100,9 @@ if (localStorage.options)
 	options = JSON.parse(localStorage.options);
 if (typeof options.addContextMenu == "undefined") {
 	options.addContextMenu = true;
+	options.formatDates = true;
+	options.formatMultilineStrings = true;
+	
 	localStorage.options = JSON.stringify(options);
 }
 
