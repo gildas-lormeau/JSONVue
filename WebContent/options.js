@@ -17,9 +17,6 @@ function initOptions() {
 		localStorage.options = JSON.stringify(options);
 		bgPage.refreshMenuEntry();
 	});
-	document.getElementById("open-editor").addEventListener("click", function() {
-		location.href = "csseditor.html";
-	}, false);
 }
 
 addEventListener("load", initOptions, false);

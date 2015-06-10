@@ -1,15 +1,5 @@
 var path, value, copyPathMenuEntryId, copyValueMenuEntryId;
 
-function getDefaultTheme(callback) {
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4)
-			callback(xhr.responseText);
-	};
-	xhr.open("GET", "jsonview.css", true);
-	xhr.send(null);
-}
-
 function copy(value) {
 	var selElement, selRange, selection;
 	selElement = document.createElement("span");
@@ -73,8 +63,7 @@ function init() {
 				if (message.html)
 					port.postMessage({
 						onjsonToHTML : true,
-						html : message.html,
-						theme : localStorage.theme
+						html : message.html
 					});
 				if (message.error) {
 					workerJSONLint = new Worker("workerJSONLint.js");
@@ -113,10 +102,5 @@ if (typeof options.addContextMenu == "undefined") {
 	localStorage.options = JSON.stringify(options);
 }
 
-if (!localStorage.theme)
-	getDefaultTheme(function(theme) {
-		localStorage.theme = theme;
-		init();
-	});
-else
-	init();
+
+init();

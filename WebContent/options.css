@@ -48,15 +48,6 @@ input[type="checkbox"] {
 	width: auto;
 }
 
-button {
-	position: absolute;
-	top: -4px;
-	right: 0px;
-	background-color: #F3F3F3;
-	-webkit-border-radius: 3px;
-	right: 0px;
-}
-
 #main {
 	border-radius: 5px;
 }
