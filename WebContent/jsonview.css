@@ -23,6 +23,18 @@ body {
   color: green;
 }
 
+.type-string-multiline {
+  color: green;
+  font-size: smaller;
+  white-space: pre;
+  padding-left: 25px;
+  border-left: 1px dashed #ddd;
+}
+
+.type-date {
+  color: gray;
+}
+
 .callback-function {
   color: gray;
 }

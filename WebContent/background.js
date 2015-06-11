@@ -1,15 +1,5 @@
 var path, value, copyPathMenuEntryId, copyValueMenuEntryId;
 
-function getDefaultTheme(callback) {
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4)
-			callback(xhr.responseText);
-	};
-	xhr.open("GET", "jsonview.css", true);
-	xhr.send(null);
-}
-
 function copy(value) {
 	var selElement, selRange, selection;
 	selElement = document.createElement("span");
@@ -73,8 +63,7 @@ function init() {
 				if (message.html)
 					port.postMessage({
 						onjsonToHTML : true,
-						html : message.html,
-						theme : localStorage.theme
+						html : message.html
 					});
 				if (message.error) {
 					workerJSONLint = new Worker("workerJSONLint.js");
@@ -97,7 +86,8 @@ function init() {
 				workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
 				workerFormatter.postMessage({
 					json : json,
-					fnName : msg.fnName
+					fnName : msg.fnName,
+					options : localStorage.options ? JSON.parse(localStorage.options) : {}
 				});
 			}
 		});
@@ -110,13 +100,11 @@ if (localStorage.options)
 	options = JSON.parse(localStorage.options);
 if (typeof options.addContextMenu == "undefined") {
 	options.addContextMenu = true;
+	options.formatDates = true;
+	options.formatMultilineStrings = true;
+	
 	localStorage.options = JSON.stringify(options);
 }
 
-if (!localStorage.theme)
-	getDefaultTheme(function(theme) {
-		localStorage.theme = theme;
-		init();
-	});
-else
-	init();
+
+init();
