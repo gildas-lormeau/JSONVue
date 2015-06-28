@@ -7,6 +7,10 @@
   "version": "0.0.32.2",
   "description": "Validate and view JSON documents",
   "options_page": "options.html",
+  "browser_action": {
+    "default_icon" : "jsonview16.png",
+    "default_title" : "JSONView"
+  },
   "background" : {
     "scripts": [
       "background.js"
