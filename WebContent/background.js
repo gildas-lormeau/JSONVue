@@ -120,3 +120,10 @@ if (!localStorage.theme)
 	});
 else
 	init();
+
+// click on browser action
+chrome.browserAction.onClicked.addListener(function(tab) {
+	chrome.tabs.create({
+		url: chrome.extension.getURL("viewer/index.html")
+	});
+});

@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>JSONEditor | Switch mode</title>
+
+  <!-- when using the mode "code", it's important to specify charset utf-8 -->
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+  <link href="jsoneditor/jsoneditor.min.css" rel="stylesheet" type="text/css">
+  <script src="jsoneditor/jsoneditor.min.js"></script>
+  
+  <style type="text/css">
+    .container {
+      font: 10.5pt arial;
+      color: #4d4d4d;
+      line-height: 150%;
+      width: 980px;
+      margin: 0 auto;
+    }
+
+    #jsoneditor {
+      width: 960px;
+      height: 480px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+	<p>
+	  You can paste the json data into `Text View` and change the view mode to see the effects. Enjoy it!
+	  Powered by <a target="_blank" href="https://github.com/josdejong/jsoneditor">josdejong's jsoneditor</a>.
+	</p>
+	<div id="jsoneditor"></div>
+</div>
+<script src="viewer.js"></script>
+</body>
+</html>
