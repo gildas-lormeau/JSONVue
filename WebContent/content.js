@@ -78,10 +78,14 @@ function displayUI(theme, html) {
 	document.body.addEventListener('contextmenu', onContextMenu, false);
 	expandElement.addEventListener('click', onexpand, false);
 	reduceElement.addEventListener('click', onreduce, false);
-	optionsElement.addEventListener("click", function() {
+	optionsElement.addEventListener("click", function(ev) {
+		if (ev.isTrusted === false)
+			return;
 		window.open(chrome.runtime.getURL("options.html"));
 	}, false);
-	copyPathElement.addEventListener("click", function() {
+	copyPathElement.addEventListener("click", function(ev) {
+		if (ev.isTrusted === false)
+			return;
 		port.postMessage({
 			copyPropertyPath : true,
 			path : statusElement.innerText
@@ -196,6 +200,8 @@ var onmouseMove = (function() {
 	}
 
 	return function(event) {
+		if (event.isTrusted === false)
+			return;
 		var str = "", statusElement = document.querySelector(".status");
 		element = getParentLI(event.target);
 		if (element) {
@@ -233,7 +239,9 @@ function onmouseClick() {
 	}
 }
 
-function onContextMenu() {
+function onContextMenu(ev) {
+	if (ev.isTrusted === false)
+		return;
 	var currentLI, statusElement, selection = "", i, value;
 	currentLI = getParentLI(event.target);
 	statusElement = document.querySelector(".status");
