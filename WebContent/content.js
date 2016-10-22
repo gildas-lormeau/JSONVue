@@ -1,4 +1,4 @@
-var port = chrome.runtime.connect(), collapsers, options, jsonObject;
+var port = chrome.runtime.connect(), collapsers, options, jsonObject, jsonSelector;
 
 function displayError(error, loc, offset) {
 	var link = document.createElement("link"), pre = document.body.firstChild.firstChild, text = pre.textContent.substring(offset), start = 0, ranges = [], idx = 0, end, range = document
@@ -42,7 +42,7 @@ function displayError(error, loc, offset) {
 function displayUI(theme, html) {
 	var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, content = "";
 	content += '<link rel="stylesheet" type="text/css" href="' + chrome.runtime.getURL("jsonview-core.css") + '">';
-	content += "<style>" + theme + "</style>";
+	content += "<style>" + theme.replace(/<\/\s*style/g, '') + "</style>";
 	content += html;
 	document.body.innerHTML = content;
 	collapsers = document.querySelectorAll("#json .collapsible .collapsible");
@@ -196,6 +196,7 @@ var onmouseMove = (function() {
 			hoveredLI.firstChild.classList.remove("hovered");
 			hoveredLI = null;
 			statusElement.innerText = "";
+			jsonSelector = [];
 		}
 	}
 
@@ -205,6 +206,7 @@ var onmouseMove = (function() {
 		var str = "", statusElement = document.querySelector(".status");
 		element = getParentLI(event.target);
 		if (element) {
+			jsonSelector = [];
 			if (hoveredLI)
 				hoveredLI.firstChild.classList.remove("hovered");
 			hoveredLI = element;
@@ -213,9 +215,12 @@ var onmouseMove = (function() {
 				if (element.parentNode.classList.contains("array")) {
 					var index = [].indexOf.call(element.parentNode.children, element);
 					str = "[" + index + "]" + str;
+					jsonSelector.unshift(index);
 				}
 				if (element.parentNode.classList.contains("obj")) {
-					str = "." + element.firstChild.firstChild.innerText + str;
+					var key = element.firstChild.firstChild.innerText;
+					str = "." + key + str;
+					jsonSelector.unshift(key);
 				}
 				element = element.parentNode.parentNode.parentNode;
 			} while (element.tagName == "LI");
@@ -246,10 +251,10 @@ function onContextMenu(ev) {
 	currentLI = getParentLI(event.target);
 	statusElement = document.querySelector(".status");
 	if (currentLI) {
-		if (Array.isArray(jsonObject))
-			value = eval("(jsonObject" + statusElement.innerText + ")");
-		else
-			value = eval("(jsonObject." + statusElement.innerText + ")");
+		var value = jsonObject;
+		jsonSelector.forEach(function(idx) {
+			value = value[idx];
+		});
 		port.postMessage({
 			copyPropertyPath : true,
 			path : statusElement.innerText,
