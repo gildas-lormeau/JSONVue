@@ -58,4 +58,9 @@ body {
 .collapser {
   padding-right: 6px;
   padding-left: 6px;
+  user-select: none;
+  -o-user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
 }
