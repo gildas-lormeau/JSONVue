@@ -40,11 +40,17 @@ function displayError(error, loc, offset) {
 }
 
 function displayUI(theme, html) {
-	var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, content = "";
-	content += '<link rel="stylesheet" type="text/css" href="' + chrome.runtime.getURL("jsonview-core.css") + '">';
-	content += "<style>" + theme.replace(/<\/\s*style/g, '') + "</style>";
-	content += html;
-	document.body.innerHTML = content;
+	var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, userStyleElement, baseStyleElement;
+	baseStyleElement = document.createElement("link");
+	baseStyleElement.rel = "stylesheet";
+	baseStyleElement.type = "text/css";
+	baseStyleElement.href = chrome.runtime.getURL("jsonview-core.css");
+	document.head.appendChild(baseStyleElement);
+	userStyleElement = document.createElement("style");
+	userStyleElement.appendChild(document.createTextNode(theme));
+	document.head.appendChild(userStyleElement);
+
+	document.body.innerHTML = html;
 	collapsers = document.querySelectorAll("#json .collapsible .collapsible");
 	statusElement = document.createElement("div");
 	statusElement.className = "status";
