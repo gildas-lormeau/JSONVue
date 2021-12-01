@@ -21,8 +21,7 @@ body > div > div {
 }
 
 .optionBlock {
-	overflow: hidden;
-	height: 30px;
+	height: 35px;
 	position: relative;
 }
 
