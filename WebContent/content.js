@@ -40,7 +40,7 @@ function displayError(error, loc, offset) {
 }
 
 function displayUI(theme, html) {
-	var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, content = "";
+	var statusElement, toolboxElement, expandElement, reduceElement, content = "";
 	content += '<link rel="stylesheet" type="text/css" href="' + chrome.runtime.getURL("jsonview-core.css") + '">';
 	content += "<style>" + theme + "</style>";
 	content += html;
@@ -59,28 +59,16 @@ function displayUI(theme, html) {
 	expandElement.innerText = "+";
 	reduceElement = document.createElement("span");
 	reduceElement.title = "reduce all";
-	reduceElement.innerText = "-";
-	viewSourceElement = document.createElement("a");
-	viewSourceElement.innerText = "View source";
-	viewSourceElement.target = "_blank";
-	viewSourceElement.href = "view-source:" + location.href;
-	optionsElement = document.createElement("img");
-	optionsElement.title = "options";
-	optionsElement.src = chrome.runtime.getURL("options.png");
+	reduceElement.innerText = "-";	
 	toolboxElement.appendChild(expandElement);
 	toolboxElement.appendChild(reduceElement);
-	toolboxElement.appendChild(viewSourceElement);
-	toolboxElement.appendChild(optionsElement);
 	document.body.appendChild(toolboxElement);
 	document.body.addEventListener('click', ontoggle, false);
 	document.body.addEventListener('mouseover', onmouseMove, false);
 	document.body.addEventListener('click', onmouseClick, false);
 	document.body.addEventListener('contextmenu', onContextMenu, false);
 	expandElement.addEventListener('click', onexpand, false);
-	reduceElement.addEventListener('click', onreduce, false);
-	optionsElement.addEventListener("click", function() {
-		window.open(chrome.runtime.getURL("options.html"));
-	}, false);
+	reduceElement.addEventListener('click', onreduce, false);	
 	copyPathElement.addEventListener("click", function() {
 		port.postMessage({
 			copyPropertyPath : true,

@@ -84,8 +84,9 @@ li {
 }
 
 .toolbox {
+	padding-right: 3px;
 	font-family: sans-serif;
-	font-size: 13px;
+	font-size: 15px;
 	opacity: .25;
 	background-color: #d2d2f6;
 	position: fixed;
