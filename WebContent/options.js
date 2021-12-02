@@ -1,5 +1,5 @@
 function initOptions() {
-	var bgPage = chrome.extension.getBackgroundPage(), options = localStorage.options ? JSON.parse(localStorage.options) : {};
+	var options = localStorage.options ? JSON.parse(localStorage.options) : {};
 	var safeMethodInput = document.getElementById("safeMethodInput"), injectInFrameInput = document.getElementById("injectInFrameInput"), addContextMenuInput = document.getElementById("addContextMenuInput");
 	safeMethodInput.checked = options.safeMethod;
 	injectInFrameInput.checked = options.injectInFrame;
@@ -15,7 +15,7 @@ function initOptions() {
 	addContextMenuInput.addEventListener("change", function() {
 		options.addContextMenu = addContextMenuInput.checked;
 		localStorage.options = JSON.stringify(options);
-		bgPage.refreshMenuEntry();
+		chrome.runtime.sendMessage("refreshMenuEntry");
 	});
 	document.getElementById("open-editor").addEventListener("click", function() {
 		location.href = "csseditor.html";

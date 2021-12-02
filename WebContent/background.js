@@ -120,3 +120,8 @@ if (!localStorage.theme)
 	});
 else
 	init();
+
+chrome.runtime.onMessage.addListener(message => {
+	if (message == "refreshMenuEntry")
+		refreshMenuEntry();
+});
