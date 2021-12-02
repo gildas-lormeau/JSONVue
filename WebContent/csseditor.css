@@ -36,7 +36,7 @@ h2 {
 
 #editor,.CodeMirror {
 	width: 500px;
-	height: 590px;
+	min-height: 590px;
 	border-width: 1px;
 	border-style: solid;
 	border-color: #aaa;
