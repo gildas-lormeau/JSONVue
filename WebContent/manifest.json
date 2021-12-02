@@ -1,23 +1,33 @@
 {
   "name": "JSONVue",
   "icons": {
-	"16": "jsonview16.png",
-	"48": "jsonview48.png",
-    "128": "jsonview128.png"},
+    "16": "jsonview16.png",
+    "48": "jsonview48.png",
+    "128": "jsonview128.png"
+  },
   "version": "0.1.1",
   "description": "Validate and view JSON documents",
   "options_page": "options.html",
-  "background" : {
+  "background": {
     "scripts": [
       "background.js"
     ]
   },
-  "content_scripts": [{
-	  "matches": ["http://*/*", "https://*/*", "ftp://*/*", "file:///*"],
-	  "js": ["content.js"],
-	  "run_at" : "document_end",
-	  "all_frames" : true
-  }],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*",
+        "ftp://*/*",
+        "file:///*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
   "web_accessible_resources": [
     "jsonview.css",
     "jsonview-core.css",
@@ -26,6 +36,12 @@
     "close_icon.gif",
     "error.gif"
   ],
-  "permissions" : ["clipboardWrite", "http://*/", "contextMenus", "https://*/", "ftp://*/"],
+  "permissions": [
+    "clipboardWrite",
+    "http://*/",
+    "contextMenus",
+    "https://*/",
+    "ftp://*/"
+  ],
   "manifest_version": 2
 }
