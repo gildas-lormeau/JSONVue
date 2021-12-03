@@ -1,3 +1,5 @@
+/* global addEventListener, postMessage */
+
 /**
  * Adapted the code in to order to run in a web worker. 
  * 
@@ -5,11 +7,11 @@
  */
 
 function htmlEncode(t) {
-	return t != null ? t.toString().replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
+	return t != null ? t.toString().replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
 }
 
 function decorateWithSpan(value, className) {
-	return '<span class="' + htmlEncode(className) + '">' + htmlEncode(value) + '</span>';
+	return "<span class=\"" + htmlEncode(className) + "\">" + htmlEncode(value) + "</span>";
 }
 
 function valueToHTML(value) {
@@ -24,9 +26,9 @@ function valueToHTML(value) {
 		output += decorateWithSpan(value, "type-number");
 	else if (valueType == "string")
 		if (/^https?:\/\/[^\s]+$/.test(value))
-			output += decorateWithSpan('"', "type-string") + '<a href="' + htmlEncode(value) + '">' + htmlEncode(value) + '</a>' + decorateWithSpan('"', "type-string");
+			output += decorateWithSpan("\"", "type-string") + "<a href=\"" + htmlEncode(value) + "\">" + htmlEncode(value) + "</a>" + decorateWithSpan("\"", "type-string");
 		else
-			output += decorateWithSpan('"' + value + '"', "type-string");
+			output += decorateWithSpan("\"" + value + "\"", "type-string");
 	else if (valueType == "boolean")
 		output += decorateWithSpan(value, "type-boolean");
 
@@ -34,48 +36,48 @@ function valueToHTML(value) {
 }
 
 function arrayToHTML(json) {
-	var i, length, output = '<div class="collapser"></div>[<span class="ellipsis"></span><ul class="array collapsible">', hasContents = false;
+	var i, length, output = "<div class=\"collapser\"></div>[<span class=\"ellipsis\"></span><ul class=\"array collapsible\">", hasContents = false;
 	for (i = 0, length = json.length; i < length; i++) {
 		hasContents = true;
-		output += '<li><div class="hoverable">';
+		output += "<li><div class=\"hoverable\">";
 		output += valueToHTML(json[i]);
 		if (i < length - 1)
-			output += ',';
-		output += '</div></li>';
+			output += ",";
+		output += "</div></li>";
 	}
-	output += '</ul>]';
+	output += "</ul>]";
 	if (!hasContents)
 		output = "[ ]";
 	return output;
 }
 
 function objectToHTML(json) {
-	var i, key, length, keys = Object.keys(json), output = '<div class="collapser"></div>{<span class="ellipsis"></span><ul class="obj collapsible">', hasContents = false;
+	var i, key, length, keys = Object.keys(json), output = "<div class=\"collapser\"></div>{<span class=\"ellipsis\"></span><ul class=\"obj collapsible\">", hasContents = false;
 	for (i = 0, length = keys.length; i < length; i++) {
 		key = keys[i];
 		hasContents = true;
-		output += '<li><div class="hoverable">';
-		output += '<span class="property">' + htmlEncode(key) + '</span>: ';
+		output += "<li><div class=\"hoverable\">";
+		output += "<span class=\"property\">" + htmlEncode(key) + "</span>: ";
 		output += valueToHTML(json[key]);
 		if (i < length - 1)
-			output += ',';
-		output += '</div></li>';
+			output += ",";
+		output += "</div></li>";
 	}
-	output += '</ul>}';
+	output += "</ul>}";
 	if (!hasContents)
 		output = "{ }";
 	return output;
 }
 
 function jsonToHTML(json, fnName) {
-	var output = '';
+	var output = "";
 	if (fnName)
-		output += '<div class="callback-function">' + htmlEncode(fnName) + '(</div>';
-	output += '<div id="json">';
+		output += "<div class=\"callback-function\">" + htmlEncode(fnName) + "(</div>";
+	output += "<div id=\"json\">";
 	output += valueToHTML(json);
-	output += '</div>';
+	output += "</div>";
 	if (fnName)
-		output += '<div class="callback-function">)</div>';
+		output += "<div class=\"callback-function\">)</div>";
 	return output;
 }
 

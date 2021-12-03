@@ -1,3 +1,5 @@
+/* global document, chrome, localStorage, addEventListener, location */
+
 function initOptions() {
 	var options = localStorage.options ? JSON.parse(localStorage.options) : {};
 	var safeMethodInput = document.getElementById("safeMethodInput"), injectInFrameInput = document.getElementById("injectInFrameInput"), addContextMenuInput = document.getElementById("addContextMenuInput");

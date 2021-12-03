@@ -1,3 +1,5 @@
+/* global window, document, chrome, fetch, localStorage, chrome, Worker */
+
 var path, value, copyPathMenuEntryId, copyValueMenuEntryId;
 
 async function getDefaultTheme() {
@@ -24,14 +26,14 @@ function refreshMenuEntry() {
 		copyPathMenuEntryId = chrome.contextMenus.create({
 			title: "Copy path",
 			contexts: ["page", "link"],
-			onclick: function (info, tab) {
+			onclick: function () {
 				copy(path);
 			}
 		});
 		copyValueMenuEntryId = chrome.contextMenus.create({
 			title: "Copy value",
 			contexts: ["page", "link"],
-			onclick: function (info, tab) {
+			onclick: function () {
 				copy(value);
 			}
 		});

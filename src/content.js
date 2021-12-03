@@ -1,9 +1,9 @@
+/* global window, document, chrome, location, history, top, XMLHttpRequest */
+
 var port = chrome.runtime.connect(), collapsers, options, jsonObject, jsonSelector;
 
 function displayError(error, loc, offset) {
-	var link = document.createElement("link"), pre = document.body.firstChild.firstChild, text = pre.textContent.substring(offset), start = 0, ranges = [], idx = 0, end, range = document
-		.createRange(), imgError = document.createElement("img"), content = document.createElement("div"), errorPosition = document.createElement("span"), container = document
-			.createElement("div"), closeButton = document.createElement("div");
+	var link = document.createElement("link"), pre = document.body.firstChild.firstChild, text = pre.textContent.substring(offset), start = 0, ranges = [], idx = 0, end, range = document.createRange(), imgError = document.createElement("img"), content = document.createElement("div"), errorPosition = document.createElement("span"), container = document.createElement("div"), closeButton = document.createElement("div");
 	link.rel = "stylesheet";
 	link.type = "text/css";
 	link.href = chrome.runtime.getURL("content_error.css");
@@ -40,7 +40,7 @@ function displayError(error, loc, offset) {
 }
 
 function displayUI(theme, html) {
-	var statusElement, toolboxElement, expandElement, reduceElement, viewSourceElement, optionsElement, userStyleElement, baseStyleElement;
+	var statusElement, toolboxElement, expandElement, reduceElement, copyPathElement, userStyleElement, baseStyleElement;
 	baseStyleElement = document.createElement("link");
 	baseStyleElement.rel = "stylesheet";
 	baseStyleElement.type = "text/css";
@@ -68,12 +68,12 @@ function displayUI(theme, html) {
 	toolboxElement.appendChild(expandElement);
 	toolboxElement.appendChild(reduceElement);
 	document.body.appendChild(toolboxElement);
-	document.body.addEventListener('click', ontoggle, false);
-	document.body.addEventListener('mouseover', onmouseMove, false);
-	document.body.addEventListener('click', onmouseClick, false);
-	document.body.addEventListener('contextmenu', onContextMenu, false);
-	expandElement.addEventListener('click', onexpand, false);
-	reduceElement.addEventListener('click', onreduce, false);
+	document.body.addEventListener("click", ontoggle, false);
+	document.body.addEventListener("mouseover", onmouseMove, false);
+	document.body.addEventListener("click", onmouseClick, false);
+	document.body.addEventListener("contextmenu", onContextMenu, false);
+	expandElement.addEventListener("click", onexpand, false);
+	reduceElement.addEventListener("click", onreduce, false);
 	copyPathElement.addEventListener("click", function (event) {
 		if (event.isTrusted === false)
 			return;
@@ -96,7 +96,7 @@ function extractData(rawText) {
 			text: rawText,
 			offset: 0
 		};
-	tokens = text.match(/^([^\s\(]*)\s*\(([\s\S]*)\)\s*;?$/);
+	tokens = text.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/);
 	if (tokens && tokens[1] && tokens[2]) {
 		if (test(tokens[2].trim()))
 			return {
@@ -122,6 +122,7 @@ function processData(data) {
 		try {
 			jsonObject = JSON.parse(jsonText);
 		} catch (e) {
+			// ignored
 		}
 	}
 
@@ -147,8 +148,8 @@ function processData(data) {
 
 function ontoggle(event) {
 	var collapsed, target = event.target;
-	if (event.target.className == 'collapser') {
-		collapsed = target.parentNode.getElementsByClassName('collapsible')[0];
+	if (event.target.className == "collapser") {
+		collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
 		if (collapsed.parentNode.classList.contains("collapsed"))
 			collapsed.parentNode.classList.remove("collapsed");
 		else
@@ -195,7 +196,7 @@ var onmouseMove = (function () {
 		if (event.isTrusted === false)
 			return;
 		var str = "", statusElement = document.querySelector(".status");
-		element = getParentLI(event.target);
+		var element = getParentLI(event.target);
 		if (element) {
 			jsonSelector = [];
 			if (hoveredLI)
@@ -215,7 +216,7 @@ var onmouseMove = (function () {
 				}
 				element = element.parentNode.parentNode.parentNode;
 			} while (element.tagName == "LI");
-			if (str.charAt(0) == '.')
+			if (str.charAt(0) == ".")
 				str = str.substring(1);
 			statusElement.innerText = str;
 			return;
@@ -226,7 +227,7 @@ var onmouseMove = (function () {
 
 var selectedLI;
 
-function onmouseClick() {
+function onmouseClick(event) {
 	if (selectedLI)
 		selectedLI.firstChild.classList.remove("selected");
 	selectedLI = getParentLI(event.target);
@@ -236,13 +237,13 @@ function onmouseClick() {
 }
 
 function onContextMenu(event) {
-	var currentLI, statusElement, selection = "", i, value;
+	var currentLI, statusElement, value;
 	if (event.isTrusted === false)
 		return;
 	currentLI = getParentLI(event.target);
 	statusElement = document.querySelector(".status");
 	if (currentLI) {
-		var value = jsonObject;
+		value = jsonObject;
 		jsonSelector.forEach(function (idx) {
 			value = value[idx];
 		});
@@ -260,15 +261,9 @@ function init(data) {
 			options = msg.options;
 			processData(data);
 		}
-		if (msg.onjsonToHTML)
-			if (msg.html) {
-				displayUI(msg.theme, msg.html);
-			} else if (msg.json)
-				port.postMessage({
-					getError: true,
-					json: json,
-					fnName: fnName
-				});
+		if (msg.onjsonToHTML && msg.html) {
+			displayUI(msg.theme, msg.html);
+		}
 		if (msg.ongetError) {
 			displayError(msg.error, msg.loc, msg.offset);
 		}
