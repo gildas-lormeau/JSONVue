@@ -31,10 +31,10 @@
   "web_accessible_resources": [
     "jsonview.css",
     "jsonview-core.css",
-    "content_error.css",
+    "content-error.css",
     "options.png",
-    "close_icon.gif",
-    "error.gif"
+    "close-icon.gif",
+    "error-icon.gif"
   ],
   "permissions": [
     "clipboardWrite",

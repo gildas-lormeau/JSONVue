@@ -17,7 +17,7 @@ function displayError(error, loc, offset) {
 	let start = 0, idx = 0, end;
 	link.rel = "stylesheet";
 	link.type = "text/css";
-	link.href = chrome.runtime.getURL("content_error.css");
+	link.href = chrome.runtime.getURL("content-error.css");
 	document.head.appendChild(link);
 	while (idx != -1) {
 		idx = text.indexOf("\n", start);
@@ -34,7 +34,7 @@ function displayError(error, loc, offset) {
 	errorPosition.className = "error-position";
 	errorPosition.id = "error-position";
 	range.surroundContents(errorPosition);
-	imgError.src = chrome.runtime.getURL("error.gif");
+	imgError.src = chrome.runtime.getURL("error-icon.gif");
 	errorPosition.insertBefore(imgError, errorPosition.firstChild);
 	content.className = "content";
 	closeButton.className = "close-error";

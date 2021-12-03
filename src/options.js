@@ -21,7 +21,7 @@ function initOptions() {
 		localStorage.options = JSON.stringify(options);
 		chrome.runtime.sendMessage("refreshMenuEntry");
 	});
-	document.getElementById("open-editor").addEventListener("click", location.href = "csseditor.html", false);
+	document.getElementById("open-editor").addEventListener("click", location.href = "css-editor.html", false);
 }
 
 addEventListener("load", initOptions, false);
