@@ -1,21 +1,18 @@
-/* global document, chrome, localStorage, addEventListener, location */
+/* global document, chrome, location */
 
-function initOptions() {
-	const options = localStorage.options ? JSON.parse(localStorage.options) : {};
+chrome.runtime.sendMessage({ getSettings: true }, settings => {
+	const options = settings.options;
 	const injectInFrameInput = document.getElementById("injectInFrameInput");
 	const addContextMenuInput = document.getElementById("addContextMenuInput");
 	injectInFrameInput.checked = options.injectInFrame;
 	addContextMenuInput.checked = options.addContextMenu;
 	injectInFrameInput.addEventListener("change", () => {
 		options.injectInFrame = injectInFrameInput.checked;
-		localStorage.options = JSON.stringify(options);
+		chrome.runtime.sendMessage({ setSetting: true, name: "options", value: options });
 	});
 	addContextMenuInput.addEventListener("change", () => {
 		options.addContextMenu = addContextMenuInput.checked;
-		localStorage.options = JSON.stringify(options);
-		chrome.runtime.sendMessage("refreshMenuEntry");
+		chrome.runtime.sendMessage({ setSetting: true, refreshMenuEntry: true, name: "options", value: options });
 	});
 	document.getElementById("open-editor").addEventListener("click", () => location.href = "css-editor.html", false);
-}
-
-addEventListener("load", initOptions, false);
+});

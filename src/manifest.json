@@ -37,7 +37,8 @@
   ],
   "permissions": [
     "clipboardWrite",
-    "contextMenus"
+    "contextMenus",
+    "storage"
   ],
   "manifest_version": 2
 }

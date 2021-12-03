@@ -1,6 +1,6 @@
-/* global document, chrome, fetch, localStorage, chrome, Worker, getSelection */
+/* global document, chrome, fetch, chrome, Worker, getSelection, localStorage */
 
-let copiedPath, copiedValue, copyPathMenuEntryId, copyValueMenuEntryId, options;
+let extensionReady, copiedPath, copiedValue, copyPathMenuEntryId, copyValueMenuEntryId, settings;
 
 async function getDefaultTheme() {
 	return (await fetch("css/jsonvue.css")).text();
@@ -19,8 +19,8 @@ function copy(value) {
 	document.body.removeChild(selElement);
 }
 
-function refreshMenuEntry() {
-	const options = localStorage.options ? JSON.parse(localStorage.options) : {};
+async function refreshMenuEntry() {
+	const options = (await getSettings()).options;
 	if (options.addContextMenu && !copyPathMenuEntryId) {
 		copyPathMenuEntryId = chrome.contextMenus.create({
 			title: "Copy path",
@@ -40,24 +40,64 @@ function refreshMenuEntry() {
 	}
 }
 
-options = {};
-if (localStorage.options)
-	options = JSON.parse(localStorage.options);
-if (typeof options.addContextMenu == "undefined") {
-	options.addContextMenu = true;
-	localStorage.options = JSON.stringify(options);
+async function migrateSettings() {
+	const promises = [];
+	if (localStorage.options) {
+		promises.push(new Promise(resolve => {
+			chrome.storage.local.set({ options: JSON.parse(localStorage.options) }, () => resolve());
+			delete localStorage.options;
+		}));
+	}
+	if (localStorage.theme) {
+		promises.push(new Promise(resolve => {
+			chrome.storage.local.set({ theme: localStorage.theme }, () => resolve());
+			delete localStorage.theme;
+		}));
+	}
+	await Promise.all(promises);
 }
 
-if (!localStorage.theme)
-	getDefaultTheme().then(theme => {
-		localStorage.theme = theme;
-		refreshMenuEntry();
-	});
-else
-	refreshMenuEntry();
+async function getSettings() {
+	await extensionReady;
+	return new Promise(resolve => chrome.storage.local.get(["options", "theme"], result => resolve(result)));
+}
+
+async function setSetting(name, value) {
+	await extensionReady;
+	return new Promise(resolve => chrome.storage.local.set({ [name]: value }, result => resolve(result)));
+}
+
+async function init() {
+	extensionReady = migrateSettings();
+	settings = await getSettings();
+	if (settings.options && typeof settings.options.addContextMenu == "undefined") {
+		settings.options.addContextMenu = true;
+		await setSetting("options", settings.options);
+	}
+	if (!settings.theme) {
+		const theme = await getDefaultTheme();
+		await setSetting("theme", theme);
+		await refreshMenuEntry();
+	} else {
+		await refreshMenuEntry();
+	}
+}
+
+async function onmessage(message, sender, sendResponse) {
+	if (message.setSetting) {
+		await setSetting(message.name, message.value);
+	}
+	if (message.getSettings) {
+		const settings = await getSettings();
+		sendResponse(settings);
+	}
+	if (message.refreshMenuEntry) {
+		await refreshMenuEntry();
+	}
+}
 
 chrome.runtime.onConnect.addListener(port => {
-	port.onMessage.addListener(message => {
+	port.onMessage.addListener(async message => {
 		const json = message.json;
 		let workerFormatter, workerJSONLint;
 
@@ -73,7 +113,7 @@ chrome.runtime.onConnect.addListener(port => {
 			});
 		}
 
-		function onWorkerFormatterMessage(event) {
+		async function onWorkerFormatterMessage(event) {
 			const message = event.data;
 			workerFormatter.removeEventListener("message", onWorkerFormatterMessage, false);
 			workerFormatter.terminate();
@@ -81,7 +121,7 @@ chrome.runtime.onConnect.addListener(port => {
 				port.postMessage({
 					onjsonToHTML: true,
 					html: message.html,
-					theme: localStorage.theme
+					theme: (await getSettings()).theme
 				});
 			if (message.error) {
 				workerJSONLint = new Worker("js/worker-JSONLint.js");
@@ -93,7 +133,7 @@ chrome.runtime.onConnect.addListener(port => {
 		if (message.init)
 			port.postMessage({
 				oninit: true,
-				options: localStorage.options ? JSON.parse(localStorage.options) : {}
+				options: (await getSettings()).options || {}
 			});
 		if (message.copyPropertyPath) {
 			copiedPath = message.path;
@@ -109,7 +149,8 @@ chrome.runtime.onConnect.addListener(port => {
 		}
 	});
 });
-chrome.runtime.onMessage.addListener(message => {
-	if (message == "refreshMenuEntry")
-		refreshMenuEntry();
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	onmessage(message, sender, sendResponse);
+	return true;
 });
+init();

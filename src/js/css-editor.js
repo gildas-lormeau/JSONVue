@@ -1,4 +1,4 @@
-/* global document, fetch, localStorage, addEventListener, setTimeout, clearTimeout, CodeMirror */
+/* global document, chrome, fetch, addEventListener, setTimeout, clearTimeout, CodeMirror */
 
 (() => {
 
@@ -26,7 +26,7 @@
 		updatePreview();
 	}, false);
 
-	saveButton.addEventListener("click", () => localStorage.theme = codemirror.getValue(), false);
+	saveButton.addEventListener("click", () => chrome.runtime.sendMessage({ setSetting: true, name: "theme", value: codemirror.getValue() }), false);
 
 	addEventListener("load", () => {
 		let timeoutOnKey;
@@ -38,8 +38,10 @@
 				timeoutOnKey = setTimeout(updatePreview, 500);
 			}
 		});
-		codemirror.setValue(localStorage.theme);
-		updatePreview();
+		chrome.runtime.sendMessage({ getSettings: true }, settings => {
+			codemirror.setValue(settings.theme);
+			updatePreview();
+		});
 	}, false);
 
 })();
