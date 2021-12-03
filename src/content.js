@@ -34,7 +34,7 @@ function displayError(error, loc, offset) {
 	errorPosition.className = "error-position";
 	errorPosition.id = "error-position";
 	range.surroundContents(errorPosition);
-	imgError.src = chrome.runtime.getURL("error-icon.gif");
+	imgError.src = chrome.runtime.getURL("resources/error-icon.gif");
 	errorPosition.insertBefore(imgError, errorPosition.firstChild);
 	content.className = "content";
 	closeButton.className = "close-error";

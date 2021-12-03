@@ -1,9 +1,9 @@
 {
   "name": "JSONVue",
   "icons": {
-    "16": "jsonview16.png",
-    "48": "jsonview48.png",
-    "128": "jsonview128.png"
+    "16": "resources/jsonview16.png",
+    "48": "resources/jsonview48.png",
+    "128": "resources/jsonview128.png"
   },
   "version": "0.1.1",
   "description": "Validate and view JSON documents",
@@ -32,9 +32,8 @@
     "jsonview.css",
     "jsonview-core.css",
     "content-error.css",
-    "options.png",
-    "close-icon.gif",
-    "error-icon.gif"
+    "resources/close-icon.gif",
+    "resources/error-icon.gif"
   ],
   "permissions": [
     "clipboardWrite",
