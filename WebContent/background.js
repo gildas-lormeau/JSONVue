@@ -1,13 +1,7 @@
 var path, value, copyPathMenuEntryId, copyValueMenuEntryId;
 
-function getDefaultTheme(callback) {
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 4)
-			callback(xhr.responseText);
-	};
-	xhr.open("GET", "jsonview.css", true);
-	xhr.send(null);
+async function getDefaultTheme() {
+	return await (await fetch("jsonview.css")).text();
 }
 
 function copy(value) {
@@ -114,7 +108,7 @@ if (typeof options.addContextMenu == "undefined") {
 }
 
 if (!localStorage.theme)
-	getDefaultTheme(function(theme) {
+	getDefaultTheme().then(theme => {
 		localStorage.theme = theme;
 		init();
 	});
