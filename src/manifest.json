@@ -10,7 +10,7 @@
   "options_page": "options.html",
   "background": {
     "scripts": [
-      "background.js"
+      "js/background.js"
     ]
   },
   "content_scripts": [
@@ -22,7 +22,7 @@
         "file:///*"
       ],
       "js": [
-        "content.js"
+        "js/content.js"
       ],
       "run_at": "document_end",
       "all_frames": true
