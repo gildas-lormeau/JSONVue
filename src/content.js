@@ -1,9 +1,20 @@
 /* global window, document, chrome, location, history, top, XMLHttpRequest */
 
-var port = chrome.runtime.connect(), collapsers, options, jsonObject, jsonSelector;
+const port = chrome.runtime.connect();
+let collapsers, options, jsonObject, jsonSelector;
 
 function displayError(error, loc, offset) {
-	var link = document.createElement("link"), pre = document.body.firstChild.firstChild, text = pre.textContent.substring(offset), start = 0, ranges = [], idx = 0, end, range = document.createRange(), imgError = document.createElement("img"), content = document.createElement("div"), errorPosition = document.createElement("span"), container = document.createElement("div"), closeButton = document.createElement("div");
+	const link = document.createElement("link");
+	const pre = document.body.firstChild.firstChild;
+	const text = pre.textContent.substring(offset);
+	const range = document.createRange();
+	const imgError = document.createElement("img");
+	const content = document.createElement("div");
+	const errorPosition = document.createElement("span");
+	const container = document.createElement("div");
+	const closeButton = document.createElement("div");
+	const ranges = [];
+	let start = 0, idx = 0, end;
 	link.rel = "stylesheet";
 	link.type = "text/css";
 	link.href = chrome.runtime.getURL("content_error.css");
@@ -40,29 +51,28 @@ function displayError(error, loc, offset) {
 }
 
 function displayUI(theme, html) {
-	var statusElement, toolboxElement, expandElement, reduceElement, copyPathElement, userStyleElement, baseStyleElement;
-	baseStyleElement = document.createElement("link");
+	const baseStyleElement = document.createElement("link");
 	baseStyleElement.rel = "stylesheet";
 	baseStyleElement.type = "text/css";
 	baseStyleElement.href = chrome.runtime.getURL("jsonview-core.css");
 	document.head.appendChild(baseStyleElement);
-	userStyleElement = document.createElement("style");
+	const userStyleElement = document.createElement("style");
 	userStyleElement.appendChild(document.createTextNode(theme));
 	document.head.appendChild(userStyleElement);
 	document.body.innerHTML = html;
 	collapsers = document.querySelectorAll("#json .collapsible .collapsible");
-	statusElement = document.createElement("div");
+	const statusElement = document.createElement("div");
 	statusElement.className = "status";
-	copyPathElement = document.createElement("div");
+	const copyPathElement = document.createElement("div");
 	copyPathElement.className = "copy-path";
 	statusElement.appendChild(copyPathElement);
 	document.body.appendChild(statusElement);
-	toolboxElement = document.createElement("div");
+	const toolboxElement = document.createElement("div");
 	toolboxElement.className = "toolbox";
-	expandElement = document.createElement("span");
+	const expandElement = document.createElement("span");
 	expandElement.title = "expand all";
 	expandElement.innerText = "+";
-	reduceElement = document.createElement("span");
+	const reduceElement = document.createElement("span");
 	reduceElement.title = "reduce all";
 	reduceElement.innerText = "-";
 	toolboxElement.appendChild(expandElement);
@@ -85,7 +95,8 @@ function displayUI(theme, html) {
 }
 
 function extractData(rawText) {
-	var tokens, text = rawText.trim();
+	const text = rawText.trim();
+	let tokens;
 
 	function test(text) {
 		return ((text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") || (text.charAt(0) == "{" && text.charAt(text.length - 1) == "}"));
@@ -108,7 +119,7 @@ function extractData(rawText) {
 }
 
 function processData(data) {
-	var xhr, jsonText;
+	let xhr, jsonText;
 
 	function formatToHTML(fnName, offset) {
 		if (!jsonText)
@@ -147,7 +158,8 @@ function processData(data) {
 }
 
 function ontoggle(event) {
-	var collapsed, target = event.target;
+	const target = event.target;
+	let collapsed;
 	if (event.target.className == "collapser") {
 		collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
 		if (collapsed.parentNode.classList.contains("collapsed"))
@@ -179,11 +191,11 @@ function getParentLI(element) {
 		return element;
 }
 
-var onmouseMove = (function () {
-	var hoveredLI;
+const onmouseMove = (function () {
+	let hoveredLI;
 
 	function onmouseOut() {
-		var statusElement = document.querySelector(".status");
+		const statusElement = document.querySelector(".status");
 		if (hoveredLI) {
 			hoveredLI.firstChild.classList.remove("hovered");
 			hoveredLI = null;
@@ -195,8 +207,9 @@ var onmouseMove = (function () {
 	return function (event) {
 		if (event.isTrusted === false)
 			return;
-		var str = "", statusElement = document.querySelector(".status");
-		var element = getParentLI(event.target);
+		const statusElement = document.querySelector(".status");
+		let str = "";
+		let element = getParentLI(event.target);
 		if (element) {
 			jsonSelector = [];
 			if (hoveredLI)
@@ -205,12 +218,12 @@ var onmouseMove = (function () {
 			element.firstChild.classList.add("hovered");
 			do {
 				if (element.parentNode.classList.contains("array")) {
-					var index = [].indexOf.call(element.parentNode.children, element);
+					const index = [].indexOf.call(element.parentNode.children, element);
 					str = "[" + index + "]" + str;
 					jsonSelector.unshift(index);
 				}
 				if (element.parentNode.classList.contains("obj")) {
-					var key = element.firstChild.firstChild.innerText;
+					const key = element.firstChild.firstChild.innerText;
 					str = "." + key + str;
 					jsonSelector.unshift(key);
 				}
@@ -225,7 +238,7 @@ var onmouseMove = (function () {
 	};
 })();
 
-var selectedLI;
+let selectedLI;
 
 function onmouseClick(event) {
 	if (selectedLI)
@@ -237,13 +250,12 @@ function onmouseClick(event) {
 }
 
 function onContextMenu(event) {
-	var currentLI, statusElement, value;
 	if (event.isTrusted === false)
 		return;
-	currentLI = getParentLI(event.target);
-	statusElement = document.querySelector(".status");
+	const currentLI = getParentLI(event.target);
+	const statusElement = document.querySelector(".status");
 	if (currentLI) {
-		value = jsonObject;
+		let value = jsonObject;
 		jsonSelector.forEach(function (idx) {
 			value = value[idx];
 		});
@@ -274,10 +286,9 @@ function init(data) {
 }
 
 function load() {
-	var child, data;
 	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
-		child = document.body.children.length ? document.body.childNodes[0] : document.body;
-		data = extractData(child.innerText);
+		const child = document.body.children.length ? document.body.childNodes[0] : document.body;
+		const data = extractData(child.innerText);
 		if (data)
 			init(data);
 	}

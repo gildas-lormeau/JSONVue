@@ -1,8 +1,10 @@
 /* global document, chrome, localStorage, addEventListener, location */
 
 function initOptions() {
-	var options = localStorage.options ? JSON.parse(localStorage.options) : {};
-	var safeMethodInput = document.getElementById("safeMethodInput"), injectInFrameInput = document.getElementById("injectInFrameInput"), addContextMenuInput = document.getElementById("addContextMenuInput");
+	const options = localStorage.options ? JSON.parse(localStorage.options) : {};
+	const safeMethodInput = document.getElementById("safeMethodInput");
+	const injectInFrameInput = document.getElementById("injectInFrameInput");
+	const addContextMenuInput = document.getElementById("addContextMenuInput");
 	safeMethodInput.checked = options.safeMethod;
 	injectInFrameInput.checked = options.injectInFrame;
 	addContextMenuInput.checked = options.addContextMenu;

@@ -15,7 +15,8 @@ function decorateWithSpan(value, className) {
 }
 
 function valueToHTML(value) {
-	var valueType = typeof value, output = "";
+	const valueType = typeof value;
+	let output = "";
 	if (value == null)
 		output += decorateWithSpan("null", "type-null");
 	else if (value && value.constructor == Array)
@@ -36,7 +37,7 @@ function valueToHTML(value) {
 }
 
 function arrayToHTML(json) {
-	var i, length, output = "<div class=\"collapser\"></div>[<span class=\"ellipsis\"></span><ul class=\"array collapsible\">", hasContents = false;
+	let i, length, output = "<div class=\"collapser\"></div>[<span class=\"ellipsis\"></span><ul class=\"array collapsible\">", hasContents = false;
 	for (i = 0, length = json.length; i < length; i++) {
 		hasContents = true;
 		output += "<li><div class=\"hoverable\">";
@@ -52,7 +53,7 @@ function arrayToHTML(json) {
 }
 
 function objectToHTML(json) {
-	var i, key, length, keys = Object.keys(json), output = "<div class=\"collapser\"></div>{<span class=\"ellipsis\"></span><ul class=\"obj collapsible\">", hasContents = false;
+	let i, key, length, keys = Object.keys(json), output = "<div class=\"collapser\"></div>{<span class=\"ellipsis\"></span><ul class=\"obj collapsible\">", hasContents = false;
 	for (i = 0, length = keys.length; i < length; i++) {
 		key = keys[i];
 		hasContents = true;
@@ -70,7 +71,7 @@ function objectToHTML(json) {
 }
 
 function jsonToHTML(json, fnName) {
-	var output = "";
+	let output = "";
 	if (fnName)
 		output += "<div class=\"callback-function\">" + htmlEncode(fnName) + "(</div>";
 	output += "<div id=\"json\">";
@@ -82,7 +83,7 @@ function jsonToHTML(json, fnName) {
 }
 
 addEventListener("message", function (event) {
-	var object;
+	let object;
 	try {
 		object = JSON.parse(event.data.json);
 	} catch (e) {

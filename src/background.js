@@ -1,19 +1,18 @@
 /* global window, document, chrome, fetch, localStorage, chrome, Worker */
 
-var path, value, copyPathMenuEntryId, copyValueMenuEntryId;
+let path, value, copyPathMenuEntryId, copyValueMenuEntryId, options;
 
 async function getDefaultTheme() {
 	return (await fetch("jsonview.css")).text();
 }
 
 function copy(value) {
-	var selElement, selRange, selection;
-	selElement = document.createElement("span");
-	selRange = document.createRange();
+	const selElement = document.createElement("span");
+	const selRange = document.createRange();
 	selElement.innerText = value;
 	document.body.appendChild(selElement);
 	selRange.selectNodeContents(selElement);
-	selection = window.getSelection();
+	const selection = window.getSelection();
 	selection.removeAllRanges();
 	selection.addRange(selRange);
 	document.execCommand("Copy");
@@ -21,7 +20,7 @@ function copy(value) {
 }
 
 function refreshMenuEntry() {
-	var options = localStorage.options ? JSON.parse(localStorage.options) : {};
+	const options = localStorage.options ? JSON.parse(localStorage.options) : {};
 	if (options.addContextMenu && !copyPathMenuEntryId) {
 		copyPathMenuEntryId = chrome.contextMenus.create({
 			title: "Copy path",
@@ -45,7 +44,7 @@ function refreshMenuEntry() {
 	}
 }
 
-var options = {};
+options = {};
 if (localStorage.options)
 	options = JSON.parse(localStorage.options);
 if (typeof options.addContextMenu == "undefined") {
@@ -63,10 +62,11 @@ else
 
 chrome.runtime.onConnect.addListener(function (port) {
 	port.onMessage.addListener(function (msg) {
-		var workerFormatter, workerJSONLint, json = msg.json;
+		const json = msg.json;
+		let workerFormatter, workerJSONLint;
 
 		function onWorkerJSONLintMessage(event) {
-			var message = JSON.parse(event.data);
+			const message = JSON.parse(event.data);
 			workerJSONLint.removeEventListener("message", onWorkerJSONLintMessage, false);
 			workerJSONLint.terminate();
 			port.postMessage({
@@ -78,7 +78,7 @@ chrome.runtime.onConnect.addListener(function (port) {
 		}
 
 		function onWorkerFormatterMessage(event) {
-			var message = event.data;
+			const message = event.data;
 			workerFormatter.removeEventListener("message", onWorkerFormatterMessage, false);
 			workerFormatter.terminate();
 			if (message.html)
