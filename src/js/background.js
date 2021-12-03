@@ -3,7 +3,7 @@
 let path, value, copyPathMenuEntryId, copyValueMenuEntryId, options;
 
 async function getDefaultTheme() {
-	return (await fetch("css/jsonview.css")).text();
+	return (await fetch("css/jsonvue.css")).text();
 }
 
 function copy(value) {

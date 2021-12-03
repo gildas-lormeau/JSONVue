@@ -52,7 +52,7 @@ function displayUI(theme, html) {
 	const baseStyleElement = document.createElement("link");
 	baseStyleElement.rel = "stylesheet";
 	baseStyleElement.type = "text/css";
-	baseStyleElement.href = chrome.runtime.getURL("css/jsonview-core.css");
+	baseStyleElement.href = chrome.runtime.getURL("css/jsonvue-core.css");
 	document.head.appendChild(baseStyleElement);
 	const userStyleElement = document.createElement("style");
 	userStyleElement.appendChild(document.createTextNode(theme));
