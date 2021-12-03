@@ -3,7 +3,7 @@ body {
 	font-size: 10pt;
 }
 
-body > div {
+body>div {
 	position: relative;
 	margin: 0px auto;
 	width: 400px;
@@ -15,7 +15,7 @@ body > div {
 	-webkit-box-shadow: #888 2px 2px 2px;
 }
 
-body > div > div {
+body>div>div {
 	padding-left: 10px;
 	padding-right: 10px;
 }

@@ -69,17 +69,17 @@ li {
 	padding-right: 7px;
 	padding-left: 4px;
 	font-family: sans-serif;
-	font-size: 12px;	
+	font-size: 12px;
 	opacity: 0;
 	background-color: #d2d2f6;
 	color: #696969;
-	transition: opacity .2s ease-out;	
+	transition: opacity .2s ease-out;
 	-webkit-transition: opacity .2s ease-out;
 	user-select: none;
 	-webkit-user-select: none;
 }
 
-.status:not(:empty ) {
+.status:not(:empty) {
 	opacity: 1;
 }
 
