@@ -1,6 +1,76 @@
 /* global window, document, chrome, location, history, top */
 
-let collapsers, options, jsonObject, jsonSelector;
+let collapsers, options, jsonObject, jsonSelector, selectedLI;
+load();
+
+function load() {
+	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
+		const child = document.body.children.length ? document.body.childNodes[0] : document.body;
+		const data = extractData(child.innerText);
+		if (data) {
+			chrome.runtime.sendMessage({ init: true }, initOptions => {
+				options = initOptions;
+				processData(data);
+			});
+		}
+	}
+}
+
+function extractData(rawText) {
+	const text = rawText.trim();
+	let tokens;
+
+	function test(text) {
+		return ((text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") || (text.charAt(0) == "{" && text.charAt(text.length - 1) == "}"));
+	}
+
+	if (test(text))
+		return {
+			text: rawText,
+			offset: 0
+		};
+	tokens = text.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/);
+	if (tokens && tokens[1] && tokens[2]) {
+		if (test(tokens[2].trim()))
+			return {
+				fnName: tokens[1],
+				text: tokens[2],
+				offset: rawText.indexOf(tokens[2])
+			};
+	}
+}
+
+function processData(data) {
+	let jsonText;
+
+	function formatToHTML(fnName, offset) {
+		if (!jsonText)
+			return;
+		chrome.runtime.sendMessage({
+			jsonToHTML: true,
+			json: jsonText,
+			fnName: fnName,
+			offset: offset
+		}, result => {
+			if (result.html) {
+				displayUI(result.theme, result.html);
+			}
+			if (result.error) {
+				displayError(result.error, result.loc, result.offset);
+			}
+		});
+		try {
+			jsonObject = JSON.parse(jsonText);
+		} catch (e) {
+			// ignored
+		}
+	}
+
+	if ((window == top || options.injectInFrame) && data) {
+		jsonText = data.text;
+		formatToHTML(data.fnName, data.offset);
+	}
+}
 
 function displayError(error, loc, offset) {
 	const link = document.createElement("link");
@@ -91,62 +161,6 @@ function displayUI(theme, html) {
 	}, false);
 }
 
-function extractData(rawText) {
-	const text = rawText.trim();
-	let tokens;
-
-	function test(text) {
-		return ((text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") || (text.charAt(0) == "{" && text.charAt(text.length - 1) == "}"));
-	}
-
-	if (test(text))
-		return {
-			text: rawText,
-			offset: 0
-		};
-	tokens = text.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/);
-	if (tokens && tokens[1] && tokens[2]) {
-		if (test(tokens[2].trim()))
-			return {
-				fnName: tokens[1],
-				text: tokens[2],
-				offset: rawText.indexOf(tokens[2])
-			};
-	}
-}
-
-function processData(data) {
-	let jsonText;
-
-	function formatToHTML(fnName, offset) {
-		if (!jsonText)
-			return;
-		chrome.runtime.sendMessage({
-			jsonToHTML: true,
-			json: jsonText,
-			fnName: fnName,
-			offset: offset
-		}, result => {
-			if (result.html) {
-				displayUI(result.theme, result.html);
-			}
-			if (result.error) {
-				displayError(result.error, result.loc, result.offset);
-			}
-		});
-		try {
-			jsonObject = JSON.parse(jsonText);
-		} catch (e) {
-			// ignored
-		}
-	}
-
-	if ((window == top || options.injectInFrame) && data) {
-		jsonText = data.text;
-		formatToHTML(data.fnName, data.offset);
-	}
-}
-
 function ontoggle(event) {
 	const target = event.target;
 	let collapsed;
@@ -228,8 +242,6 @@ const onmouseMove = (() => {
 	};
 })();
 
-let selectedLI;
-
 function onmouseClick(event) {
 	if (selectedLI)
 		selectedLI.firstChild.classList.remove("selected");
@@ -254,21 +266,3 @@ function onContextMenu(event) {
 		});
 	}
 }
-
-function init(data) {
-	chrome.runtime.sendMessage({ init: true }, initOptions => {
-		options = initOptions;
-		processData(data);
-	});
-}
-
-function load() {
-	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
-		const child = document.body.children.length ? document.body.childNodes[0] : document.body;
-		const data = extractData(child.innerText);
-		if (data)
-			init(data);
-	}
-}
-
-load();
