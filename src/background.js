@@ -1,7 +1,7 @@
 var path, value, copyPathMenuEntryId, copyValueMenuEntryId;
 
 async function getDefaultTheme() {
-	return await (await fetch("jsonview.css")).text();
+	return (await fetch("jsonview.css")).text();
 }
 
 function copy(value) {
