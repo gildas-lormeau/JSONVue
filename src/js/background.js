@@ -1,6 +1,6 @@
 /* global document, chrome, fetch, chrome, Worker, getSelection, localStorage */
 
-let extensionReady, copiedPath, copiedValue, copyPathMenuEntryId, copyValueMenuEntryId, settings;
+let extensionReady, copiedPath, copiedValue, copyPathMenuEntryId, copyValueMenuEntryId;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	onmessage(message, sender, sendResponse);
 	return true;
@@ -9,7 +9,7 @@ init();
 
 async function init() {
 	extensionReady = migrateSettings();
-	settings = await getSettings();
+	const settings = await getSettings();
 	if (settings.options && typeof settings.options.addContextMenu == "undefined") {
 		settings.options.addContextMenu = true;
 		await setSetting("options", settings.options);
