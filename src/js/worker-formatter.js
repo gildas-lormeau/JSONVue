@@ -37,12 +37,12 @@ function valueToHTML(value) {
 }
 
 function arrayToHTML(json) {
-	let i, length, output = "<div class=\"collapser\"></div>[<span class=\"ellipsis\"></span><ul class=\"array collapsible\">", hasContents = false;
-	for (i = 0, length = json.length; i < length; i++) {
+	let indexValue, length, output = "<div class=\"collapser\"></div>[<span class=\"ellipsis\"></span><ul class=\"array collapsible\">", hasContents = false;
+	for (indexValue = 0, length = json.length; indexValue < length; indexValue++) {
 		hasContents = true;
 		output += "<li><div class=\"hoverable\">";
-		output += valueToHTML(json[i]);
-		if (i < length - 1)
+		output += valueToHTML(json[indexValue]);
+		if (indexValue < length - 1)
 			output += ",";
 		output += "</div></li>";
 	}
@@ -53,14 +53,14 @@ function arrayToHTML(json) {
 }
 
 function objectToHTML(json) {
-	let i, key, length, keys = Object.keys(json), output = "<div class=\"collapser\"></div>{<span class=\"ellipsis\"></span><ul class=\"obj collapsible\">", hasContents = false;
-	for (i = 0, length = keys.length; i < length; i++) {
-		key = keys[i];
+	let indexKey, key, length, keys = Object.keys(json), output = "<div class=\"collapser\"></div>{<span class=\"ellipsis\"></span><ul class=\"obj collapsible\">", hasContents = false;
+	for (indexKey = 0, length = keys.length; indexKey < length; indexKey++) {
+		key = keys[indexKey];
 		hasContents = true;
 		output += "<li><div class=\"hoverable\">";
 		output += "<span class=\"property\">" + htmlEncode(key) + "</span>: ";
 		output += valueToHTML(json[key]);
-		if (i < length - 1)
+		if (indexKey < length - 1)
 			output += ",";
 		output += "</div></li>";
 	}
@@ -86,7 +86,7 @@ addEventListener("message", event => {
 	let object;
 	try {
 		object = JSON.parse(event.data.json);
-	} catch (e) {
+	} catch (error) {
 		postMessage({
 			error: true
 		});

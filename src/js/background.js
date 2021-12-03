@@ -57,8 +57,8 @@ else
 	refreshMenuEntry();
 
 chrome.runtime.onConnect.addListener(port => {
-	port.onMessage.addListener(msg => {
-		const json = msg.json;
+	port.onMessage.addListener(message => {
+		const json = message.json;
 		let workerFormatter, workerJSONLint;
 
 		function onWorkerJSONLintMessage(event) {
@@ -69,7 +69,7 @@ chrome.runtime.onConnect.addListener(port => {
 				ongetError: true,
 				error: message.error,
 				loc: message.loc,
-				offset: msg.offset
+				offset: message.offset
 			});
 		}
 
@@ -90,21 +90,21 @@ chrome.runtime.onConnect.addListener(port => {
 			}
 		}
 
-		if (msg.init)
+		if (message.init)
 			port.postMessage({
 				oninit: true,
 				options: localStorage.options ? JSON.parse(localStorage.options) : {}
 			});
-		if (msg.copyPropertyPath) {
-			copiedPath = msg.path;
-			copiedValue = msg.value;
+		if (message.copyPropertyPath) {
+			copiedPath = message.path;
+			copiedValue = message.value;
 		}
-		if (msg.jsonToHTML) {
+		if (message.jsonToHTML) {
 			workerFormatter = new Worker("js/worker-formatter.js");
 			workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
 			workerFormatter.postMessage({
 				json: json,
-				fnName: msg.fnName
+				fnName: message.fnName
 			});
 		}
 	});

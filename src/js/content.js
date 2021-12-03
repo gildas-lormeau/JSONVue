@@ -14,23 +14,23 @@ function displayError(error, loc, offset) {
 	const container = document.createElement("div");
 	const closeButton = document.createElement("div");
 	const ranges = [];
-	let start = 0, idx = 0, end;
+	let startRange = 0, indexRange = 0, endRange;
 	link.rel = "stylesheet";
 	link.type = "text/css";
 	link.href = chrome.runtime.getURL("css/content-error.css");
 	document.head.appendChild(link);
-	while (idx != -1) {
-		idx = text.indexOf("\n", start);
-		ranges.push(start);
-		start = idx + 1;
+	while (indexRange != -1) {
+		indexRange = text.indexOf("\n", startRange);
+		ranges.push(startRange);
+		startRange = indexRange + 1;
 	}
-	start = ranges[loc.first_line - 1] + loc.first_column + offset;
-	end = ranges[loc.last_line - 1] + loc.last_column + offset;
-	range.setStart(pre, start);
-	if (start == end - 1)
-		range.setEnd(pre, start);
+	startRange = ranges[loc.first_line - 1] + loc.first_column + offset;
+	endRange = ranges[loc.last_line - 1] + loc.last_column + offset;
+	range.setStart(pre, startRange);
+	if (startRange == endRange - 1)
+		range.setEnd(pre, startRange);
 	else
-		range.setEnd(pre, end);
+		range.setEnd(pre, endRange);
 	errorPosition.className = "error-position";
 	errorPosition.id = "error-position";
 	range.surroundContents(errorPosition);
@@ -240,7 +240,7 @@ function onContextMenu(event) {
 	const statusElement = document.querySelector(".status");
 	if (currentLI) {
 		let value = jsonObject;
-		jsonSelector.forEach(idx => value = value[idx]);
+		jsonSelector.forEach(propertyName => value = value[propertyName]);
 		port.postMessage({
 			copyPropertyPath: true,
 			path: statusElement.innerText,
@@ -250,16 +250,16 @@ function onContextMenu(event) {
 }
 
 function init(data) {
-	port.onMessage.addListener(msg => {
-		if (msg.oninit) {
-			options = msg.options;
+	port.onMessage.addListener(message => {
+		if (message.oninit) {
+			options = message.options;
 			processData(data);
 		}
-		if (msg.onjsonToHTML && msg.html) {
-			displayUI(msg.theme, msg.html);
+		if (message.onjsonToHTML && message.html) {
+			displayUI(message.theme, message.html);
 		}
-		if (msg.ongetError) {
-			displayError(msg.error, msg.loc, msg.offset);
+		if (message.ongetError) {
+			displayError(message.error, message.loc, message.offset);
 		}
 	});
 	port.postMessage({
