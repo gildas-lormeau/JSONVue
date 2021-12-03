@@ -84,7 +84,7 @@ chrome.runtime.onConnect.addListener(port => {
 					theme: localStorage.theme
 				});
 			if (message.error) {
-				workerJSONLint = new Worker("worker-JSONLint.js");
+				workerJSONLint = new Worker("js/worker-JSONLint.js");
 				workerJSONLint.addEventListener("message", onWorkerJSONLintMessage, false);
 				workerJSONLint.postMessage(json);
 			}
@@ -100,7 +100,7 @@ chrome.runtime.onConnect.addListener(port => {
 			value = msg.value;
 		}
 		if (msg.jsonToHTML) {
-			workerFormatter = new Worker("worker-formatter.js");
+			workerFormatter = new Worker("js/worker-formatter.js");
 			workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
 			workerFormatter.postMessage({
 				json: json,
