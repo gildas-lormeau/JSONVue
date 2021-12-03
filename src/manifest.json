@@ -37,10 +37,7 @@
   ],
   "permissions": [
     "clipboardWrite",
-    "http://*/",
-    "contextMenus",
-    "https://*/",
-    "ftp://*/"
+    "contextMenus"
   ],
   "manifest_version": 2
 }
