@@ -1,4 +1,4 @@
-/* global window, document, chrome, fetch, localStorage, chrome, Worker */
+/* global document, chrome, fetch, localStorage, chrome, Worker, getSelection */
 
 let path, value, copyPathMenuEntryId, copyValueMenuEntryId, options;
 
@@ -12,7 +12,7 @@ function copy(value) {
 	selElement.innerText = value;
 	document.body.appendChild(selElement);
 	selRange.selectNodeContents(selElement);
-	const selection = window.getSelection();
+	const selection = getSelection();
 	selection.removeAllRanges();
 	selection.addRange(selRange);
 	document.execCommand("Copy");
