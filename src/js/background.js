@@ -7,41 +7,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 init();
 
-async function getDefaultTheme() {
-	return (await fetch("css/jsonvue.css")).text();
-}
-
-function copy(value) {
-	const selElement = document.createElement("span");
-	const selRange = document.createRange();
-	selElement.innerText = value;
-	document.body.appendChild(selElement);
-	selRange.selectNodeContents(selElement);
-	const selection = getSelection();
-	selection.removeAllRanges();
-	selection.addRange(selRange);
-	document.execCommand("Copy");
-	document.body.removeChild(selElement);
-}
-
-async function refreshMenuEntry() {
-	const options = (await getSettings()).options;
-	if (options.addContextMenu && !copyPathMenuEntryId) {
-		copyPathMenuEntryId = chrome.contextMenus.create({
-			title: "Copy path",
-			contexts: ["page", "link"],
-			onclick: () => copy(copiedPath)
-		});
-		copyValueMenuEntryId = chrome.contextMenus.create({
-			title: "Copy value",
-			contexts: ["page", "link"],
-			onclick: () => copy(copiedValue)
-		});
+async function init() {
+	extensionReady = migrateSettings();
+	settings = await getSettings();
+	if (settings.options && typeof settings.options.addContextMenu == "undefined") {
+		settings.options.addContextMenu = true;
+		await setSetting("options", settings.options);
 	}
-	if (!options.addContextMenu && copyPathMenuEntryId) {
-		chrome.contextMenus.remove(copyPathMenuEntryId);
-		chrome.contextMenus.remove(copyValueMenuEntryId);
-		copyPathMenuEntryId = null;
+	if (!settings.theme) {
+		const theme = await getDefaultTheme();
+		await setSetting("theme", theme);
+		await refreshMenuEntry();
+	} else {
+		await refreshMenuEntry();
 	}
 }
 
@@ -60,32 +38,6 @@ async function migrateSettings() {
 		}));
 	}
 	await Promise.all(promises);
-}
-
-async function getSettings() {
-	await extensionReady;
-	return new Promise(resolve => chrome.storage.local.get(["options", "theme"], result => resolve(result)));
-}
-
-async function setSetting(name, value) {
-	await extensionReady;
-	return new Promise(resolve => chrome.storage.local.set({ [name]: value }, result => resolve(result)));
-}
-
-async function init() {
-	extensionReady = migrateSettings();
-	settings = await getSettings();
-	if (settings.options && typeof settings.options.addContextMenu == "undefined") {
-		settings.options.addContextMenu = true;
-		await setSetting("options", settings.options);
-	}
-	if (!settings.theme) {
-		const theme = await getDefaultTheme();
-		await setSetting("theme", theme);
-		await refreshMenuEntry();
-	} else {
-		await refreshMenuEntry();
-	}
 }
 
 async function onmessage(message, sender, sendResponse) {
@@ -144,4 +96,52 @@ async function onmessage(message, sender, sendResponse) {
 			workerJSONLint.postMessage(json);
 		}
 	}
+}
+
+async function refreshMenuEntry() {
+	const options = (await getSettings()).options;
+	if (options.addContextMenu && !copyPathMenuEntryId) {
+		copyPathMenuEntryId = chrome.contextMenus.create({
+			title: "Copy path",
+			contexts: ["page", "link"],
+			onclick: () => copy(copiedPath)
+		});
+		copyValueMenuEntryId = chrome.contextMenus.create({
+			title: "Copy value",
+			contexts: ["page", "link"],
+			onclick: () => copy(copiedValue)
+		});
+	}
+	if (!options.addContextMenu && copyPathMenuEntryId) {
+		chrome.contextMenus.remove(copyPathMenuEntryId);
+		chrome.contextMenus.remove(copyValueMenuEntryId);
+		copyPathMenuEntryId = null;
+	}
+}
+
+async function getDefaultTheme() {
+	return (await fetch("css/jsonvue.css")).text();
+}
+
+function copy(value) {
+	const selElement = document.createElement("span");
+	const selRange = document.createRange();
+	selElement.innerText = value;
+	document.body.appendChild(selElement);
+	selRange.selectNodeContents(selElement);
+	const selection = getSelection();
+	selection.removeAllRanges();
+	selection.addRange(selRange);
+	document.execCommand("Copy");
+	document.body.removeChild(selElement);
+}
+
+async function getSettings() {
+	await extensionReady;
+	return new Promise(resolve => chrome.storage.local.get(["options", "theme"], result => resolve(result)));
+}
+
+async function setSetting(name, value) {
+	await extensionReady;
+	return new Promise(resolve => chrome.storage.local.set({ [name]: value }, result => resolve(result)));
 }
