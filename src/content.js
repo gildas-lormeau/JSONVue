@@ -38,9 +38,7 @@ function displayError(error, loc, offset) {
 	errorPosition.insertBefore(imgError, errorPosition.firstChild);
 	content.className = "content";
 	closeButton.className = "close-error";
-	closeButton.onclick = function () {
-		content.parentElement.removeChild(content);
-	};
+	closeButton.onclick = () => content.parentElement.removeChild(content);
 	content.textContent = error;
 	content.appendChild(closeButton);
 	container.className = "container";
@@ -84,7 +82,7 @@ function displayUI(theme, html) {
 	document.body.addEventListener("contextmenu", onContextMenu, false);
 	expandElement.addEventListener("click", onexpand, false);
 	reduceElement.addEventListener("click", onreduce, false);
-	copyPathElement.addEventListener("click", function (event) {
+	copyPathElement.addEventListener("click", event => {
 		if (event.isTrusted === false)
 			return;
 		port.postMessage({
@@ -140,7 +138,7 @@ function processData(data) {
 	if (window == top || options.injectInFrame)
 		if (options.safeMethod) {
 			xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = function () {
+			xhr.onreadystatechange = () => {
 				if (this.readyState == 4) {
 					data = extractData(this.responseText);
 					if (data) {
@@ -170,14 +168,14 @@ function ontoggle(event) {
 }
 
 function onexpand() {
-	collapsers.forEach(function (collapsed) {
+	collapsers.forEach(collapsed => {
 		if (collapsed.parentNode.classList.contains("collapsed"))
 			collapsed.parentNode.classList.remove("collapsed");
 	});
 }
 
 function onreduce() {
-	collapsers.forEach(function (collapsed) {
+	collapsers.forEach(collapsed => {
 		if (!collapsed.parentNode.classList.contains("collapsed"))
 			collapsed.parentNode.classList.add("collapsed");
 	});
@@ -191,7 +189,7 @@ function getParentLI(element) {
 		return element;
 }
 
-const onmouseMove = (function () {
+const onmouseMove = (() => {
 	let hoveredLI;
 
 	function onmouseOut() {
@@ -204,7 +202,7 @@ const onmouseMove = (function () {
 		}
 	}
 
-	return function (event) {
+	return event => {
 		if (event.isTrusted === false)
 			return;
 		const statusElement = document.querySelector(".status");
@@ -256,9 +254,7 @@ function onContextMenu(event) {
 	const statusElement = document.querySelector(".status");
 	if (currentLI) {
 		let value = jsonObject;
-		jsonSelector.forEach(function (idx) {
-			value = value[idx];
-		});
+		jsonSelector.forEach(idx => value = value[idx]);
 		port.postMessage({
 			copyPropertyPath: true,
 			path: statusElement.innerText,
@@ -268,7 +264,7 @@ function onContextMenu(event) {
 }
 
 function init(data) {
-	port.onMessage.addListener(function (msg) {
+	port.onMessage.addListener(msg => {
 		if (msg.oninit) {
 			options = msg.options;
 			processData(data);

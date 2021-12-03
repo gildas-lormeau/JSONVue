@@ -25,16 +25,12 @@ function refreshMenuEntry() {
 		copyPathMenuEntryId = chrome.contextMenus.create({
 			title: "Copy path",
 			contexts: ["page", "link"],
-			onclick: function () {
-				copy(path);
-			}
+			onclick: () => copy(path)
 		});
 		copyValueMenuEntryId = chrome.contextMenus.create({
 			title: "Copy value",
 			contexts: ["page", "link"],
-			onclick: function () {
-				copy(value);
-			}
+			onclick: () => copy(value)
 		});
 	}
 	if (!options.addContextMenu && copyPathMenuEntryId) {
@@ -60,8 +56,8 @@ if (!localStorage.theme)
 else
 	refreshMenuEntry();
 
-chrome.runtime.onConnect.addListener(function (port) {
-	port.onMessage.addListener(function (msg) {
+chrome.runtime.onConnect.addListener(port => {
+	port.onMessage.addListener(msg => {
 		const json = msg.json;
 		let workerFormatter, workerJSONLint;
 

@@ -82,7 +82,7 @@ function jsonToHTML(json, fnName) {
 	return output;
 }
 
-addEventListener("message", function (event) {
+addEventListener("message", event => {
 	let object;
 	try {
 		object = JSON.parse(event.data.json);
