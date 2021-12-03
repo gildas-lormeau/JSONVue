@@ -12,7 +12,7 @@ body>div {
 	border: 1px solid #D2DBED;
 	font-family: Arial, sans-serif;
 	font-size: 13px;
-	-webkit-box-shadow: #888 2px 2px 2px;
+	box-shadow: #888 2px 2px 2px;
 }
 
 body>div>div {
@@ -52,7 +52,7 @@ button {
 	top: -4px;
 	right: 0px;
 	background-color: #F3F3F3;
-	-webkit-border-radius: 3px;
+	border-radius: 3px;
 	right: 0px;
 }
 

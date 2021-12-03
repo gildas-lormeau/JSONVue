@@ -17,7 +17,7 @@ body>div {
 	padding-right: 10px;
 	padding-bottom: 5px;
 	text-align: justify;
-	-webkit-box-shadow: #888 2px 2px 2px;
+	box-shadow: #888 2px 2px 2px;
 }
 
 h2 {
@@ -66,7 +66,7 @@ h2 {
 
 .buttons button {
 	background-color: #F3F3F3;
-	-webkit-border-radius: 3px;
+	border-radius: 3px;
 }
 
 

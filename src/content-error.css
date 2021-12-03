@@ -25,7 +25,7 @@
 	color: #933;
 	padding: 20px;
 	position: relative;
-	-webkit-box-shadow: #888 3px 3px 5px;
+	box-shadow: #888 3px 3px 5px;
 }
 
 .close-error {
