@@ -1,6 +1,5 @@
 /* global window, document, chrome, location, history, top */
 
-const port = chrome.runtime.connect();
 let collapsers, options, jsonObject, jsonSelector;
 
 function displayError(error, loc, offset) {
@@ -85,7 +84,7 @@ function displayUI(theme, html) {
 	copyPathElement.addEventListener("click", event => {
 		if (event.isTrusted === false)
 			return;
-		port.postMessage({
+		chrome.runtime.sendMessage({
 			copyPropertyPath: true,
 			path: statusElement.innerText
 		});
@@ -122,11 +121,18 @@ function processData(data) {
 	function formatToHTML(fnName, offset) {
 		if (!jsonText)
 			return;
-		port.postMessage({
+		chrome.runtime.sendMessage({
 			jsonToHTML: true,
 			json: jsonText,
 			fnName: fnName,
 			offset: offset
+		}, result => {
+			if (result.html) {
+				displayUI(result.theme, result.html);
+			}
+			if (result.error) {
+				displayError(result.error, result.loc, result.offset);
+			}
 		});
 		try {
 			jsonObject = JSON.parse(jsonText);
@@ -241,7 +247,7 @@ function onContextMenu(event) {
 	if (currentLI) {
 		let value = jsonObject;
 		jsonSelector.forEach(propertyName => value = value[propertyName]);
-		port.postMessage({
+		chrome.runtime.sendMessage({
 			copyPropertyPath: true,
 			path: statusElement.innerText,
 			value: typeof value == "object" ? JSON.stringify(value) : value
@@ -250,20 +256,9 @@ function onContextMenu(event) {
 }
 
 function init(data) {
-	port.onMessage.addListener(message => {
-		if (message.oninit) {
-			options = message.options;
-			processData(data);
-		}
-		if (message.onjsonToHTML && message.html) {
-			displayUI(message.theme, message.html);
-		}
-		if (message.ongetError) {
-			displayError(message.error, message.loc, message.offset);
-		}
-	});
-	port.postMessage({
-		init: true
+	chrome.runtime.sendMessage({ init: true }, initOptions => {
+		options = initOptions;
+		processData(data);
 	});
 }
 
