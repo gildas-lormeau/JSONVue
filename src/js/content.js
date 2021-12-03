@@ -17,7 +17,7 @@ function displayError(error, loc, offset) {
 	let start = 0, idx = 0, end;
 	link.rel = "stylesheet";
 	link.type = "text/css";
-	link.href = chrome.runtime.getURL("content-error.css");
+	link.href = chrome.runtime.getURL("css/content-error.css");
 	document.head.appendChild(link);
 	while (idx != -1) {
 		idx = text.indexOf("\n", start);
@@ -52,7 +52,7 @@ function displayUI(theme, html) {
 	const baseStyleElement = document.createElement("link");
 	baseStyleElement.rel = "stylesheet";
 	baseStyleElement.type = "text/css";
-	baseStyleElement.href = chrome.runtime.getURL("jsonview-core.css");
+	baseStyleElement.href = chrome.runtime.getURL("css/jsonview-core.css");
 	document.head.appendChild(baseStyleElement);
 	const userStyleElement = document.createElement("style");
 	userStyleElement.appendChild(document.createTextNode(theme));

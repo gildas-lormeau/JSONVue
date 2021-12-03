@@ -29,9 +29,9 @@
     }
   ],
   "web_accessible_resources": [
-    "jsonview.css",
-    "jsonview-core.css",
-    "content-error.css",
+    "css/jsonview.css",
+    "css/jsonview-core.css",
+    "css/content-error.css",
     "resources/close-icon.gif",
     "resources/error-icon.gif"
   ],
