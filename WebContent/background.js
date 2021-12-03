@@ -22,17 +22,17 @@ function refreshMenuEntry() {
 	var options = localStorage.options ? JSON.parse(localStorage.options) : {};
 	if (options.addContextMenu && !copyPathMenuEntryId) {
 		copyPathMenuEntryId = chrome.contextMenus.create({
-			title : "Copy path",
-			contexts : [ "page", "link" ],
-			onclick : function(info, tab) {
-				copy(path);				
+			title: "Copy path",
+			contexts: ["page", "link"],
+			onclick: function (info, tab) {
+				copy(path);
 			}
 		});
 		copyValueMenuEntryId = chrome.contextMenus.create({
-			title : "Copy value",
-			contexts : [ "page", "link" ],
-			onclick : function(info, tab) {
-				copy(value);				
+			title: "Copy value",
+			contexts: ["page", "link"],
+			onclick: function (info, tab) {
+				copy(value);
 			}
 		});
 	}
@@ -44,8 +44,8 @@ function refreshMenuEntry() {
 }
 
 function init() {
-	chrome.runtime.onConnect.addListener(function(port) {
-		port.onMessage.addListener(function(msg) {
+	chrome.runtime.onConnect.addListener(function (port) {
+		port.onMessage.addListener(function (msg) {
 			var workerFormatter, workerJSONLint, json = msg.json;
 
 			function onWorkerJSONLintMessage() {
@@ -53,10 +53,10 @@ function init() {
 				workerJSONLint.removeEventListener("message", onWorkerJSONLintMessage, false);
 				workerJSONLint.terminate();
 				port.postMessage({
-					ongetError : true,
-					error : message.error,
-					loc : message.loc,
-					offset : msg.offset
+					ongetError: true,
+					error: message.error,
+					loc: message.loc,
+					offset: msg.offset
 				});
 			}
 
@@ -66,9 +66,9 @@ function init() {
 				workerFormatter.terminate();
 				if (message.html)
 					port.postMessage({
-						onjsonToHTML : true,
-						html : message.html,
-						theme : localStorage.theme
+						onjsonToHTML: true,
+						html: message.html,
+						theme: localStorage.theme
 					});
 				if (message.error) {
 					workerJSONLint = new Worker("workerJSONLint.js");
@@ -79,8 +79,8 @@ function init() {
 
 			if (msg.init)
 				port.postMessage({
-					oninit : true,
-					options : localStorage.options ? JSON.parse(localStorage.options) : {}
+					oninit: true,
+					options: localStorage.options ? JSON.parse(localStorage.options) : {}
 				});
 			if (msg.copyPropertyPath) {
 				path = msg.path;
@@ -90,8 +90,8 @@ function init() {
 				workerFormatter = new Worker("workerFormatter.js");
 				workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
 				workerFormatter.postMessage({
-					json : json,
-					fnName : msg.fnName
+					json: json,
+					fnName: msg.fnName
 				});
 			}
 		});

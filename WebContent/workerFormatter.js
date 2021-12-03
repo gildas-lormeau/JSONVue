@@ -79,18 +79,18 @@ function jsonToHTML(json, fnName) {
 	return output;
 }
 
-addEventListener("message", function(event) {
+addEventListener("message", function (event) {
 	var object;
 	try {
 		object = JSON.parse(event.data.json);
 	} catch (e) {
 		postMessage({
-			error : true
+			error: true
 		});
 		return;
 	}
 	postMessage({
-		onjsonToHTML : true,
-		html : jsonToHTML(object, event.data.fnName)
+		onjsonToHTML: true,
+		html: jsonToHTML(object, event.data.fnName)
 	});
 }, false);

@@ -2,7 +2,7 @@ var port = chrome.runtime.connect(), collapsers, options, jsonObject, jsonSelect
 
 function displayError(error, loc, offset) {
 	var link = document.createElement("link"), pre = document.body.firstChild.firstChild, text = pre.textContent.substring(offset), start = 0, ranges = [], idx = 0, end, range = document
-			.createRange(), imgError = document.createElement("img"), content = document.createElement("div"), errorPosition = document.createElement("span"), container = document
+		.createRange(), imgError = document.createElement("img"), content = document.createElement("div"), errorPosition = document.createElement("span"), container = document
 			.createElement("div"), closeButton = document.createElement("div");
 	link.rel = "stylesheet";
 	link.type = "text/css";
@@ -27,7 +27,7 @@ function displayError(error, loc, offset) {
 	errorPosition.insertBefore(imgError, errorPosition.firstChild);
 	content.className = "content";
 	closeButton.className = "close-error";
-	closeButton.onclick = function() {
+	closeButton.onclick = function () {
 		content.parentElement.removeChild(content);
 	};
 	content.textContent = error;
@@ -64,7 +64,7 @@ function displayUI(theme, html) {
 	expandElement.innerText = "+";
 	reduceElement = document.createElement("span");
 	reduceElement.title = "reduce all";
-	reduceElement.innerText = "-";	
+	reduceElement.innerText = "-";
 	toolboxElement.appendChild(expandElement);
 	toolboxElement.appendChild(reduceElement);
 	document.body.appendChild(toolboxElement);
@@ -73,13 +73,13 @@ function displayUI(theme, html) {
 	document.body.addEventListener('click', onmouseClick, false);
 	document.body.addEventListener('contextmenu', onContextMenu, false);
 	expandElement.addEventListener('click', onexpand, false);
-	reduceElement.addEventListener('click', onreduce, false);	
-	copyPathElement.addEventListener("click", function(event) {
+	reduceElement.addEventListener('click', onreduce, false);
+	copyPathElement.addEventListener("click", function (event) {
 		if (event.isTrusted === false)
 			return;
 		port.postMessage({
-			copyPropertyPath : true,
-			path : statusElement.innerText
+			copyPropertyPath: true,
+			path: statusElement.innerText
 		});
 	}, false);
 }
@@ -93,31 +93,31 @@ function extractData(rawText) {
 
 	if (test(text))
 		return {
-			text : rawText,
-			offset : 0
+			text: rawText,
+			offset: 0
 		};
 	tokens = text.match(/^([^\s\(]*)\s*\(([\s\S]*)\)\s*;?$/);
 	if (tokens && tokens[1] && tokens[2]) {
 		if (test(tokens[2].trim()))
 			return {
-				fnName : tokens[1],
-				text : tokens[2],
-				offset : rawText.indexOf(tokens[2])
+				fnName: tokens[1],
+				text: tokens[2],
+				offset: rawText.indexOf(tokens[2])
 			};
 	}
 }
 
 function processData(data) {
 	var xhr, jsonText;
-	
+
 	function formatToHTML(fnName, offset) {
 		if (!jsonText)
-			return;	
+			return;
 		port.postMessage({
-			jsonToHTML : true,
-			json : jsonText,
-			fnName : fnName,
-			offset : offset
+			jsonToHTML: true,
+			json: jsonText,
+			fnName: fnName,
+			offset: offset
 		});
 		try {
 			jsonObject = JSON.parse(jsonText);
@@ -128,7 +128,7 @@ function processData(data) {
 	if (window == top || options.injectInFrame)
 		if (options.safeMethod) {
 			xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = function() {
+			xhr.onreadystatechange = function () {
 				if (this.readyState == 4) {
 					data = extractData(this.responseText);
 					if (data) {
@@ -157,14 +157,14 @@ function ontoggle(event) {
 }
 
 function onexpand() {
-	Array.prototype.forEach.call(collapsers, function(collapsed) {
+	Array.prototype.forEach.call(collapsers, function (collapsed) {
 		if (collapsed.parentNode.classList.contains("collapsed"))
 			collapsed.parentNode.classList.remove("collapsed");
 	});
 }
 
 function onreduce() {
-	Array.prototype.forEach.call(collapsers, function(collapsed) {
+	Array.prototype.forEach.call(collapsers, function (collapsed) {
 		if (!collapsed.parentNode.classList.contains("collapsed"))
 			collapsed.parentNode.classList.add("collapsed");
 	});
@@ -178,7 +178,7 @@ function getParentLI(element) {
 		return element;
 }
 
-var onmouseMove = (function() {
+var onmouseMove = (function () {
 	var hoveredLI;
 
 	function onmouseOut() {
@@ -191,7 +191,7 @@ var onmouseMove = (function() {
 		}
 	}
 
-	return function(event) {
+	return function (event) {
 		if (event.isTrusted === false)
 			return;
 		var str = "", statusElement = document.querySelector(".status");
@@ -243,19 +243,19 @@ function onContextMenu(event) {
 	statusElement = document.querySelector(".status");
 	if (currentLI) {
 		var value = jsonObject;
-		jsonSelector.forEach(function(idx) {
+		jsonSelector.forEach(function (idx) {
 			value = value[idx];
 		});
 		port.postMessage({
-			copyPropertyPath : true,
-			path : statusElement.innerText,
-			value : typeof value == "object" ? JSON.stringify(value) : value
+			copyPropertyPath: true,
+			path: statusElement.innerText,
+			value: typeof value == "object" ? JSON.stringify(value) : value
 		});
 	}
 }
 
 function init(data) {
-	port.onMessage.addListener(function(msg) {
+	port.onMessage.addListener(function (msg) {
 		if (msg.oninit) {
 			options = msg.options;
 			processData(data);
@@ -265,16 +265,16 @@ function init(data) {
 				displayUI(msg.theme, msg.html);
 			} else if (msg.json)
 				port.postMessage({
-					getError : true,
-					json : json,
-					fnName : fnName
+					getError: true,
+					json: json,
+					fnName: fnName
 				});
 		if (msg.ongetError) {
 			displayError(msg.error, msg.loc, msg.offset);
 		}
 	});
 	port.postMessage({
-		init : true
+		init: true
 	});
 }
 
