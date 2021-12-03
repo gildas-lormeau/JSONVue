@@ -1,6 +1,6 @@
 /* global document, chrome, fetch, localStorage, chrome, Worker, getSelection */
 
-let copiedPath, copiedvalue, copyPathMenuEntryId, copyValueMenuEntryId, options;
+let copiedPath, copiedValue, copyPathMenuEntryId, copyValueMenuEntryId, options;
 
 async function getDefaultTheme() {
 	return (await fetch("css/jsonvue.css")).text();
@@ -30,7 +30,7 @@ function refreshMenuEntry() {
 		copyValueMenuEntryId = chrome.contextMenus.create({
 			title: "Copy value",
 			contexts: ["page", "link"],
-			onclick: () => copy(copiedvalue)
+			onclick: () => copy(copiedValue)
 		});
 	}
 	if (!options.addContextMenu && copyPathMenuEntryId) {
@@ -97,7 +97,7 @@ chrome.runtime.onConnect.addListener(port => {
 			});
 		if (msg.copyPropertyPath) {
 			copiedPath = msg.path;
-			copiedvalue = msg.value;
+			copiedValue = msg.value;
 		}
 		if (msg.jsonToHTML) {
 			workerFormatter = new Worker("js/worker-formatter.js");
