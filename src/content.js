@@ -170,14 +170,14 @@ function ontoggle(event) {
 }
 
 function onexpand() {
-	Array.prototype.forEach.call(collapsers, function (collapsed) {
+	collapsers.forEach(function (collapsed) {
 		if (collapsed.parentNode.classList.contains("collapsed"))
 			collapsed.parentNode.classList.remove("collapsed");
 	});
 }
 
 function onreduce() {
-	Array.prototype.forEach.call(collapsers, function (collapsed) {
+	collapsers.forEach(function (collapsed) {
 		if (!collapsed.parentNode.classList.contains("collapsed"))
 			collapsed.parentNode.classList.add("collapsed");
 	});
