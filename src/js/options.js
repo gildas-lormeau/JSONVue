@@ -2,16 +2,10 @@
 
 function initOptions() {
 	const options = localStorage.options ? JSON.parse(localStorage.options) : {};
-	const safeMethodInput = document.getElementById("safeMethodInput");
 	const injectInFrameInput = document.getElementById("injectInFrameInput");
 	const addContextMenuInput = document.getElementById("addContextMenuInput");
-	safeMethodInput.checked = options.safeMethod;
 	injectInFrameInput.checked = options.injectInFrame;
 	addContextMenuInput.checked = options.addContextMenu;
-	safeMethodInput.addEventListener("change", () => {
-		options.safeMethod = safeMethodInput.checked;
-		localStorage.options = JSON.stringify(options);
-	});
 	injectInFrameInput.addEventListener("change", () => {
 		options.injectInFrame = injectInFrameInput.checked;
 		localStorage.options = JSON.stringify(options);

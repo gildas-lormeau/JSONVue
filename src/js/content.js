@@ -1,4 +1,4 @@
-/* global window, document, chrome, location, history, top, XMLHttpRequest */
+/* global window, document, chrome, location, history, top */
 
 const port = chrome.runtime.connect();
 let collapsers, options, jsonObject, jsonSelector;
@@ -117,7 +117,7 @@ function extractData(rawText) {
 }
 
 function processData(data) {
-	let xhr, jsonText;
+	let jsonText;
 
 	function formatToHTML(fnName, offset) {
 		if (!jsonText)
@@ -135,24 +135,10 @@ function processData(data) {
 		}
 	}
 
-	if (window == top || options.injectInFrame)
-		if (options.safeMethod) {
-			xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = () => {
-				if (this.readyState == 4) {
-					data = extractData(this.responseText);
-					if (data) {
-						jsonText = data.text;
-						formatToHTML(data.fnName, data.offset);
-					}
-				}
-			};
-			xhr.open("GET", document.location.href, true);
-			xhr.send(null);
-		} else if (data) {
-			jsonText = data.text;
-			formatToHTML(data.fnName, data.offset);
-		}
+	if ((window == top || options.injectInFrame) && data) {
+		jsonText = data.text;
+		formatToHTML(data.fnName, data.offset);
+	}
 }
 
 function ontoggle(event) {
