@@ -275,10 +275,10 @@ function onContextMenu(event) {
 function copy(value) {
 	const selectedElement = document.createElement("span");
 	const selectedRange = document.createRange();
+	const selection = getSelection();
 	selectedElement.innerText = value;
 	document.body.appendChild(selectedElement);
 	selectedRange.selectNodeContents(selectedElement);
-	const selection = getSelection();
 	selection.removeAllRanges();
 	selection.addRange(selectedRange);
 	document.execCommand("Copy");
