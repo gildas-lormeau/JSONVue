@@ -1,9 +1,20 @@
 /* global chrome, fetch, chrome, Worker, localStorage */
 
+const MENU_ID_COPY_PATH = "copy-path";
+const MENU_ID_COPY_VALUE = "copy-value";
+
 let extensionReady, copiedPath, copiedValue;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	onmessage(message, sender, sendResponse);
 	return true;
+});
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+	if (info.menuItemId == MENU_ID_COPY_PATH) {
+		chrome.tabs.sendMessage(tab.id, { copy: true, value: copiedPath });
+	}
+	if (info.menuItemId == MENU_ID_COPY_VALUE) {
+		chrome.tabs.sendMessage(tab.id, { copy: true, value: copiedValue });
+	}
 });
 init();
 
@@ -93,14 +104,14 @@ async function refreshMenuEntry() {
 	chrome.contextMenus.removeAll();
 	if (options.addContextMenu) {
 		chrome.contextMenus.create({
+			id: MENU_ID_COPY_PATH,
 			title: "Copy path",
-			contexts: ["page", "link"],
-			onclick: (info, tab) => chrome.tabs.sendMessage(tab.id, { copy: true, value: copiedPath })
+			contexts: ["page", "link"]
 		});
 		chrome.contextMenus.create({
+			id: MENU_ID_COPY_VALUE,
 			title: "Copy value",
-			contexts: ["page", "link"],
-			onclick: (info, tab) => chrome.tabs.sendMessage(tab.id, { copy: true, value: copiedValue })
+			contexts: ["page", "link"]
 		});
 	}
 }
