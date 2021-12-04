@@ -1,6 +1,6 @@
 /* global window, document, chrome, location, history, top, getSelection */
 
-let collapsers, options, jsonObject, jsonSelector, selectedLI;
+let collapsers, jsonObject, jsonSelector, selectedLI;
 chrome.runtime.onMessage.addListener(message => {
 	if (message.copy) {
 		copy(message.value);
@@ -13,10 +13,7 @@ function load() {
 		const child = document.body.children.length ? document.body.childNodes[0] : document.body;
 		const data = extractData(child.innerText);
 		if (data) {
-			chrome.runtime.sendMessage({ init: true }, initOptions => {
-				options = initOptions;
-				processData(data);
-			});
+			chrome.runtime.sendMessage({ init: true }, options => processData(data, options));
 		}
 	}
 }
@@ -45,7 +42,7 @@ function extractData(rawText) {
 	}
 }
 
-function processData(data) {
+function processData(data, options) {
 	let jsonText;
 
 	function formatToHTML(fnName, offset) {
