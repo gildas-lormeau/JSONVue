@@ -1,4 +1,4 @@
-/* global document, chrome, location */
+/* global document, chrome, open */
 
 chrome.runtime.sendMessage({ getSettings: true }, settings => {
 	const options = settings.options;
@@ -14,5 +14,8 @@ chrome.runtime.sendMessage({ getSettings: true }, settings => {
 		options.addContextMenu = addContextMenuInput.checked;
 		chrome.runtime.sendMessage({ setSetting: true, refreshMenuEntry: true, name: "options", value: options });
 	});
-	document.getElementById("open-editor").addEventListener("click", () => location.href = "css-editor.html", false);
+	document.getElementById("open-editor").addEventListener("click", event => {
+		open("css-editor.html", "jsonvue-css-editor");
+		event.stopPropagation();
+	}, false);
 });

@@ -7,26 +7,24 @@
 </head>
 
 <body>
-	<div id="main">
-		<div>
-			<h2><img alt="icon" id="icon" src="resources/jsonvue48.png" />JSONVue options</h2>
-			<hr>
-			<div class="optionBlock">
+	<form id="main">
+		<fieldset>
+			<legend><img alt="icon" class="icon" src="resources/jsonvue48.png" />JSONVue options</legend>
+			<section>
 				<label for="addContextMenuInput">Add context menu entry</label>
 				<input type="checkbox" id="addContextMenuInput">
-			</div>
-			<div class="optionBlock">
+			</section>
+			<section>
 				<label for="injectInFrameInput">Inject into frames</label>
 				<input type="checkbox" id="injectInFrameInput">
-			</div>
-			<div class="optionBlock">
-				<label for="openStyleInput">Build custom theme with style editor</label>
+			</section>
+			<section>
+				<label>Open the style editor</label>
 				<button id="open-editor">Open</button>
-			</div>
-			<p>(*) safe method forces the browser to send an extra HTTP request to get the raw HTTP content.</p>
-		</div>
-	</div>
-	<script type="text/javascript" src="js/options.js"></script>	
+			</section>
+		</fieldset>
+	</form>
+	<script type="text/javascript" src="js/options.js"></script>
 </body>
 
 </html>
