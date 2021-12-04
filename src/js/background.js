@@ -1,6 +1,6 @@
 /* global chrome, fetch, chrome, Worker, localStorage */
 
-let extensionReady, copiedPath, copiedValue, copyPathMenuEntryId, copyValueMenuEntryId;
+let extensionReady, copiedPath, copiedValue;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	onmessage(message, sender, sendResponse);
 	return true;
@@ -102,22 +102,18 @@ async function onmessage(message, sender, sendResponse) {
 
 async function refreshMenuEntry() {
 	const options = (await getSettings()).options;
-	if (options.addContextMenu && !copyPathMenuEntryId) {
-		copyPathMenuEntryId = chrome.contextMenus.create({
+	chrome.contextMenus.removeAll();
+	if (options.addContextMenu) {
+		chrome.contextMenus.create({
 			title: "Copy path",
 			contexts: ["page", "link"],
 			onclick: (info, tab) => chrome.tabs.sendMessage(tab.id, { copy: true, value: copiedPath })
 		});
-		copyValueMenuEntryId = chrome.contextMenus.create({
+		chrome.contextMenus.create({
 			title: "Copy value",
 			contexts: ["page", "link"],
 			onclick: (info, tab) => chrome.tabs.sendMessage(tab.id, { copy: true, value: copiedValue })
 		});
-	}
-	if (!options.addContextMenu && copyPathMenuEntryId) {
-		chrome.contextMenus.remove(copyPathMenuEntryId);
-		chrome.contextMenus.remove(copyValueMenuEntryId);
-		copyPathMenuEntryId = null;
 	}
 }
 
