@@ -18,38 +18,37 @@ if (document.body && (document.body.childNodes[0] && document.body.childNodes[0]
 function extractData(rawText) {
 	const text = rawText.trim();
 	let tokens;
-
-	function test(text) {
-		return ((text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") || (text.charAt(0) == "{" && text.charAt(text.length - 1) == "}"));
-	}
-
-	if (test(text))
+	if (test(text)) {
 		return {
 			text: rawText,
 			offset: 0
 		};
-	tokens = text.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/);
-	if (tokens && tokens[1] && tokens[2]) {
-		if (test(tokens[2].trim()))
-			return {
-				fnName: tokens[1],
-				text: tokens[2],
-				offset: rawText.indexOf(tokens[2])
-			};
+	} else {
+		tokens = text.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/);
+		if (tokens && tokens[1] && tokens[2]) {
+			if (test(tokens[2].trim())) {
+				return {
+					fnName: tokens[1],
+					text: tokens[2],
+					offset: rawText.indexOf(tokens[2])
+				};
+			}
+		}
+	}
+
+	function test(text) {
+		return ((text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") || (text.charAt(0) == "{" && text.charAt(text.length - 1) == "}"));
 	}
 }
 
 function processData(data, options) {
-	let jsonText;
-
-	function formatToHTML(fnName, offset) {
-		if (!jsonText)
-			return;
+	if ((window == top || options.injectInFrame) && data && data.text) {
+		const json = data.text;
 		chrome.runtime.sendMessage({
 			jsonToHTML: true,
-			json: jsonText,
-			fnName: fnName,
-			offset: offset
+			json,
+			fnName: data.fnName,
+			offset: data.offset
 		}, result => {
 			if (result.html) {
 				displayUI(result.theme, result.html);
@@ -59,15 +58,10 @@ function processData(data, options) {
 			}
 		});
 		try {
-			jsonObject = JSON.parse(jsonText);
+			jsonObject = JSON.parse(json);
 		} catch (e) {
 			// ignored
 		}
-	}
-
-	if ((window == top || options.injectInFrame) && data) {
-		jsonText = data.text;
-		formatToHTML(data.fnName, data.offset);
 	}
 }
 
@@ -95,10 +89,11 @@ function displayError(error, loc, offset) {
 	startRange = ranges[loc.first_line - 1] + loc.first_column + offset;
 	endRange = ranges[loc.last_line - 1] + loc.last_column + offset;
 	range.setStart(pre, startRange);
-	if (startRange == endRange - 1)
+	if (startRange == endRange - 1) {
 		range.setEnd(pre, startRange);
-	else
+	} else {
 		range.setEnd(pre, endRange);
+	}
 	errorPosition.className = "error-position";
 	errorPosition.id = "error-position";
 	range.surroundContents(errorPosition);
@@ -156,38 +151,40 @@ function displayUI(theme, html) {
 	viewSourceElement.addEventListener("click", onviewsource, false);
 	reduceElement.addEventListener("click", onreduce, false);
 	copyPathElement.addEventListener("click", event => {
-		if (event.isTrusted === false)
-			return;
-		chrome.runtime.sendMessage({
-			copyPropertyPath: true,
-			path: statusElement.innerText
-		});
+		if (event.isTrusted) {
+			chrome.runtime.sendMessage({
+				copyPropertyPath: true,
+				path: statusElement.innerText
+			});
+		}
 	}, false);
 }
 
 function ontoggle(event) {
 	const target = event.target;
-	let collapsed;
 	if (event.target.className == "collapser") {
-		collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
-		if (collapsed.parentNode.classList.contains("collapsed"))
+		const collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
+		if (collapsed.parentNode.classList.contains("collapsed")) {
 			collapsed.parentNode.classList.remove("collapsed");
-		else
+		} else {
 			collapsed.parentNode.classList.add("collapsed");
+		}
 	}
 }
 
 function onexpand() {
 	collapsers.forEach(collapsed => {
-		if (collapsed.parentNode.classList.contains("collapsed"))
+		if (collapsed.parentNode.classList.contains("collapsed")) {
 			collapsed.parentNode.classList.remove("collapsed");
+		}
 	});
 }
 
 function onreduce() {
 	collapsers.forEach(collapsed => {
-		if (!collapsed.parentNode.classList.contains("collapsed"))
+		if (!collapsed.parentNode.classList.contains("collapsed")) {
 			collapsed.parentNode.classList.add("collapsed");
+		}
 	});
 }
 
@@ -196,15 +193,52 @@ function onviewsource() {
 }
 
 function getParentLI(element) {
-	if (element.tagName != "LI")
-		while (element && element.tagName != "LI")
+	if (element.tagName != "LI") {
+		while (element && element.tagName != "LI") {
 			element = element.parentNode;
-	if (element && element.tagName == "LI")
+		}
+	}
+	if (element && element.tagName == "LI") {
 		return element;
+	}
 }
 
 const onmouseMove = (() => {
 	let hoveredLI;
+	return event => {
+		if (event.isTrusted) {
+			const statusElement = document.querySelector(".status");
+			let str = "";
+			let element = getParentLI(event.target);
+			if (element) {
+				jsonSelector = [];
+				if (hoveredLI) {
+					hoveredLI.firstChild.classList.remove("hovered");
+				}
+				hoveredLI = element;
+				element.firstChild.classList.add("hovered");
+				do {
+					if (element.parentNode.classList.contains("array")) {
+						const index = [].indexOf.call(element.parentNode.children, element);
+						str = "[" + index + "]" + str;
+						jsonSelector.unshift(index);
+					}
+					if (element.parentNode.classList.contains("obj")) {
+						const key = element.firstChild.firstChild.innerText;
+						str = "." + key + str;
+						jsonSelector.unshift(key);
+					}
+					element = element.parentNode.parentNode.parentNode;
+				} while (element.tagName == "LI");
+				if (str.charAt(0) == ".") {
+					str = str.substring(1);
+				}
+				statusElement.innerText = str;
+				return;
+			}
+			onmouseOut();
+		}
+	};
 
 	function onmouseOut() {
 		const statusElement = document.querySelector(".status");
@@ -215,44 +249,12 @@ const onmouseMove = (() => {
 			jsonSelector = [];
 		}
 	}
-
-	return event => {
-		if (event.isTrusted === false)
-			return;
-		const statusElement = document.querySelector(".status");
-		let str = "";
-		let element = getParentLI(event.target);
-		if (element) {
-			jsonSelector = [];
-			if (hoveredLI)
-				hoveredLI.firstChild.classList.remove("hovered");
-			hoveredLI = element;
-			element.firstChild.classList.add("hovered");
-			do {
-				if (element.parentNode.classList.contains("array")) {
-					const index = [].indexOf.call(element.parentNode.children, element);
-					str = "[" + index + "]" + str;
-					jsonSelector.unshift(index);
-				}
-				if (element.parentNode.classList.contains("obj")) {
-					const key = element.firstChild.firstChild.innerText;
-					str = "." + key + str;
-					jsonSelector.unshift(key);
-				}
-				element = element.parentNode.parentNode.parentNode;
-			} while (element.tagName == "LI");
-			if (str.charAt(0) == ".")
-				str = str.substring(1);
-			statusElement.innerText = str;
-			return;
-		}
-		onmouseOut();
-	};
 })();
 
 function onmouseClick(event) {
-	if (selectedLI)
+	if (selectedLI) {
 		selectedLI.firstChild.classList.remove("selected");
+	}
 	selectedLI = getParentLI(event.target);
 	if (selectedLI) {
 		selectedLI.firstChild.classList.add("selected");
@@ -260,24 +262,24 @@ function onmouseClick(event) {
 }
 
 function onContextMenu(event) {
-	if (event.isTrusted === false)
-		return;
-	const currentLI = getParentLI(event.target);
-	const statusElement = document.querySelector(".status");
-	if (currentLI) {
-		let value = jsonObject;
-		jsonSelector.forEach(propertyName => value = value[propertyName]);
-		chrome.runtime.sendMessage({
-			copyPropertyPath: true,
-			path: statusElement.innerText,
-			value: typeof value == "object" ? JSON.stringify(value) : value
-		});
-	} else {
-		chrome.runtime.sendMessage({
-			copyPropertyPath: true,
-			path: "",
-			value: typeof jsonObject == "object" ? JSON.stringify(jsonObject) : jsonObject
-		});
+	if (event.isTrusted) {
+		const currentLI = getParentLI(event.target);
+		const statusElement = document.querySelector(".status");
+		if (currentLI) {
+			let value = jsonObject;
+			jsonSelector.forEach(propertyName => value = value[propertyName]);
+			chrome.runtime.sendMessage({
+				copyPropertyPath: true,
+				path: statusElement.innerText,
+				value: typeof value == "object" ? JSON.stringify(value) : value
+			});
+		} else {
+			chrome.runtime.sendMessage({
+				copyPropertyPath: true,
+				path: "",
+				value: typeof jsonObject == "object" ? JSON.stringify(jsonObject) : jsonObject
+			});
+		}
 	}
 }
 
