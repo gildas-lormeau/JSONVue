@@ -1,4 +1,4 @@
-/* global chrome, fetch, chrome, document, Worker, localStorage */
+/* global chrome, fetch, chrome, Worker, localStorage */
 
 const MENU_ID_COPY_PATH = "copy-path";
 const MENU_ID_COPY_VALUE = "copy-value";
@@ -40,19 +40,7 @@ async function init() {
 }
 
 function copyText(tab, value) {
-	if (typeof document != "undefined") {
-		const command = "copy";
-		document.addEventListener(command, listener);
-		document.execCommand(command);
-		document.removeEventListener(command, listener);
-	} else {
-		chrome.tabs.sendMessage(tab.id, { copy: true, value });
-	}
-
-	function listener(event) {
-		event.clipboardData.setData("text/plain", value);
-		event.preventDefault();
-	}
+	chrome.tabs.sendMessage(tab.id, { copy: true, value });
 }
 
 async function migrateSettings() {

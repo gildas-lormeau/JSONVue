@@ -1,9 +1,9 @@
-/* global navigator, window, document, chrome, location, history, top */
+/* global window, document, chrome, location, history, top */
 
 let collapsers, jsonObject, jsonSelector, selectedLI, hoveredLI, originalBody;
 chrome.runtime.onMessage.addListener(message => {
 	if (message.copy) {
-		copy(message.value);
+		copyText(message.value);
 	}
 });
 if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
@@ -275,6 +275,15 @@ function getParentLI(element) {
 	}
 }
 
-function copy(value) {
-	return navigator.clipboard.writeText(value);
+function copyText(value) {
+	const command = "copy";
+	document.addEventListener(command, listener);
+	document.execCommand(command);
+	document.removeEventListener(command, listener);
+
+
+	function listener(event) {
+		event.clipboardData.setData("text/plain", value);
+		event.preventDefault();
+	}
 }
