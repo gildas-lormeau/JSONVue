@@ -117,3 +117,10 @@ li {
 .toolbox>a {
 	font-size: 13px;
 }
+
+@media (prefers-color-scheme: dark) {
+	.toolbox {
+		background-color: #484848;
+		border-color: #242424;
+	}
+}
