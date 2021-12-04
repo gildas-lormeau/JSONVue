@@ -1,47 +1,44 @@
-/* global document, chrome, fetch, addEventListener, setTimeout, clearTimeout, CodeMirror */
+/* global document, chrome, fetch, setTimeout, clearTimeout, CodeMirror */
 
-(() => {
+const SAMPLE_PART1 = "<!doctype html><html><head><meta charset=\"UTF-8\"></head><body><link rel=\"stylesheet\" type=\"text/css\" href=\"css/jsonvue-core.css\"><style>";
+const SAMPLE_PART2 = "</style><div id=\"json\"><div class=\"collapser\"></div>{<span class=\"ellipsis\"></span><ul class=\"obj collapsible\"><li><div class=\"hoverable\"><span class=\"property\">hey</span>: <span class=\"type-string\">\"guy\"</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">anumber</span>: <span class=\"type-number\">243</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">anobject</span>: <div class=\"collapser\"></div>{<span class=\"ellipsis\"></span><ul class=\"obj collapsible\"><li><div class=\"hoverable\"><span class=\"property\">whoa</span>: <span class=\"type-string\">\"nuts\"</span>,</div></li><li><div class=\"hoverable collapsed\"><span class=\"property\">anarray</span>: <div class=\"collapser\"></div>[<span class=\"ellipsis\"></span><ul class=\"array collapsible\"><li><div class=\"hoverable\"><span class=\"type-number\">1</span>,</div></li><li><div class=\"hoverable\"><span class=\"type-number\">2</span>,</div></li><li><div class=\"hoverable\"><span class=\"type-string\">\"thr&lt;h1&gt;ee\"</span></div></li></ul>],</div></li><li><div class=\"hoverable hovered\"><span class=\"property\">more</span>: <span class=\"type-string\">\"stuff\"</span></div></li></ul>},</div></li><li><div class=\"hoverable\"><span class=\"property\">awesome</span>: <span class=\"type-boolean\">true</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">bogus</span>: <span class=\"type-boolean\">false</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">meaning</span>: <span class=\"type-null\">null</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">link</span>: <span class=\"type-string\">\"</span><a href=\"#\">https://www.example.com</a><span class=\"type-string\">\"</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">notLink</span>: <span class=\"type-string\">\"https://www.example.com is great\"</span></div></li></ul>}</div></body></html>";
+const PASSIVE_KEYS = ["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "End", "Home", "PageDown", "PageUp", "ControlLeft", "ControlRight", "AltLeft", "ShiftLeft", "ShiftRight", "Insert"];
 
-	const SAMPLE_PART1 = "<!doctype html><html><head><meta charset=\"UTF-8\"></head><body><link rel=\"stylesheet\" type=\"text/css\" href=\"css/jsonvue-core.css\"><style>";
-	const SAMPLE_PART2 = "</style><div id=\"json\"><div class=\"collapser\"></div>{<span class=\"ellipsis\"></span><ul class=\"obj collapsible\"><li><div class=\"hoverable\"><span class=\"property\">hey</span>: <span class=\"type-string\">\"guy\"</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">anumber</span>: <span class=\"type-number\">243</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">anobject</span>: <div class=\"collapser\"></div>{<span class=\"ellipsis\"></span><ul class=\"obj collapsible\"><li><div class=\"hoverable\"><span class=\"property\">whoa</span>: <span class=\"type-string\">\"nuts\"</span>,</div></li><li><div class=\"hoverable collapsed\"><span class=\"property\">anarray</span>: <div class=\"collapser\"></div>[<span class=\"ellipsis\"></span><ul class=\"array collapsible\"><li><div class=\"hoverable\"><span class=\"type-number\">1</span>,</div></li><li><div class=\"hoverable\"><span class=\"type-number\">2</span>,</div></li><li><div class=\"hoverable\"><span class=\"type-string\">\"thr&lt;h1&gt;ee\"</span></div></li></ul>],</div></li><li><div class=\"hoverable hovered\"><span class=\"property\">more</span>: <span class=\"type-string\">\"stuff\"</span></div></li></ul>},</div></li><li><div class=\"hoverable\"><span class=\"property\">awesome</span>: <span class=\"type-boolean\">true</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">bogus</span>: <span class=\"type-boolean\">false</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">meaning</span>: <span class=\"type-null\">null</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">link</span>: <span class=\"type-string\">\"</span><a href=\"#\">https://www.example.com</a><span class=\"type-string\">\"</span>,</div></li><li><div class=\"hoverable\"><span class=\"property\">notLink</span>: <span class=\"type-string\">\"https://www.example.com is great\"</span></div></li></ul>}</div></body></html>";
-	const PASSIVE_KEYS = ["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "End", "Home", "PageDown", "PageUp", "ControlLeft", "ControlRight", "AltLeft", "ShiftLeft", "ShiftRight", "Insert"];
+const editor = document.getElementById("editor");
+const resetButton = document.getElementById("reset-button");
+const saveButton = document.getElementById("save-button");
+const previewer = document.getElementById("previewer").contentWindow;
 
-	const editor = document.getElementById("editor");
-	const resetButton = document.getElementById("reset-button");
-	const saveButton = document.getElementById("save-button");
-	const previewer = document.getElementById("previewer").contentWindow;
-	let codemirror;
+let timeoutOnKey;
+const codemirror = CodeMirror.fromTextArea(editor);
+codemirror.on("keyup", onkeyupEditor);
+resetButton.addEventListener("click", resetTheme, false);
+saveButton.addEventListener("click", () => chrome.runtime.sendMessage({ setSetting: true, name: "theme", value: codemirror.getValue() }), false);
+chrome.runtime.sendMessage({ getSettings: true }, init);
 
-	function updatePreview() {
-		previewer.document.open();
-		previewer.document.write(SAMPLE_PART1);
-		previewer.document.write(codemirror.getValue());
-		previewer.document.write(SAMPLE_PART2);
-		previewer.document.close();
+function init(settings) {
+	codemirror.setValue(settings.theme);
+	updatePreview();
+}
+
+async function resetTheme() {
+	codemirror.setValue(await (await fetch("css/jsonvue.css")).text());
+	updatePreview();
+}
+
+function onkeyupEditor(editor, event) {
+	if (PASSIVE_KEYS.indexOf(event.code) == -1) {
+		if (timeoutOnKey) {
+			clearTimeout(timeoutOnKey);
+		}
+		timeoutOnKey = setTimeout(updatePreview, 500);
 	}
+}
 
-	resetButton.addEventListener("click", async () => {
-		const theme = await (await fetch("css/jsonvue.css")).text();
-		codemirror.setValue(theme);
-		updatePreview();
-	}, false);
-
-	saveButton.addEventListener("click", () => chrome.runtime.sendMessage({ setSetting: true, name: "theme", value: codemirror.getValue() }), false);
-
-	addEventListener("load", () => {
-		let timeoutOnKey;
-		codemirror = CodeMirror.fromTextArea(editor);
-		codemirror.on("keyup", (editor, event) => {
-			if (PASSIVE_KEYS.indexOf(event.code) == -1) {
-				if (timeoutOnKey)
-					clearTimeout(timeoutOnKey);
-				timeoutOnKey = setTimeout(updatePreview, 500);
-			}
-		});
-		chrome.runtime.sendMessage({ getSettings: true }, settings => {
-			codemirror.setValue(settings.theme);
-			updatePreview();
-		});
-	}, false);
-
-})();
+function updatePreview() {
+	previewer.document.open();
+	previewer.document.write(SAMPLE_PART1);
+	previewer.document.write(codemirror.getValue());
+	previewer.document.write(SAMPLE_PART2);
+	previewer.document.close();
+}
