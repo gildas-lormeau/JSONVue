@@ -2,6 +2,7 @@
 
 const MENU_ID_COPY_PATH = "copy-path";
 const MENU_ID_COPY_VALUE = "copy-value";
+const MENU_ID_COPY_JSON_VALUE = "copy-json-value";
 
 let extensionReady, copiedPath, copiedValue;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -9,11 +10,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	return true;
 });
 chrome.contextMenus.onClicked.addListener((info, tab) => {
+	let message;
 	if (info.menuItemId == MENU_ID_COPY_PATH) {
-		chrome.tabs.sendMessage(tab.id, { copy: true, value: copiedPath });
+		message = { copy: true, value: copiedPath };
 	}
 	if (info.menuItemId == MENU_ID_COPY_VALUE) {
-		chrome.tabs.sendMessage(tab.id, { copy: true, value: copiedValue });
+		message = { copy: true, value: copiedValue };
+	}
+	if (info.menuItemId == MENU_ID_COPY_JSON_VALUE) {
+		message = { copy: true, value: JSON.stringify(copiedValue) };
+	}
+	if (message) {
+		chrome.tabs.sendMessage(tab.id, message);
 	}
 });
 init();
@@ -111,6 +119,11 @@ async function refreshMenuEntry() {
 		chrome.contextMenus.create({
 			id: MENU_ID_COPY_VALUE,
 			title: "Copy value",
+			contexts: ["page", "link"]
+		});
+		chrome.contextMenus.create({
+			id: MENU_ID_COPY_JSON_VALUE,
+			title: "Copy JSON value",
 			contexts: ["page", "link"]
 		});
 	}
