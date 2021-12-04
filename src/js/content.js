@@ -1,6 +1,6 @@
 /* global navigator, window, document, chrome, location, history, top */
 
-let collapsers, jsonObject, jsonSelector, selectedLI;
+let collapsers, jsonObject, jsonSelector, selectedLI, originalBody;
 chrome.runtime.onMessage.addListener(message => {
 	if (message.copy) {
 		copy(message.value);
@@ -10,6 +10,7 @@ if (document.body && (document.body.childNodes[0] && document.body.childNodes[0]
 	const child = document.body.children.length ? document.body.childNodes[0] : document.body;
 	const data = extractData(child.innerText);
 	if (data) {
+		originalBody = document.body.cloneNode(true);
 		chrome.runtime.sendMessage({ init: true }, options => processData(data, options));
 	}
 }
@@ -137,10 +138,14 @@ function displayUI(theme, html) {
 	const expandElement = document.createElement("span");
 	expandElement.title = "expand all";
 	expandElement.innerText = "+";
+	const viewSourceElement = document.createElement("a");
+	viewSourceElement.title = "view source";
+	viewSourceElement.innerText = "view source";
 	const reduceElement = document.createElement("span");
 	reduceElement.title = "reduce all";
 	reduceElement.innerText = "-";
 	toolboxElement.appendChild(expandElement);
+	toolboxElement.appendChild(viewSourceElement);
 	toolboxElement.appendChild(reduceElement);
 	document.body.appendChild(toolboxElement);
 	document.body.addEventListener("click", ontoggle, false);
@@ -148,6 +153,7 @@ function displayUI(theme, html) {
 	document.body.addEventListener("click", onmouseClick, false);
 	document.body.addEventListener("contextmenu", onContextMenu, false);
 	expandElement.addEventListener("click", onexpand, false);
+	viewSourceElement.addEventListener("click", onviewsource, false);
 	reduceElement.addEventListener("click", onreduce, false);
 	copyPathElement.addEventListener("click", event => {
 		if (event.isTrusted === false)
@@ -183,6 +189,10 @@ function onreduce() {
 		if (!collapsed.parentNode.classList.contains("collapsed"))
 			collapsed.parentNode.classList.add("collapsed");
 	});
+}
+
+function onviewsource() {
+	document.body.replaceWith(originalBody);
 }
 
 function getParentLI(element) {
