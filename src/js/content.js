@@ -1,6 +1,6 @@
 /* global navigator, window, document, chrome, location, history, top */
 
-let collapsers, jsonObject, jsonSelector, selectedLI, originalBody;
+let collapsers, jsonObject, jsonSelector, selectedLI, hoveredLI, originalBody;
 chrome.runtime.onMessage.addListener(message => {
 	if (message.copy) {
 		copy(message.value);
@@ -143,13 +143,13 @@ function displayUI(theme, html) {
 	toolboxElement.appendChild(viewSourceElement);
 	toolboxElement.appendChild(reduceElement);
 	document.body.appendChild(toolboxElement);
-	document.body.addEventListener("click", ontoggle, false);
-	document.body.addEventListener("mouseover", onmouseMove, false);
-	document.body.addEventListener("click", onmouseClick, false);
+	document.body.addEventListener("click", onToggle, false);
+	document.body.addEventListener("mouseover", onMouseMove, false);
+	document.body.addEventListener("click", onMouseClick, false);
 	document.body.addEventListener("contextmenu", onContextMenu, false);
-	expandElement.addEventListener("click", onexpand, false);
-	viewSourceElement.addEventListener("click", onviewsource, false);
-	reduceElement.addEventListener("click", onreduce, false);
+	expandElement.addEventListener("click", onExpandAll, false);
+	viewSourceElement.addEventListener("click", onViewSource, false);
+	reduceElement.addEventListener("click", onCollapseAll, false);
 	copyPathElement.addEventListener("click", event => {
 		if (event.isTrusted) {
 			chrome.runtime.sendMessage({
@@ -160,7 +160,7 @@ function displayUI(theme, html) {
 	}, false);
 }
 
-function ontoggle(event) {
+function onToggle(event) {
 	const target = event.target;
 	if (event.target.className == "collapser") {
 		const collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
@@ -172,7 +172,7 @@ function ontoggle(event) {
 	}
 }
 
-function onexpand() {
+function onExpandAll() {
 	collapsers.forEach(collapsed => {
 		if (collapsed.parentNode.classList.contains("collapsed")) {
 			collapsed.parentNode.classList.remove("collapsed");
@@ -180,7 +180,7 @@ function onexpand() {
 	});
 }
 
-function onreduce() {
+function onCollapseAll() {
 	collapsers.forEach(collapsed => {
 		if (!collapsed.parentNode.classList.contains("collapsed")) {
 			collapsed.parentNode.classList.add("collapsed");
@@ -188,60 +188,41 @@ function onreduce() {
 	});
 }
 
-function onviewsource() {
+function onViewSource() {
 	document.body.replaceWith(originalBody);
 }
 
-function getParentLI(element) {
-	if (element.tagName != "LI") {
-		while (element && element.tagName != "LI") {
-			element = element.parentNode;
-		}
-	}
-	if (element && element.tagName == "LI") {
-		return element;
-	}
-}
-
-const onmouseMove = (() => {
-	let hoveredLI;
-	return event => {
-		if (event.isTrusted) {
-			const statusElement = document.querySelector(".status");
-			let str = "";
-			let element = getParentLI(event.target);
-			if (element) {
-				jsonSelector = [];
-				if (hoveredLI) {
-					hoveredLI.firstChild.classList.remove("hovered");
-				}
-				hoveredLI = element;
-				element.firstChild.classList.add("hovered");
-				do {
-					if (element.parentNode.classList.contains("array")) {
-						const index = [].indexOf.call(element.parentNode.children, element);
-						str = "[" + index + "]" + str;
-						jsonSelector.unshift(index);
-					}
-					if (element.parentNode.classList.contains("obj")) {
-						const key = element.firstChild.firstChild.innerText;
-						str = "." + key + str;
-						jsonSelector.unshift(key);
-					}
-					element = element.parentNode.parentNode.parentNode;
-				} while (element.tagName == "LI");
-				if (str.charAt(0) == ".") {
-					str = str.substring(1);
-				}
-				statusElement.innerText = str;
-				return;
-			}
-			onmouseOut();
-		}
-	};
-
-	function onmouseOut() {
+function onMouseMove(event) {
+	if (event.isTrusted) {
 		const statusElement = document.querySelector(".status");
+		let str = "";
+		let element = getParentLI(event.target);
+		if (element) {
+			jsonSelector = [];
+			if (hoveredLI) {
+				hoveredLI.firstChild.classList.remove("hovered");
+			}
+			hoveredLI = element;
+			element.firstChild.classList.add("hovered");
+			do {
+				if (element.parentNode.classList.contains("array")) {
+					const index = [].indexOf.call(element.parentNode.children, element);
+					str = "[" + index + "]" + str;
+					jsonSelector.unshift(index);
+				}
+				if (element.parentNode.classList.contains("obj")) {
+					const key = element.firstChild.firstChild.innerText;
+					str = "." + key + str;
+					jsonSelector.unshift(key);
+				}
+				element = element.parentNode.parentNode.parentNode;
+			} while (element.tagName == "LI");
+			if (str.charAt(0) == ".") {
+				str = str.substring(1);
+			}
+			statusElement.innerText = str;
+			return;
+		}
 		if (hoveredLI) {
 			hoveredLI.firstChild.classList.remove("hovered");
 			hoveredLI = null;
@@ -249,9 +230,9 @@ const onmouseMove = (() => {
 			jsonSelector = [];
 		}
 	}
-})();
+}
 
-function onmouseClick(event) {
+function onMouseClick(event) {
 	if (selectedLI) {
 		selectedLI.firstChild.classList.remove("selected");
 	}
@@ -280,6 +261,17 @@ function onContextMenu(event) {
 				value: typeof jsonObject == "object" ? JSON.stringify(jsonObject) : jsonObject
 			});
 		}
+	}
+}
+
+function getParentLI(element) {
+	if (element.tagName != "LI") {
+		while (element && element.tagName != "LI") {
+			element = element.parentNode;
+		}
+	}
+	if (element && element.tagName == "LI") {
+		return element;
 	}
 }
 
