@@ -17,10 +17,8 @@ async function init() {
 	if (!settings.theme) {
 		const theme = await getDefaultTheme();
 		await setSetting("theme", theme);
-		await refreshMenuEntry();
-	} else {
-		await refreshMenuEntry();
 	}
+	await refreshMenuEntry();
 }
 
 async function migrateSettings() {
