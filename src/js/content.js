@@ -1,6 +1,11 @@
-/* global window, document, chrome, location, history, top */
+/* global window, document, chrome, location, history, top, getSelection */
 
 let collapsers, options, jsonObject, jsonSelector, selectedLI;
+chrome.runtime.onMessage.addListener(message => {
+	if (message.copy) {
+		copy(message.value);
+	}
+});
 load();
 
 function load() {
@@ -265,4 +270,17 @@ function onContextMenu(event) {
 			value: typeof value == "object" ? JSON.stringify(value) : value
 		});
 	}
+}
+
+function copy(value) {
+	const selectedElement = document.createElement("span");
+	const selectedRange = document.createRange();
+	selectedElement.innerText = value;
+	document.body.appendChild(selectedElement);
+	selectedRange.selectNodeContents(selectedElement);
+	const selection = getSelection();
+	selection.removeAllRanges();
+	selection.addRange(selectedRange);
+	document.execCommand("Copy");
+	document.body.removeChild(selectedElement);
 }

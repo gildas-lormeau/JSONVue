@@ -1,4 +1,4 @@
-/* global document, chrome, fetch, chrome, Worker, getSelection, localStorage */
+/* global chrome, fetch, chrome, Worker, localStorage */
 
 let extensionReady, copiedPath, copiedValue, copyPathMenuEntryId, copyValueMenuEntryId;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -25,17 +25,19 @@ async function init() {
 
 async function migrateSettings() {
 	const promises = [];
-	if (localStorage.options) {
-		promises.push(new Promise(resolve => {
-			chrome.storage.local.set({ options: JSON.parse(localStorage.options) }, () => resolve());
-			delete localStorage.options;
-		}));
-	}
-	if (localStorage.theme) {
-		promises.push(new Promise(resolve => {
-			chrome.storage.local.set({ theme: localStorage.theme }, () => resolve());
-			delete localStorage.theme;
-		}));
+	if (typeof localStorage != "undefined") {
+		if (localStorage.options) {
+			promises.push(new Promise(resolve => {
+				chrome.storage.local.set({ options: JSON.parse(localStorage.options) }, () => resolve());
+				delete localStorage.options;
+			}));
+		}
+		if (localStorage.theme) {
+			promises.push(new Promise(resolve => {
+				chrome.storage.local.set({ theme: localStorage.theme }, () => resolve());
+				delete localStorage.theme;
+			}));
+		}
 	}
 	await Promise.all(promises);
 }
@@ -104,12 +106,12 @@ async function refreshMenuEntry() {
 		copyPathMenuEntryId = chrome.contextMenus.create({
 			title: "Copy path",
 			contexts: ["page", "link"],
-			onclick: () => copy(copiedPath)
+			onclick: (info, tab) => chrome.tabs.sendMessage(tab.id, { copy: true, value: copiedPath })
 		});
 		copyValueMenuEntryId = chrome.contextMenus.create({
 			title: "Copy value",
 			contexts: ["page", "link"],
-			onclick: () => copy(copiedValue)
+			onclick: (info, tab) => chrome.tabs.sendMessage(tab.id, { copy: true, value: copiedValue })
 		});
 	}
 	if (!options.addContextMenu && copyPathMenuEntryId) {
@@ -121,19 +123,6 @@ async function refreshMenuEntry() {
 
 async function getDefaultTheme() {
 	return (await fetch("css/jsonvue.css")).text();
-}
-
-function copy(value) {
-	const selElement = document.createElement("span");
-	const selRange = document.createRange();
-	selElement.innerText = value;
-	document.body.appendChild(selElement);
-	selRange.selectNodeContents(selElement);
-	const selection = getSelection();
-	selection.removeAllRanges();
-	selection.addRange(selRange);
-	document.execCommand("Copy");
-	document.body.removeChild(selElement);
 }
 
 async function getSettings() {
