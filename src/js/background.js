@@ -76,7 +76,6 @@ async function migrateSettings() {
 
 async function onmessage(message, sender, sendResponse) {
 	const json = message.json;
-	let workerFormatter, workerJSONLint;
 	if (message.setSetting) {
 		await setSetting(message.name, message.value);
 	}
@@ -95,31 +94,42 @@ async function onmessage(message, sender, sendResponse) {
 		copiedValue = message.value;
 	}
 	if (message.jsonToHTML) {
-		workerFormatter = new Worker("js/worker-formatter.js");
+		const result = await formatHTML(json, message.fnName, message.offset);
+		if (result.html) {
+			result.theme = (await getSettings()).theme;
+		}
+		sendResponse(result);
+	}
+}
+
+function formatHTML(json, fnName, offset) {
+	return new Promise(resolve => {
+		const workerFormatter = new Worker("js/worker-formatter.js");
+		let workerJSONLint;
 		workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
-		workerFormatter.postMessage({ json: json, fnName: message.fnName });
-	}
+		workerFormatter.postMessage({ json: json, fnName });
 
-	function onWorkerJSONLintMessage(event) {
-		const message = JSON.parse(event.data);
-		workerJSONLint.removeEventListener("message", onWorkerJSONLintMessage, false);
-		workerJSONLint.terminate();
-		sendResponse({ error: message.error, loc: message.loc, offset: message.offset || 0 });
-	}
+		function onWorkerFormatterMessage(event) {
+			const message = event.data;
+			workerFormatter.removeEventListener("message", onWorkerFormatterMessage, false);
+			workerFormatter.terminate();
+			if (message.html) {
+				resolve({ html: message.html });
+			}
+			if (message.error) {
+				workerJSONLint = new Worker("js/worker-JSONLint.js");
+				workerJSONLint.addEventListener("message", onWorkerJSONLintMessage, false);
+				workerJSONLint.postMessage(json);
+			}
+		}
 
-	async function onWorkerFormatterMessage(event) {
-		const message = event.data;
-		workerFormatter.removeEventListener("message", onWorkerFormatterMessage, false);
-		workerFormatter.terminate();
-		if (message.html) {
-			sendResponse({ html: message.html, theme: (await getSettings()).theme });
+		function onWorkerJSONLintMessage(event) {
+			const message = JSON.parse(event.data);
+			workerJSONLint.removeEventListener("message", onWorkerJSONLintMessage, false);
+			workerJSONLint.terminate();
+			resolve({ error: message.error, loc: message.loc, offset });
 		}
-		if (message.error) {
-			workerJSONLint = new Worker("js/worker-JSONLint.js");
-			workerJSONLint.addEventListener("message", onWorkerJSONLintMessage, false);
-			workerJSONLint.postMessage(json);
-		}
-	}
+	});
 }
 
 async function refreshMenuEntry() {
