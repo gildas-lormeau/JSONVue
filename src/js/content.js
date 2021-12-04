@@ -262,6 +262,12 @@ function onContextMenu(event) {
 			path: statusElement.innerText,
 			value: typeof value == "object" ? JSON.stringify(value) : value
 		});
+	} else {
+		chrome.runtime.sendMessage({
+			copyPropertyPath: true,
+			path: "",
+			value: jsonObject
+		});
 	}
 }
 
