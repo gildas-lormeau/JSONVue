@@ -46,8 +46,7 @@ function copyText(tab, value) {
 		document.execCommand(command);
 		document.removeEventListener(command, listener);
 	} else {
-		let message = { copy: true, value: copiedPath };
-		chrome.tabs.sendMessage(tab.id, message);
+		chrome.tabs.sendMessage(tab.id, { copy: true, value });
 	}
 
 	function listener(event) {
