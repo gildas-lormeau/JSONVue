@@ -82,4 +82,20 @@ body {
   .hovered {
     background-color: #424242;
   }
+
+  .type-boolean {
+    color: tomato
+  }
+
+  .type-number {
+    color: dodgerblue;
+  }
+
+  .type-string {
+    color: yellowgreen;
+  }
+
+  a {
+    color: dodgerblue;
+  }
 }
