@@ -10,13 +10,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	return true;
 });
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-	if (info.menuItemId == MENU_ID_COPY_PATH) {
+	if (info.menuItemId == MENU_ID_COPY_PATH && copiedPath !== undefined) {
 		copyText(tab, copiedPath);
 	}
-	if (info.menuItemId == MENU_ID_COPY_VALUE) {
+	if (info.menuItemId == MENU_ID_COPY_VALUE && copiedValue !== undefined) {
 		copyText(tab, copiedValue);
 	}
-	if (info.menuItemId == MENU_ID_COPY_JSON_VALUE) {
+	if (info.menuItemId == MENU_ID_COPY_JSON_VALUE && copiedValue !== undefined) {
 		copyText(tab, JSON.stringify(copiedValue));
 	}
 });
