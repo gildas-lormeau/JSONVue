@@ -1,4 +1,4 @@
-/* global chrome, fetch, chrome, Worker, localStorage */
+/* global chrome, fetch, chrome, document, Worker, localStorage */
 
 const MENU_ID_COPY_PATH = "copy-path";
 const MENU_ID_COPY_VALUE = "copy-value";
@@ -10,18 +10,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	return true;
 });
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-	let message;
 	if (info.menuItemId == MENU_ID_COPY_PATH) {
-		message = { copy: true, value: copiedPath };
+		copyText(tab, copiedPath);
 	}
 	if (info.menuItemId == MENU_ID_COPY_VALUE) {
-		message = { copy: true, value: copiedValue };
+		copyText(tab, copiedValue);
 	}
 	if (info.menuItemId == MENU_ID_COPY_JSON_VALUE) {
-		message = { copy: true, value: JSON.stringify(copiedValue) };
-	}
-	if (message) {
-		chrome.tabs.sendMessage(tab.id, message);
+		copyText(tab, JSON.stringify(copiedValue));
 	}
 });
 init();
@@ -41,6 +37,23 @@ async function init() {
 		await setSetting("theme", theme);
 	}
 	await refreshMenuEntry();
+}
+
+function copyText(tab, value) {
+	if (typeof document != "undefined") {
+		const command = "copy";
+		document.addEventListener(command, listener);
+		document.execCommand(command);
+		document.removeEventListener(command, listener);
+	} else {
+		let message = { copy: true, value: copiedPath };
+		chrome.tabs.sendMessage(tab.id, message);
+	}
+
+	function listener(event) {
+		event.clipboardData.setData("text/plain", value);
+		event.preventDefault();
+	}
 }
 
 async function migrateSettings() {
