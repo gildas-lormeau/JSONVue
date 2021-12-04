@@ -266,7 +266,7 @@ function onContextMenu(event) {
 		chrome.runtime.sendMessage({
 			copyPropertyPath: true,
 			path: "",
-			value: jsonObject
+			value: JSON.stringify(jsonObject)
 		});
 	}
 }
