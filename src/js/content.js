@@ -6,15 +6,11 @@ chrome.runtime.onMessage.addListener(message => {
 		copy(message.value);
 	}
 });
-load();
-
-function load() {
-	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
-		const child = document.body.children.length ? document.body.childNodes[0] : document.body;
-		const data = extractData(child.innerText);
-		if (data) {
-			chrome.runtime.sendMessage({ init: true }, options => processData(data, options));
-		}
+if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
+	const child = document.body.children.length ? document.body.childNodes[0] : document.body;
+	const data = extractData(child.innerText);
+	if (data) {
+		chrome.runtime.sendMessage({ init: true }, options => processData(data, options));
 	}
 }
 
