@@ -1,4 +1,4 @@
-/* global window, document, chrome, location, history, top, getSelection */
+/* global navigator, window, document, chrome, location, history, top */
 
 let collapsers, jsonObject, jsonSelector, selectedLI;
 chrome.runtime.onMessage.addListener(message => {
@@ -272,14 +272,5 @@ function onContextMenu(event) {
 }
 
 function copy(value) {
-	const selectedElement = document.createElement("span");
-	const selectedRange = document.createRange();
-	const selection = getSelection();
-	selectedElement.innerText = value;
-	document.body.appendChild(selectedElement);
-	selectedRange.selectNodeContents(selectedElement);
-	selection.removeAllRanges();
-	selection.addRange(selectedRange);
-	document.execCommand("Copy");
-	document.body.removeChild(selectedElement);
+	return navigator.clipboard.writeText(value);
 }
