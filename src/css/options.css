@@ -18,6 +18,7 @@ fieldset {
 section {
 	display: flex;
 	margin-top: 10px;
+	align-items: center;
 }
 
 label {
@@ -31,6 +32,10 @@ legend {
 	padding-left: 10px;
 	padding-right: 10px;
 	margin-bottom: 5px;
+}
+
+button {	
+    max-height: 21px;
 }
 
 .icon {
