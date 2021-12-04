@@ -6,7 +6,7 @@ const MENU_ID_COPY_JSON_VALUE = "copy-json-value";
 
 let extensionReady, copiedPath, copiedValue;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	onmessage(message, sender, sendResponse);
+	onMessage(message, sendResponse);
 	return true;
 });
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -74,7 +74,7 @@ async function migrateSettings() {
 	await Promise.all(promises);
 }
 
-async function onmessage(message, sender, sendResponse) {
+async function onMessage(message, sendResponse) {
 	const json = message.json;
 	if (message.setSetting) {
 		await setSetting(message.name, message.value);
