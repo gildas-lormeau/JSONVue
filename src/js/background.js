@@ -53,10 +53,9 @@ async function onmessage(message, sender, sendResponse) {
 	if (message.refreshMenuEntry) {
 		await refreshMenuEntry();
 	}
-	if (message.init)
-		sendResponse({
-			options: (await getSettings()).options || {}
-		});
+	if (message.init) {
+		sendResponse({ options: (await getSettings()).options || {} });
+	}
 	if (message.copyPropertyPath) {
 		copiedPath = message.path;
 		copiedValue = message.value;
@@ -64,32 +63,23 @@ async function onmessage(message, sender, sendResponse) {
 	if (message.jsonToHTML) {
 		workerFormatter = new Worker("js/worker-formatter.js");
 		workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
-		workerFormatter.postMessage({
-			json: json,
-			fnName: message.fnName
-		});
+		workerFormatter.postMessage({ json: json, fnName: message.fnName });
 	}
 
 	function onWorkerJSONLintMessage(event) {
 		const message = JSON.parse(event.data);
 		workerJSONLint.removeEventListener("message", onWorkerJSONLintMessage, false);
 		workerJSONLint.terminate();
-		sendResponse({
-			error: message.error,
-			loc: message.loc,
-			offset: message.offset || 0
-		});
+		sendResponse({ error: message.error, loc: message.loc, offset: message.offset || 0 });
 	}
 
 	async function onWorkerFormatterMessage(event) {
 		const message = event.data;
 		workerFormatter.removeEventListener("message", onWorkerFormatterMessage, false);
 		workerFormatter.terminate();
-		if (message.html)
-			sendResponse({
-				html: message.html,
-				theme: (await getSettings()).theme
-			});
+		if (message.html) {
+			sendResponse({ html: message.html, theme: (await getSettings()).theme });
+		}
 		if (message.error) {
 			workerJSONLint = new Worker("js/worker-JSONLint.js");
 			workerJSONLint.addEventListener("message", onWorkerJSONLintMessage, false);
