@@ -29,6 +29,9 @@ init();
 async function init() {
 	extensionReady = migrateSettings();
 	const settings = await getSettings();
+	if (!settings.options) {
+		settings.options = {};
+	}
 	if (settings.options && typeof settings.options.addContextMenu == "undefined") {
 		settings.options.addContextMenu = true;
 		await setSetting("options", settings.options);
@@ -108,7 +111,8 @@ async function onmessage(message, sender, sendResponse) {
 }
 
 async function refreshMenuEntry() {
-	const options = (await getSettings()).options;
+	const settings = await getSettings();
+	const options = (settings).options;
 	chrome.contextMenus.removeAll();
 	if (options.addContextMenu) {
 		chrome.contextMenus.create({
