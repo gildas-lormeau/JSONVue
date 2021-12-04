@@ -31,7 +31,7 @@ body {
   content: "-";
 }
 
-.collapsed > .collapser:after {
+.collapsed>.collapser:after {
   content: "+";
 }
 
@@ -49,13 +49,37 @@ body {
   padding-left: 2px;
   padding-right: 2px;
   border-radius: 2px;
+  transition: background-color .2s ease-out 0s;
 }
 
 .hovered {
-  background-color: rgba(235, 238, 249, 1);  
+  background-color: rgba(235, 238, 249, 1);
+  transition-delay: .2s;
 }
 
 .collapser {
+  position: absolute;
+  top: 1px;
+  left: -1.5em;
+  cursor: default;
+  user-select: none;
   padding-right: 6px;
   padding-left: 6px;
+}
+
+.selected {
+  outline-style: solid;
+  outline-width: 1px;
+  outline-style: dotted;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #282828;
+    color: lightgrey;
+  }
+
+  .hovered {
+    background-color: #424242;
+  }
 }

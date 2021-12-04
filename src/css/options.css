@@ -34,12 +34,24 @@ legend {
 	margin-bottom: 5px;
 }
 
-button {	
-    max-height: 21px;
+button {
+	max-height: 21px;
 }
 
 .icon {
 	width: 20px;
 	padding-right: 5px;
 	vertical-align: bottom;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: #282828;
+		color: lightgrey;
+	}
+
+	fieldset {
+		border-color: dimgray;
+		box-shadow: #1d1d1d 5px 5px
+	}
 }
