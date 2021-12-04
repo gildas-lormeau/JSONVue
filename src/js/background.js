@@ -40,7 +40,7 @@ async function init() {
 }
 
 function copyText(tab, value) {
-	chrome.tabs.sendMessage(tab.id, { copy: true, value });
+	chrome.tabs.sendMessage(tab.id, { copyText: true, value });
 }
 
 async function migrateSettings() {

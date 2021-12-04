@@ -2,7 +2,7 @@
 
 let collapsers, jsonObject, jsonSelector, selectedLI, hoveredLI, originalBody;
 chrome.runtime.onMessage.addListener(message => {
-	if (message.copy) {
+	if (message.copyText) {
 		copyText(message.value);
 	}
 });
