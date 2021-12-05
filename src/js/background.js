@@ -1,4 +1,4 @@
-/* global chrome, fetch, chrome, Worker, localStorage */
+/* global chrome, fetch, Worker, localStorage */
 
 const MENU_ID_COPY_PATH = "copy-path";
 const MENU_ID_COPY_VALUE = "copy-value";
