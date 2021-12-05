@@ -170,6 +170,7 @@ function onToggle(event) {
 	if (target.className == "collapser") {
 		const collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
 		collapsed.parentNode.classList.toggle(CLASS_COLLAPSED);
+		event.stopImmediatePropagation();
 	}
 }
 
