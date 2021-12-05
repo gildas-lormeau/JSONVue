@@ -67,34 +67,34 @@ async function migrateSettings() {
 	await Promise.all(promises);
 }
 
-async function onMessage(message, sendResponse) {
+async function onMessage(message, resolve) {
 	const json = message.json;
 	if (message.setSetting) {
 		await setSetting(message.name, message.value);
-		sendResponse({});
+		resolve({});
 	}
 	if (message.getSettings) {
 		const settings = await getSettings();
-		sendResponse(settings);
+		resolve(settings);
 	}
 	if (message.refreshMenuEntry) {
 		await refreshMenuEntry();
-		sendResponse({});
+		resolve({});
 	}
 	if (message.init) {
-		sendResponse({ options: (await getSettings()).options || {} });
+		resolve({ options: (await getSettings()).options || {} });
 	}
 	if (message.copyPropertyPath) {
 		copiedPath = message.path;
 		copiedValue = message.value;
-		sendResponse({});
+		resolve({});
 	}
 	if (message.jsonToHTML) {
 		const result = await formatHTML(json, message.functionName, message.offset);
 		if (result.html) {
 			result.theme = (await getSettings()).theme;
 		}
-		sendResponse(result);
+		resolve(result);
 	}
 }
 
