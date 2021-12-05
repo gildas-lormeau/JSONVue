@@ -4,6 +4,12 @@ const CLASS_COLLAPSED = "collapsed";
 const CLASS_HOVERED = "hovered";
 const CLASS_SELECTED = "selected";
 const TAG_LIST_ITEM = "LI";
+const TITLE_OPEN_COLLAPSIBLES = "expand all";
+const LABEL_OPEN_COLLAPSIBLES = "+";
+const TITLE_CLOSE_COLLAPSIBLES = "reduce all";
+const LABEL_CLOSE_COLLAPSIBLES = "-";
+const TITLE_VIEW_SOURCE = "view unformatted source";
+const LABEL_VIEW_SOURCE = "view source";
 
 let collapserElements, statusElement, jsonObject, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody;
 chrome.runtime.onMessage.addListener(message => {
@@ -138,12 +144,12 @@ function displayUI(theme, html) {
 	statusElement.className = "status";
 	document.body.appendChild(statusElement);
 	toolboxElement.className = "toolbox";
-	openCollapsiblesElement.title = "expand all";
-	openCollapsiblesElement.innerText = "+";
-	viewSourceElement.title = "view source";
-	viewSourceElement.innerText = "view source";
-	closeCollapsiblesElement.title = "reduce all";
-	closeCollapsiblesElement.innerText = "-";
+	openCollapsiblesElement.title = TITLE_OPEN_COLLAPSIBLES;
+	openCollapsiblesElement.innerText = LABEL_OPEN_COLLAPSIBLES;
+	viewSourceElement.title = TITLE_VIEW_SOURCE;
+	viewSourceElement.innerText = LABEL_VIEW_SOURCE;
+	closeCollapsiblesElement.title = TITLE_CLOSE_COLLAPSIBLES;
+	closeCollapsiblesElement.innerText = LABEL_CLOSE_COLLAPSIBLES;
 	toolboxElement.appendChild(openCollapsiblesElement);
 	toolboxElement.appendChild(viewSourceElement);
 	toolboxElement.appendChild(closeCollapsiblesElement);
