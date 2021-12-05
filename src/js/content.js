@@ -13,17 +13,17 @@ chrome.runtime.onMessage.addListener(message => {
 });
 if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
 	const child = document.body.children.length ? document.body.childNodes[0] : document.body;
-	const data = extractData(child.innerText);
-	if (data) {
+	const jsonInfo = extractJsonInfo(child.innerText);
+	if (jsonInfo) {
 		originalBody = document.body.cloneNode(true);
-		chrome.runtime.sendMessage({ init: true }, options => processData(data, options));
+		chrome.runtime.sendMessage({ init: true }, options => processData(jsonInfo, options));
 	}
 }
 
-function extractData(rawText) {
+function extractJsonInfo(rawText) {
 	const text = rawText.trim();
 	let tokens;
-	if (detectJSON(text)) {
+	if (detectJson(text)) {
 		return {
 			text: rawText,
 			offset: 0
@@ -31,7 +31,7 @@ function extractData(rawText) {
 	} else {
 		tokens = text.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/);
 		if (tokens && tokens[1] && tokens[2]) {
-			if (detectJSON(tokens[2].trim())) {
+			if (detectJson(tokens[2].trim())) {
 				return {
 					fnName: tokens[1],
 					text: tokens[2],
@@ -41,19 +41,19 @@ function extractData(rawText) {
 		}
 	}
 
-	function detectJSON(text) {
+	function detectJson(text) {
 		return ((text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") || (text.charAt(0) == "{" && text.charAt(text.length - 1) == "}"));
 	}
 }
 
-function processData(data, options) {
-	if ((window == top || options.injectInFrame) && data && data.text) {
-		const json = data.text;
+function processData(jsonInfo, options) {
+	if ((window == top || options.injectInFrame) && jsonInfo && jsonInfo.text) {
+		const json = jsonInfo.text;
 		chrome.runtime.sendMessage({
 			jsonToHTML: true,
 			json,
-			fnName: data.fnName,
-			offset: data.offset
+			fnName: jsonInfo.fnName,
+			offset: jsonInfo.offset
 		}, result => {
 			if (result.html) {
 				displayUI(result.theme, result.html);
