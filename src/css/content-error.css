@@ -1,12 +1,12 @@
 .error-position {
 	display: inline-block;
+	vertical-align: middle;
 	color: fireBrick;
 	padding-left: 3px;
 	padding-right: 3px;
 }
 
 .error-position img {
-	padding-right: 3px;
 	height: .8em;
 }
 
