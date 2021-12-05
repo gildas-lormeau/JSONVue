@@ -26,6 +26,11 @@ init();
 async function init() {
 	extensionReady = migrateSettings();
 	const settings = await getSettings();
+	await initDefaultSettings(settings);
+	await refreshMenuEntry();
+}
+
+async function initDefaultSettings(settings) {
 	if (!settings.options) {
 		settings.options = {};
 	}
@@ -37,7 +42,6 @@ async function init() {
 		const theme = await getDefaultTheme();
 		await setSetting("theme", theme);
 	}
-	await refreshMenuEntry();
 }
 
 function copyText(tab, value) {
