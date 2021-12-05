@@ -442,7 +442,6 @@ if (typeof module !== 'undefined' && require.main === module) {
 }
 
 addEventListener("message", function(event) {
-	var errorMessage;
 	try {
 		jsonlint.parse(event.data);
 	} catch (errorMessage) {
