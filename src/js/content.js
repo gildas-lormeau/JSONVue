@@ -278,7 +278,6 @@ function copyText(value) {
 	document.execCommand(command);
 	document.removeEventListener(command, listener);
 
-
 	function listener(event) {
 		event.clipboardData.setData("text/plain", value);
 		event.preventDefault();
