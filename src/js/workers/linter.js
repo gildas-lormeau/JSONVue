@@ -41,7 +41,6 @@ var jsonlint = (function () {
 				case 5: this.$ = false;
 					break;
 				case 6: return this.$ = $$[$0 - 1];
-					break;
 				case 13: this.$ = {};
 					break;
 				case 14: this.$ = $$[$0 - 1];
@@ -110,6 +109,7 @@ var jsonlint = (function () {
 			}
 
 			var symbol, preErrorSymbol, state, action, r, yyval = {}, p, len, newState, expected;
+			// eslint-disable-next-line no-constant-condition
 			while (true) {
 				// retreive state number from top of stack
 				state = stack[stack.length - 1];
@@ -159,7 +159,8 @@ var jsonlint = (function () {
 					}
 
 					// try to recover from error
-					while (1) {
+					// eslint-disable-next-line no-constant-condition
+					while (true) {
 						// check for error recovery rule in this state
 						if ((TERROR.toString()) in table[state]) {
 							break;
@@ -246,8 +247,6 @@ var jsonlint = (function () {
 				}
 
 			}
-
-			return true;
 		}
 	};
 	/* Jison generated lexer */
@@ -388,34 +387,22 @@ var jsonlint = (function () {
 			switch ($avoiding_name_collisions) {
 				case 0:/* skip whitespace */
 					break;
-				case 1: return 6;
-					break;
+				case 1: return 6;					
 				case 2: yy_.yytext = yy_.yytext.substr(1, yy_.yyleng - 2); return 4;
-					break;
 				case 3: return 17;
-					break;
 				case 4: return 18;
-					break;
 				case 5: return 23;
-					break;
 				case 6: return 24;
-					break;
 				case 7: return 22;
-					break;
 				case 8: return 21;
-					break;
 				case 9: return 10;
-					break;
 				case 10: return 11;
-					break;
 				case 11: return 8;
-					break;
 				case 12: return 14;
-					break;
 				case 13: return "INVALID";
-					break;
 			}
 		};
+		// eslint-disable-next-line no-control-regex
 		lexer.rules = [/^(?:\s+)/, /^(?:(-?([0-9]|[1-9][0-9]+))(\.[0-9]+)?([eE][-+]?[0-9]+)?\b)/, /^(?:"(?:\\[\\"bfnrt/]|\\u[a-fA-F0-9]{4}|[^\\\0-\x09\x0a-\x1f"])*")/, /^(?:\{)/, /^(?:\})/, /^(?:\[)/, /^(?:\])/, /^(?:,)/, /^(?::)/, /^(?:true\b)/, /^(?:false\b)/, /^(?:null\b)/, /^(?:$)/, /^(?:.)/];
 		lexer.conditions = { "INITIAL": { "rules": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], "inclusive": true } };
 
