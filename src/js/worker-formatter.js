@@ -70,14 +70,14 @@ function objectToHTML(json) {
 	return output;
 }
 
-function jsonToHTML(json, fnName) {
+function jsonToHTML(json, functionName) {
 	let output = "";
-	if (fnName)
-		output += "<div class=\"callback-function\">" + htmlEncode(fnName) + "(</div>";
+	if (functionName)
+		output += "<div class=\"callback-function\">" + htmlEncode(functionName) + "(</div>";
 	output += "<div id=\"json\">";
 	output += valueToHTML(json);
 	output += "</div>";
-	if (fnName)
+	if (functionName)
 		output += "<div class=\"callback-function\">)</div>";
 	return output;
 }
@@ -94,6 +94,6 @@ addEventListener("message", event => {
 	}
 	postMessage({
 		onjsonToHTML: true,
-		html: jsonToHTML(object, event.data.fnName)
+		html: jsonToHTML(object, event.data.functionName)
 	});
 }, false);

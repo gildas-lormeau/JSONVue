@@ -87,7 +87,7 @@ async function onMessage(message, sendResponse) {
 		copiedValue = message.value;
 	}
 	if (message.jsonToHTML) {
-		const result = await formatHTML(json, message.fnName, message.offset);
+		const result = await formatHTML(json, message.functionName, message.offset);
 		if (result.html) {
 			result.theme = (await getSettings()).theme;
 		}
@@ -95,12 +95,12 @@ async function onMessage(message, sendResponse) {
 	}
 }
 
-function formatHTML(json, fnName, offset) {
+function formatHTML(json, functionName, offset) {
 	return new Promise(resolve => {
 		const workerFormatter = new Worker("js/worker-formatter.js");
 		let workerJSONLint;
 		workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
-		workerFormatter.postMessage({ json: json, fnName });
+		workerFormatter.postMessage({ json: json, functionName });
 
 		function onWorkerFormatterMessage(event) {
 			const message = event.data;

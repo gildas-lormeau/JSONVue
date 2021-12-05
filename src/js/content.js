@@ -33,7 +33,7 @@ function extractJsonInfo(rawText) {
 		if (tokens && tokens[1] && tokens[2]) {
 			if (detectJson(tokens[2].trim())) {
 				return {
-					fnName: tokens[1],
+					functionName: tokens[1],
 					text: tokens[2],
 					offset: rawText.indexOf(tokens[2])
 				};
@@ -52,7 +52,7 @@ function processData(jsonInfo, options) {
 		chrome.runtime.sendMessage({
 			jsonToHTML: true,
 			json,
-			fnName: jsonInfo.fnName,
+			functionName: jsonInfo.functionName,
 			offset: jsonInfo.offset
 		}, result => {
 			if (result.html) {
