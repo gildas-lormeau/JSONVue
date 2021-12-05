@@ -59,7 +59,7 @@ function processData(data, options) {
 		});
 		try {
 			jsonObject = JSON.parse(json);
-		} catch (e) {
+		} catch (error) {
 			// ignored
 		}
 	}
