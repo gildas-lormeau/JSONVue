@@ -20,6 +20,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 		copyText(tab, JSON.stringify(copiedValue));
 	}
 });
+addMenuEntry(true);
 init();
 
 async function init() {
@@ -125,22 +126,29 @@ async function refreshMenuEntry() {
 	const options = (settings).options;
 	chrome.contextMenus.removeAll();
 	if (options.addContextMenu) {
-		chrome.contextMenus.create({
-			id: MENU_ID_COPY_PATH,
-			title: "Copy path",
-			contexts: ["page", "link"]
-		});
-		chrome.contextMenus.create({
-			id: MENU_ID_COPY_VALUE,
-			title: "Copy value",
-			contexts: ["page", "link"]
-		});
-		chrome.contextMenus.create({
-			id: MENU_ID_COPY_JSON_VALUE,
-			title: "Copy JSON value",
-			contexts: ["page", "link"]
-		});
+		addMenuEntry();
 	}
+}
+
+function addMenuEntry(removeAll) {
+	if (removeAll) {
+		chrome.contextMenus.removeAll();
+	}
+	chrome.contextMenus.create({
+		id: MENU_ID_COPY_PATH,
+		title: "Copy path",
+		contexts: ["page", "link"]
+	});
+	chrome.contextMenus.create({
+		id: MENU_ID_COPY_VALUE,
+		title: "Copy value",
+		contexts: ["page", "link"]
+	});
+	chrome.contextMenus.create({
+		id: MENU_ID_COPY_JSON_VALUE,
+		title: "Copy JSON value",
+		contexts: ["page", "link"]
+	});
 }
 
 async function getDefaultTheme() {
