@@ -1,6 +1,11 @@
 /* global window, document, chrome, location, history, top */
 
-let collapserElements, jsonObject, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody;
+const CLASS_COLLAPSED = "collapsed";
+const CLASS_HOVERED = "hovered";
+const CLASS_SELECTED = "selected";
+const TAG_LIST_ITEM = "LI";
+
+let collapserElements, statusElement, jsonObject, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody;
 chrome.runtime.onMessage.addListener(message => {
 	if (message.copyText) {
 		copyText(message.value);
@@ -114,12 +119,12 @@ function displayError(error, loc, offset) {
 function displayUI(theme, html) {
 	const baseStyleElement = document.createElement("link");
 	const userStyleElement = document.createElement("style");
-	const statusElement = document.createElement("div");
 	const copyPathElement = document.createElement("div");
 	const toolboxElement = document.createElement("div");
 	const expandElement = document.createElement("span");
 	const viewSourceElement = document.createElement("a");
 	const reduceElement = document.createElement("span");
+	statusElement = document.createElement("div");
 	baseStyleElement.rel = "stylesheet";
 	baseStyleElement.type = "text/css";
 	baseStyleElement.href = chrome.runtime.getURL("css/jsonvue-core.css");
@@ -164,16 +169,16 @@ function onToggle(event) {
 	const target = event.target;
 	if (target.className == "collapser") {
 		const collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
-		collapsed.parentNode.classList.toggle("collapsed");
+		collapsed.parentNode.classList.toggle(CLASS_COLLAPSED);
 	}
 }
 
 function onExpandAll() {
-	collapserElements.forEach(collapsed => collapsed.parentNode.classList.remove("collapsed"));
+	collapserElements.forEach(collapsed => collapsed.parentNode.classList.remove(CLASS_COLLAPSED));
 }
 
 function onCollapseAll() {
-	collapserElements.forEach(collapsed => collapsed.parentNode.classList.add("collapsed"));
+	collapserElements.forEach(collapsed => collapsed.parentNode.classList.add(CLASS_COLLAPSED));
 }
 
 function onViewSource() {
@@ -182,16 +187,15 @@ function onViewSource() {
 
 function onMouseMove(event) {
 	if (event.isTrusted) {
-		const statusElement = document.querySelector(".status");
 		jsonPath = "";
 		let element = getParentListItem(event.target);
 		if (element) {
 			jsonSelector = [];
 			if (hoveredListItem) {
-				hoveredListItem.firstChild.classList.remove("hovered");
+				hoveredListItem.firstChild.classList.remove(CLASS_HOVERED);
 			}
 			hoveredListItem = element;
-			element.firstChild.classList.add("hovered");
+			element.firstChild.classList.add(CLASS_HOVERED);
 			do {
 				if (element.parentNode.classList.contains("array")) {
 					const index = [].indexOf.call(element.parentNode.children, element);
@@ -204,13 +208,13 @@ function onMouseMove(event) {
 					jsonSelector.unshift(key);
 				}
 				element = element.parentNode.parentNode.parentNode;
-			} while (element.tagName == "LI");
+			} while (element.tagName == TAG_LIST_ITEM);
 			if (jsonPath.charAt(0) == ".") {
 				jsonPath = jsonPath.substring(1);
 			}
 			statusElement.innerText = jsonPath;
 		} else if (hoveredListItem) {
-			hoveredListItem.firstChild.classList.remove("hovered");
+			hoveredListItem.firstChild.classList.remove(CLASS_HOVERED);
 			hoveredListItem = null;
 			statusElement.innerText = "";
 			jsonSelector = [];
@@ -220,11 +224,11 @@ function onMouseMove(event) {
 
 function onMouseClick(event) {
 	if (selectedListItem) {
-		selectedListItem.firstChild.classList.remove("selected");
+		selectedListItem.firstChild.classList.remove(CLASS_SELECTED);
 	}
 	selectedListItem = getParentListItem(event.target);
 	if (selectedListItem) {
-		selectedListItem.firstChild.classList.add("selected");
+		selectedListItem.firstChild.classList.add(CLASS_SELECTED);
 	}
 }
 
@@ -250,12 +254,12 @@ function onContextMenu(event) {
 }
 
 function getParentListItem(element) {
-	if (element.tagName != "LI") {
-		while (element && element.tagName != "LI") {
+	if (element.tagName != TAG_LIST_ITEM) {
+		while (element && element.tagName != TAG_LIST_ITEM) {
 			element = element.parentNode;
 		}
 	}
-	if (element && element.tagName == "LI") {
+	if (element && element.tagName == TAG_LIST_ITEM) {
 		return element;
 	}
 }
