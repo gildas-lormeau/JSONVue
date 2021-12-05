@@ -2,7 +2,7 @@
 
 const injectInFrameInput = document.getElementById("injectInFrameInput");
 const addContextMenuInput = document.getElementById("addContextMenuInput");
-document.getElementById("open-editor").addEventListener("click", event => {
+document.getElementById("openEditorButton").addEventListener("click", event => {
 	open("css-editor.html", "jsonvue-css-editor");
 	event.stopPropagation();
 }, false);
