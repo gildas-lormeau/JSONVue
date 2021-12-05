@@ -105,7 +105,7 @@ function displayError(error, loc, offset) {
 	errorPositionElement.insertBefore(iconElement, errorPositionElement.firstChild);
 	contentElement.className = "content";
 	closeButtonElement.className = "close-error";
-	closeButtonElement.onclick = () => contentElement.parentElement.removeChild(contentElement);
+	closeButtonElement.addEventListener("click", () => contentElement.parentElement.removeChild(contentElement), false);
 	contentElement.textContent = error;
 	contentElement.appendChild(closeButtonElement);
 	containerElement.className = "container";
