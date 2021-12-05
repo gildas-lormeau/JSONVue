@@ -162,9 +162,9 @@ function displayUI(theme, html) {
 
 function onToggle(event) {
 	const target = event.target;
-	if (event.target.className == "collapser") {
+	if (target.className == "collapser") {
 		const collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
-		collapsed.parentNode.classList.toggle("collapsed");		
+		collapsed.parentNode.classList.toggle("collapsed");
 	}
 }
 
