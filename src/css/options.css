@@ -3,16 +3,13 @@ body {
 }
 
 form {
-	max-width: 320px;
-	margin-top: 10px;
+	margin-top: 0px;
 	margin-left: auto;
 	margin-right: auto;
 }
 
 fieldset {
-	border-width: 1px;
-	border-style: solid;
-	box-shadow: lightgrey 5px 5px;
+	border-width: 0px;
 }
 
 section {
@@ -46,12 +43,7 @@ button {
 
 @media (prefers-color-scheme: dark) {
 	body {
-		background-color: #282828;
+		background-color: #292a2d;
 		color: lightgrey;
-	}
-
-	fieldset {
-		border-color: dimgray;
-		box-shadow: #1d1d1d 5px 5px
 	}
 }
