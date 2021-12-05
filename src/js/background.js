@@ -71,6 +71,7 @@ async function onMessage(message, sendResponse) {
 	const json = message.json;
 	if (message.setSetting) {
 		await setSetting(message.name, message.value);
+		sendResponse({});
 	}
 	if (message.getSettings) {
 		const settings = await getSettings();
@@ -78,6 +79,7 @@ async function onMessage(message, sendResponse) {
 	}
 	if (message.refreshMenuEntry) {
 		await refreshMenuEntry();
+		sendResponse({});
 	}
 	if (message.init) {
 		sendResponse({ options: (await getSettings()).options || {} });
@@ -85,6 +87,7 @@ async function onMessage(message, sendResponse) {
 	if (message.copyPropertyPath) {
 		copiedPath = message.path;
 		copiedValue = message.value;
+		sendResponse({});
 	}
 	if (message.jsonToHTML) {
 		const result = await formatHTML(json, message.functionName, message.offset);
