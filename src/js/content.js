@@ -173,19 +173,11 @@ function onToggle(event) {
 }
 
 function onExpandAll() {
-	collapsers.forEach(collapsed => {
-		if (collapsed.parentNode.classList.contains("collapsed")) {
-			collapsed.parentNode.classList.remove("collapsed");
-		}
-	});
+	collapserElements.forEach(collapsed => collapsed.parentNode.classList.remove("collapsed"));
 }
 
 function onCollapseAll() {
-	collapsers.forEach(collapsed => {
-		if (!collapsed.parentNode.classList.contains("collapsed")) {
-			collapsed.parentNode.classList.add("collapsed");
-		}
-	});
+	collapserElements.forEach(collapsed => collapsed.parentNode.classList.add("collapsed"));
 }
 
 function onViewSource() {
