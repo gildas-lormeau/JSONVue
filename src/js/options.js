@@ -6,7 +6,6 @@ document.getElementById("openEditorButton").addEventListener("click", event => {
 	open("css-editor.html", "jsonvue-css-editor");
 	event.stopPropagation();
 }, false);
-
 chrome.runtime.sendMessage({ getSettings: true }, settings => {
 	const options = settings.options;
 	injectInFrameInput.checked = options.injectInFrame;
