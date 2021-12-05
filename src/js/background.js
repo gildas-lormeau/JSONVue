@@ -6,7 +6,7 @@ const MENU_ID_COPY_JSON_VALUE = "copy-json-value";
 
 let extensionReady, copiedPath, copiedValue;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	onMessage(message, sendResponse);
+	onMessage(message).then(sendResponse);
 	return true;
 });
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -67,34 +67,34 @@ async function migrateSettings() {
 	await Promise.all(promises);
 }
 
-async function onMessage(message, resolve) {
+async function onMessage(message) {
 	const json = message.json;
 	if (message.setSetting) {
 		await setSetting(message.name, message.value);
-		resolve({});
+		return {};
 	}
 	if (message.getSettings) {
 		const settings = await getSettings();
-		resolve(settings);
+		return settings;
 	}
 	if (message.refreshMenuEntry) {
 		await refreshMenuEntry();
-		resolve({});
+		return {};
 	}
 	if (message.init) {
-		resolve({ options: (await getSettings()).options || {} });
+		return { options: (await getSettings()).options || {} };
 	}
 	if (message.copyPropertyPath) {
 		copiedPath = message.path;
 		copiedValue = message.value;
-		resolve({});
+		return {};
 	}
 	if (message.jsonToHTML) {
 		const result = await formatHTML(json, message.functionName, message.offset);
 		if (result.html) {
 			result.theme = (await getSettings()).theme;
 		}
-		resolve(result);
+		return result;
 	}
 }
 
