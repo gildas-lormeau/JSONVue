@@ -57,16 +57,16 @@ function processData(jsonInfo, options) {
 		}, result => {
 			if (result.html) {
 				displayUI(result.theme, result.html);
+				try {
+					jsonObject = JSON.parse(json);
+				} catch (error) {
+					// ignored
+				}
 			}
 			if (result.error) {
 				displayError(result.error, result.loc, result.offset);
 			}
 		});
-		try {
-			jsonObject = JSON.parse(json);
-		} catch (error) {
-			// ignored
-		}
 	}
 }
 
