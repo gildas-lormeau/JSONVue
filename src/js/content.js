@@ -148,13 +148,13 @@ function displayUI(theme, html) {
 	toolboxElement.appendChild(viewSourceElement);
 	toolboxElement.appendChild(reduceElement);
 	document.body.appendChild(toolboxElement);
-	document.body.addEventListener("click", onToggle, false);
+	document.body.addEventListener("click", onToggleCollapsible, false);
 	document.body.addEventListener("mouseover", onMouseMove, false);
 	document.body.addEventListener("click", onMouseClick, false);
 	document.body.addEventListener("contextmenu", onContextMenu, false);
-	expandElement.addEventListener("click", onExpandAll, false);
+	expandElement.addEventListener("click", onOpenCollapsibles, false);
 	viewSourceElement.addEventListener("click", onViewSource, false);
-	reduceElement.addEventListener("click", onCollapseAll, false);
+	reduceElement.addEventListener("click", onCloseCollapsibles, false);
 	copyPathElement.addEventListener("click", event => {
 		if (event.isTrusted) {
 			chrome.runtime.sendMessage({
@@ -165,7 +165,7 @@ function displayUI(theme, html) {
 	}, false);
 }
 
-function onToggle(event) {
+function onToggleCollapsible(event) {
 	if (event.isTrusted) {
 		const target = event.target;
 		if (target.className == "collapser") {
@@ -176,13 +176,13 @@ function onToggle(event) {
 	}
 }
 
-function onExpandAll(event) {
+function onOpenCollapsibles(event) {
 	if (event.isTrusted) {
 		collapserElements.forEach(collapsed => collapsed.parentNode.classList.remove(CLASS_COLLAPSED));
 	}
 }
 
-function onCollapseAll(event) {
+function onCloseCollapsibles(event) {
 	if (event.isTrusted) {
 		collapserElements.forEach(collapsed => collapsed.parentNode.classList.add(CLASS_COLLAPSED));
 	}
