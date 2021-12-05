@@ -164,11 +164,7 @@ function onToggle(event) {
 	const target = event.target;
 	if (event.target.className == "collapser") {
 		const collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
-		if (collapsed.parentNode.classList.contains("collapsed")) {
-			collapsed.parentNode.classList.remove("collapsed");
-		} else {
-			collapsed.parentNode.classList.add("collapsed");
-		}
+		collapsed.parentNode.classList.toggle("collapsed");		
 	}
 }
 
