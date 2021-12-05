@@ -1,6 +1,6 @@
 /* global window, document, chrome, location, history, top */
 
-let collapsers, jsonObject, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody;
+let collapserElements, jsonObject, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody;
 chrome.runtime.onMessage.addListener(message => {
 	if (message.copyText) {
 		copyText(message.value);
@@ -76,7 +76,7 @@ function displayError(error, loc, offset) {
 	const container = document.createElement("div");
 	const closeButton = document.createElement("div");
 	const ranges = [];
-	let startRange = 0, indexRange = 0, endRange;
+	let startRange = 0, indexRange = 0;
 	link.rel = "stylesheet";
 	link.type = "text/css";
 	link.href = chrome.runtime.getURL("css/content-error.css");
@@ -87,7 +87,7 @@ function displayError(error, loc, offset) {
 		startRange = indexRange + 1;
 	}
 	startRange = ranges[loc.first_line - 1] + loc.first_column + offset;
-	endRange = ranges[loc.last_line - 1] + loc.last_column + offset;
+	const endRange = ranges[loc.last_line - 1] + loc.last_column + offset;
 	range.setStart(pre, startRange);
 	if (startRange == endRange - 1) {
 		range.setEnd(pre, startRange);
@@ -113,30 +113,30 @@ function displayError(error, loc, offset) {
 
 function displayUI(theme, html) {
 	const baseStyleElement = document.createElement("link");
+	const userStyleElement = document.createElement("style");
+	const statusElement = document.createElement("div");
+	const copyPathElement = document.createElement("div");
+	const toolboxElement = document.createElement("div");
+	const expandElement = document.createElement("span");
+	const viewSourceElement = document.createElement("a");
+	const reduceElement = document.createElement("span");
 	baseStyleElement.rel = "stylesheet";
 	baseStyleElement.type = "text/css";
 	baseStyleElement.href = chrome.runtime.getURL("css/jsonvue-core.css");
 	document.head.appendChild(baseStyleElement);
-	const userStyleElement = document.createElement("style");
 	userStyleElement.appendChild(document.createTextNode(theme));
 	document.head.appendChild(userStyleElement);
 	document.body.innerHTML = html;
-	collapsers = document.querySelectorAll("#json .collapsible .collapsible");
-	const statusElement = document.createElement("div");
+	collapserElements = document.querySelectorAll("#json .collapsible .collapsible");
 	statusElement.className = "status";
-	const copyPathElement = document.createElement("div");
 	copyPathElement.className = "copy-path";
 	statusElement.appendChild(copyPathElement);
 	document.body.appendChild(statusElement);
-	const toolboxElement = document.createElement("div");
 	toolboxElement.className = "toolbox";
-	const expandElement = document.createElement("span");
 	expandElement.title = "expand all";
 	expandElement.innerText = "+";
-	const viewSourceElement = document.createElement("a");
 	viewSourceElement.title = "view source";
 	viewSourceElement.innerText = "view source";
-	const reduceElement = document.createElement("span");
 	reduceElement.title = "reduce all";
 	reduceElement.innerText = "-";
 	toolboxElement.appendChild(expandElement);
