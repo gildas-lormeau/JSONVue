@@ -1,4 +1,4 @@
-/* global window, document, chrome, location, history, top */
+/* global window, document, chrome, top */
 
 const CLASS_COLLAPSED = "collapsed";
 const CLASS_HOVERED = "hovered";
@@ -100,7 +100,6 @@ function displayError(error, loc, offset) {
 		range.setEnd(preElement, endRange);
 	}
 	errorPositionElement.className = "error-position";
-	errorPositionElement.id = "error-position";
 	range.surroundContents(errorPositionElement);
 	iconElement.src = chrome.runtime.getURL("resources/error-icon.gif");
 	errorPositionElement.insertBefore(iconElement, errorPositionElement.firstChild);
@@ -112,8 +111,6 @@ function displayError(error, loc, offset) {
 	containerElement.className = "container";
 	containerElement.appendChild(contentElement);
 	errorPositionElement.parentNode.insertBefore(containerElement, errorPositionElement.nextSibling);
-	location.hash = "error-position";
-	history.replaceState({}, "", "#");
 }
 
 function displayUI(theme, html) {
