@@ -71,47 +71,47 @@ function processData(data, options) {
 }
 
 function displayError(error, loc, offset) {
-	const link = document.createElement("link");
-	const pre = document.body.firstChild.firstChild;
-	const text = pre.textContent.substring(offset);
+	const linkElement = document.createElement("link");
+	const preElement = document.body.firstChild.firstChild;
+	const textElement = preElement.textContent.substring(offset);
+	const iconElement = document.createElement("img");
+	const contentElement = document.createElement("div");
+	const errorPositionElement = document.createElement("span");
+	const containerElement = document.createElement("div");
+	const closeButtonElement = document.createElement("div");
 	const range = document.createRange();
-	const imgError = document.createElement("img");
-	const content = document.createElement("div");
-	const errorPosition = document.createElement("span");
-	const container = document.createElement("div");
-	const closeButton = document.createElement("div");
 	const ranges = [];
 	let startRange = 0, indexRange = 0;
-	link.rel = "stylesheet";
-	link.type = "text/css";
-	link.href = chrome.runtime.getURL("css/content-error.css");
-	document.head.appendChild(link);
+	linkElement.rel = "stylesheet";
+	linkElement.type = "text/css";
+	linkElement.href = chrome.runtime.getURL("css/content-error.css");
+	document.head.appendChild(linkElement);
 	while (indexRange != -1) {
-		indexRange = text.indexOf("\n", startRange);
+		indexRange = textElement.indexOf("\n", startRange);
 		ranges.push(startRange);
 		startRange = indexRange + 1;
 	}
 	startRange = ranges[loc.first_line - 1] + loc.first_column + offset;
 	const endRange = ranges[loc.last_line - 1] + loc.last_column + offset;
-	range.setStart(pre, startRange);
+	range.setStart(preElement, startRange);
 	if (startRange == endRange - 1) {
-		range.setEnd(pre, startRange);
+		range.setEnd(preElement, startRange);
 	} else {
-		range.setEnd(pre, endRange);
+		range.setEnd(preElement, endRange);
 	}
-	errorPosition.className = "error-position";
-	errorPosition.id = "error-position";
-	range.surroundContents(errorPosition);
-	imgError.src = chrome.runtime.getURL("resources/error-icon.gif");
-	errorPosition.insertBefore(imgError, errorPosition.firstChild);
-	content.className = "content";
-	closeButton.className = "close-error";
-	closeButton.onclick = () => content.parentElement.removeChild(content);
-	content.textContent = error;
-	content.appendChild(closeButton);
-	container.className = "container";
-	container.appendChild(content);
-	errorPosition.parentNode.insertBefore(container, errorPosition.nextSibling);
+	errorPositionElement.className = "error-position";
+	errorPositionElement.id = "error-position";
+	range.surroundContents(errorPositionElement);
+	iconElement.src = chrome.runtime.getURL("resources/error-icon.gif");
+	errorPositionElement.insertBefore(iconElement, errorPositionElement.firstChild);
+	contentElement.className = "content";
+	closeButtonElement.className = "close-error";
+	closeButtonElement.onclick = () => contentElement.parentElement.removeChild(contentElement);
+	contentElement.textContent = error;
+	contentElement.appendChild(closeButtonElement);
+	containerElement.className = "container";
+	containerElement.appendChild(contentElement);
+	errorPositionElement.parentNode.insertBefore(containerElement, errorPositionElement.nextSibling);
 	location.hash = "error-position";
 	history.replaceState({}, "", "#");
 }
