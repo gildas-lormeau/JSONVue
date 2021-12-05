@@ -235,21 +235,16 @@ function onMouseClick(event) {
 function onContextMenu(event) {
 	if (event.isTrusted) {
 		const currentListItem = getParentListItem(event.target);
+		let value = jsonObject, path = "";
 		if (currentListItem) {
-			let value = jsonObject;
 			jsonSelector.forEach(propertyName => value = value[propertyName]);
-			chrome.runtime.sendMessage({
-				copyPropertyPath: true,
-				path: jsonPath,
-				value: typeof value == "object" ? JSON.stringify(value) : value
-			});
-		} else {
-			chrome.runtime.sendMessage({
-				copyPropertyPath: true,
-				path: "",
-				value: typeof jsonObject == "object" ? JSON.stringify(jsonObject) : jsonObject
-			});
+			path = jsonPath;
 		}
+		chrome.runtime.sendMessage({
+			copyPropertyPath: true,
+			path,
+			value: typeof value == "object" ? JSON.stringify(value) : value
+		});
 	}
 }
 
