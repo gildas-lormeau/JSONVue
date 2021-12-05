@@ -1,9 +1,14 @@
 /* global document, chrome, open */
 
+const injectInFrameInput = document.getElementById("injectInFrameInput");
+const addContextMenuInput = document.getElementById("addContextMenuInput");
+document.getElementById("open-editor").addEventListener("click", event => {
+	open("css-editor.html", "jsonvue-css-editor");
+	event.stopPropagation();
+}, false);
+
 chrome.runtime.sendMessage({ getSettings: true }, settings => {
 	const options = settings.options;
-	const injectInFrameInput = document.getElementById("injectInFrameInput");
-	const addContextMenuInput = document.getElementById("addContextMenuInput");
 	injectInFrameInput.checked = options.injectInFrame;
 	addContextMenuInput.checked = options.addContextMenu;
 	injectInFrameInput.addEventListener("change", () => {
@@ -14,8 +19,4 @@ chrome.runtime.sendMessage({ getSettings: true }, settings => {
 		options.addContextMenu = addContextMenuInput.checked;
 		chrome.runtime.sendMessage({ setSetting: true, refreshMenuEntry: true, name: "options", value: options });
 	});
-	document.getElementById("open-editor").addEventListener("click", event => {
-		open("css-editor.html", "jsonvue-css-editor");
-		event.stopPropagation();
-	}, false);
 });
