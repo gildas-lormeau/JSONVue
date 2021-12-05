@@ -105,12 +105,18 @@ function displayError(error, loc, offset) {
 	errorPositionElement.insertBefore(iconElement, errorPositionElement.firstChild);
 	contentElement.className = "content";
 	closeButtonElement.className = "close-error";
-	closeButtonElement.addEventListener("click", () => contentElement.parentElement.removeChild(contentElement), false);
+	closeButtonElement.addEventListener("click", onCloseError, false);
 	contentElement.textContent = error;
 	contentElement.appendChild(closeButtonElement);
 	containerElement.className = "container";
 	containerElement.appendChild(contentElement);
 	errorPositionElement.parentNode.insertBefore(containerElement, errorPositionElement.nextSibling);
+
+	function onCloseError(event) {
+		if (event.isTrusted) {
+			contentElement.parentElement.removeChild(contentElement);
+		}
+	}
 }
 
 function displayUI(theme, html) {
