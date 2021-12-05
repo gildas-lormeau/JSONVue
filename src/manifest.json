@@ -5,7 +5,7 @@
     "48": "resources/jsonvue48.png",
     "128": "resources/jsonvue128.png"
   },
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Validate and view JSON documents",
   "options_ui": {
     "browser_style": true,
