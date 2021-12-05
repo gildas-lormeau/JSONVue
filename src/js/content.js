@@ -120,9 +120,9 @@ function displayUI(theme, html) {
 	const baseStyleElement = document.createElement("link");
 	const userStyleElement = document.createElement("style");
 	const toolboxElement = document.createElement("div");
-	const expandElement = document.createElement("span");
+	const openCollapsiblesElement = document.createElement("span");
 	const viewSourceElement = document.createElement("a");
-	const reduceElement = document.createElement("span");
+	const closeCollapsiblesElement = document.createElement("span");
 	statusElement = document.createElement("div");
 	baseStyleElement.rel = "stylesheet";
 	baseStyleElement.type = "text/css";
@@ -135,23 +135,23 @@ function displayUI(theme, html) {
 	statusElement.className = "status";
 	document.body.appendChild(statusElement);
 	toolboxElement.className = "toolbox";
-	expandElement.title = "expand all";
-	expandElement.innerText = "+";
+	openCollapsiblesElement.title = "expand all";
+	openCollapsiblesElement.innerText = "+";
 	viewSourceElement.title = "view source";
 	viewSourceElement.innerText = "view source";
-	reduceElement.title = "reduce all";
-	reduceElement.innerText = "-";
-	toolboxElement.appendChild(expandElement);
+	closeCollapsiblesElement.title = "reduce all";
+	closeCollapsiblesElement.innerText = "-";
+	toolboxElement.appendChild(openCollapsiblesElement);
 	toolboxElement.appendChild(viewSourceElement);
-	toolboxElement.appendChild(reduceElement);
+	toolboxElement.appendChild(closeCollapsiblesElement);
 	document.body.appendChild(toolboxElement);
 	document.body.addEventListener("click", onToggleCollapsible, false);
 	document.body.addEventListener("mouseover", onMouseMove, false);
 	document.body.addEventListener("click", onMouseClick, false);
 	document.body.addEventListener("contextmenu", onContextMenu, false);
-	expandElement.addEventListener("click", onOpenCollapsibles, false);
+	openCollapsiblesElement.addEventListener("click", onOpenCollapsibles, false);
 	viewSourceElement.addEventListener("click", onViewSource, false);
-	reduceElement.addEventListener("click", onCloseCollapsibles, false);
+	closeCollapsiblesElement.addEventListener("click", onCloseCollapsibles, false);
 }
 
 function onToggleCollapsible(event) {
