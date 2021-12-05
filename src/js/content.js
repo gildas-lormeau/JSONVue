@@ -166,24 +166,32 @@ function displayUI(theme, html) {
 }
 
 function onToggle(event) {
-	const target = event.target;
-	if (target.className == "collapser") {
-		const collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
-		collapsed.parentNode.classList.toggle(CLASS_COLLAPSED);
-		event.stopImmediatePropagation();
+	if (event.isTrusted) {
+		const target = event.target;
+		if (target.className == "collapser") {
+			const collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
+			collapsed.parentNode.classList.toggle(CLASS_COLLAPSED);
+			event.stopImmediatePropagation();
+		}
 	}
 }
 
-function onExpandAll() {
-	collapserElements.forEach(collapsed => collapsed.parentNode.classList.remove(CLASS_COLLAPSED));
+function onExpandAll(event) {
+	if (event.isTrusted) {
+		collapserElements.forEach(collapsed => collapsed.parentNode.classList.remove(CLASS_COLLAPSED));
+	}
 }
 
-function onCollapseAll() {
-	collapserElements.forEach(collapsed => collapsed.parentNode.classList.add(CLASS_COLLAPSED));
+function onCollapseAll(event) {
+	if (event.isTrusted) {
+		collapserElements.forEach(collapsed => collapsed.parentNode.classList.add(CLASS_COLLAPSED));
+	}
 }
 
-function onViewSource() {
-	document.body.replaceWith(originalBody);
+function onViewSource(event) {
+	if (event.isTrusted) {
+		document.body.replaceWith(originalBody);
+	}
 }
 
 function onMouseMove(event) {
@@ -224,15 +232,17 @@ function onMouseMove(event) {
 }
 
 function onMouseClick(event) {
-	const previousSelectedListItem = selectedListItem;
-	if (selectedListItem) {
-		selectedListItem.firstChild.classList.remove(CLASS_SELECTED);
-		selectedListItem = null;
-	}
-	const newSelectedListItem = getParentListItem(event.target);
-	if (newSelectedListItem && previousSelectedListItem != newSelectedListItem) {
-		selectedListItem = newSelectedListItem;
-		selectedListItem.firstChild.classList.add(CLASS_SELECTED);
+	if (event.isTrusted) {
+		const previousSelectedListItem = selectedListItem;
+		if (selectedListItem) {
+			selectedListItem.firstChild.classList.remove(CLASS_SELECTED);
+			selectedListItem = null;
+		}
+		const newSelectedListItem = getParentListItem(event.target);
+		if (newSelectedListItem && previousSelectedListItem != newSelectedListItem) {
+			selectedListItem = newSelectedListItem;
+			selectedListItem.firstChild.classList.add(CLASS_SELECTED);
+		}
 	}
 }
 
