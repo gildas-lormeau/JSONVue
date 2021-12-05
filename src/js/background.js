@@ -97,8 +97,8 @@ async function onMessage(message, sendResponse) {
 
 function formatHTML(json, functionName, offset) {
 	return new Promise(resolve => {
-		const workerFormatter = new Worker("js/worker-formatter.js");
-		let workerJSONLint;
+		const workerFormatter = new Worker("js/workers/formatter.js");
+		let workerLinter;
 		workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
 		workerFormatter.postMessage({ json: json, functionName });
 
@@ -110,16 +110,16 @@ function formatHTML(json, functionName, offset) {
 				resolve({ html: message.html });
 			}
 			if (message.error) {
-				workerJSONLint = new Worker("js/worker-JSONLint.js");
-				workerJSONLint.addEventListener("message", onWorkerJSONLintMessage, false);
-				workerJSONLint.postMessage(json);
+				workerLinter = new Worker("js/workers/linter.js");
+				workerLinter.addEventListener("message", onWorkerLinterMessage, false);
+				workerLinter.postMessage(json);
 			}
 		}
 
-		function onWorkerJSONLintMessage(event) {
+		function onWorkerLinterMessage(event) {
 			const message = JSON.parse(event.data);
-			workerJSONLint.removeEventListener("message", onWorkerJSONLintMessage, false);
-			workerJSONLint.terminate();
+			workerLinter.removeEventListener("message", onWorkerLinterMessage, false);
+			workerLinter.terminate();
 			resolve({ error: message.error, loc: message.loc, offset });
 		}
 	});
