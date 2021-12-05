@@ -1,6 +1,6 @@
 /* global window, document, chrome, location, history, top */
 
-let collapsers, jsonObject, jsonSelector, selectedLI, hoveredLI, originalBody;
+let collapsers, jsonObject, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody;
 chrome.runtime.onMessage.addListener(message => {
 	if (message.copyText) {
 		copyText(message.value);
@@ -195,37 +195,35 @@ function onViewSource() {
 function onMouseMove(event) {
 	if (event.isTrusted) {
 		const statusElement = document.querySelector(".status");
-		let str = "";
-		let element = getParentLI(event.target);
+		jsonPath = "";
+		let element = getParentListItem(event.target);
 		if (element) {
 			jsonSelector = [];
-			if (hoveredLI) {
-				hoveredLI.firstChild.classList.remove("hovered");
+			if (hoveredListItem) {
+				hoveredListItem.firstChild.classList.remove("hovered");
 			}
-			hoveredLI = element;
+			hoveredListItem = element;
 			element.firstChild.classList.add("hovered");
 			do {
 				if (element.parentNode.classList.contains("array")) {
 					const index = [].indexOf.call(element.parentNode.children, element);
-					str = "[" + index + "]" + str;
+					jsonPath = "[" + index + "]" + jsonPath;
 					jsonSelector.unshift(index);
 				}
 				if (element.parentNode.classList.contains("obj")) {
 					const key = element.firstChild.firstChild.innerText;
-					str = "." + key + str;
+					jsonPath = "." + key + jsonPath;
 					jsonSelector.unshift(key);
 				}
 				element = element.parentNode.parentNode.parentNode;
 			} while (element.tagName == "LI");
-			if (str.charAt(0) == ".") {
-				str = str.substring(1);
+			if (jsonPath.charAt(0) == ".") {
+				jsonPath = jsonPath.substring(1);
 			}
-			statusElement.innerText = str;
-			return;
-		}
-		if (hoveredLI) {
-			hoveredLI.firstChild.classList.remove("hovered");
-			hoveredLI = null;
+			statusElement.innerText = jsonPath;
+		} else if (hoveredListItem) {
+			hoveredListItem.firstChild.classList.remove("hovered");
+			hoveredListItem = null;
 			statusElement.innerText = "";
 			jsonSelector = [];
 		}
@@ -233,25 +231,24 @@ function onMouseMove(event) {
 }
 
 function onMouseClick(event) {
-	if (selectedLI) {
-		selectedLI.firstChild.classList.remove("selected");
+	if (selectedListItem) {
+		selectedListItem.firstChild.classList.remove("selected");
 	}
-	selectedLI = getParentLI(event.target);
-	if (selectedLI) {
-		selectedLI.firstChild.classList.add("selected");
+	selectedListItem = getParentListItem(event.target);
+	if (selectedListItem) {
+		selectedListItem.firstChild.classList.add("selected");
 	}
 }
 
 function onContextMenu(event) {
 	if (event.isTrusted) {
-		const currentLI = getParentLI(event.target);
-		const statusElement = document.querySelector(".status");
-		if (currentLI) {
+		const currentListItem = getParentListItem(event.target);
+		if (currentListItem) {
 			let value = jsonObject;
 			jsonSelector.forEach(propertyName => value = value[propertyName]);
 			chrome.runtime.sendMessage({
 				copyPropertyPath: true,
-				path: statusElement.innerText,
+				path: jsonPath,
 				value: typeof value == "object" ? JSON.stringify(value) : value
 			});
 		} else {
@@ -264,7 +261,7 @@ function onContextMenu(event) {
 	}
 }
 
-function getParentLI(element) {
+function getParentListItem(element) {
 	if (element.tagName != "LI") {
 		while (element && element.tagName != "LI") {
 			element = element.parentNode;
