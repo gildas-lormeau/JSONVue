@@ -119,7 +119,6 @@ function displayError(error, loc, offset) {
 function displayUI(theme, html) {
 	const baseStyleElement = document.createElement("link");
 	const userStyleElement = document.createElement("style");
-	const copyPathElement = document.createElement("div");
 	const toolboxElement = document.createElement("div");
 	const expandElement = document.createElement("span");
 	const viewSourceElement = document.createElement("a");
@@ -134,8 +133,6 @@ function displayUI(theme, html) {
 	document.body.innerHTML = html;
 	collapserElements = document.querySelectorAll("#json .collapsible .collapsible");
 	statusElement.className = "status";
-	copyPathElement.className = "copy-path";
-	statusElement.appendChild(copyPathElement);
 	document.body.appendChild(statusElement);
 	toolboxElement.className = "toolbox";
 	expandElement.title = "expand all";
@@ -155,14 +152,6 @@ function displayUI(theme, html) {
 	expandElement.addEventListener("click", onOpenCollapsibles, false);
 	viewSourceElement.addEventListener("click", onViewSource, false);
 	reduceElement.addEventListener("click", onCloseCollapsibles, false);
-	copyPathElement.addEventListener("click", event => {
-		if (event.isTrusted) {
-			chrome.runtime.sendMessage({
-				copyPropertyPath: true,
-				path: statusElement.innerText
-			});
-		}
-	}, false);
 }
 
 function onToggleCollapsible(event) {
