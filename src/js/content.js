@@ -224,11 +224,14 @@ function onMouseMove(event) {
 }
 
 function onMouseClick(event) {
+	const previousSelectedListItem = selectedListItem;
 	if (selectedListItem) {
 		selectedListItem.firstChild.classList.remove(CLASS_SELECTED);
+		selectedListItem = null;
 	}
-	selectedListItem = getParentListItem(event.target);
-	if (selectedListItem) {
+	const newSelectedListItem = getParentListItem(event.target);
+	if (newSelectedListItem && previousSelectedListItem != newSelectedListItem) {
+		selectedListItem = newSelectedListItem;
 		selectedListItem.firstChild.classList.add(CLASS_SELECTED);
 	}
 }
