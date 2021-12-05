@@ -23,7 +23,7 @@ if (document.body && (document.body.childNodes[0] && document.body.childNodes[0]
 function extractData(rawText) {
 	const text = rawText.trim();
 	let tokens;
-	if (test(text)) {
+	if (detectJSON(text)) {
 		return {
 			text: rawText,
 			offset: 0
@@ -31,7 +31,7 @@ function extractData(rawText) {
 	} else {
 		tokens = text.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/);
 		if (tokens && tokens[1] && tokens[2]) {
-			if (test(tokens[2].trim())) {
+			if (detectJSON(tokens[2].trim())) {
 				return {
 					fnName: tokens[1],
 					text: tokens[2],
@@ -41,7 +41,7 @@ function extractData(rawText) {
 		}
 	}
 
-	function test(text) {
+	function detectJSON(text) {
 		return ((text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") || (text.charAt(0) == "{" && text.charAt(text.length - 1) == "}"));
 	}
 }
