@@ -21,6 +21,7 @@ body {
 
 .type-string {
   color: green;
+  white-space: pre-wrap;
 }
 
 .callback-function {
@@ -93,6 +94,7 @@ body {
 
   .type-string {
     color: yellowgreen;
+    white-space: pre-wrap;
   }
 
   a {
