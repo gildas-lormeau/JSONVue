@@ -27,15 +27,15 @@ if (document.body && (document.body.childNodes[0] && document.body.childNodes[0]
 }
 
 function extractJsonInfo(rawText) {
-	const text = rawText.trim();
+	rawText = rawText.trim().replace(/^(\)]}', |\)]}',\n)/, "");
 	let tokens;
-	if (detectJson(text)) {
+	if (detectJson(rawText)) {
 		return {
 			text: rawText,
 			offset: 0
 		};
 	} else {
-		tokens = text.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/);
+		tokens = rawText.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/);
 		if (tokens && tokens[1] && tokens[2]) {
 			if (detectJson(tokens[2].trim())) {
 				return {
