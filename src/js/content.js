@@ -10,11 +10,28 @@ const TITLE_CLOSE_COLLAPSIBLES = "collapse all";
 const LABEL_CLOSE_COLLAPSIBLES = "-";
 const TITLE_VIEW_SOURCE = "view unformatted source";
 const LABEL_VIEW_SOURCE = "view source";
+const MENU_ID_COPY_PATH = "copy-path";
+const MENU_ID_COPY_VALUE = "copy-value";
+const MENU_ID_COPY_JSON_VALUE = "copy-json-value";
 
-let collapserElements, statusElement, jsonObject, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody;
+
+let collapserElements, statusElement, jsonObject, copiedSelector, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody;
 chrome.runtime.onMessage.addListener(message => {
-	if (message.copyText) {
-		copyText(message.value);
+	if (message.copy) {
+		if (message.type == MENU_ID_COPY_PATH && jsonPath) {
+			copyText(jsonPath);
+		} else if (message.type == MENU_ID_COPY_VALUE || message.type == MENU_ID_COPY_JSON_VALUE) {
+			let value = jsonObject;
+			copiedSelector.forEach(propertyName => value = value[propertyName]);
+			if (value) {
+				value = JSON.stringify(value);
+				if (message.type == MENU_ID_COPY_VALUE) {
+					copyText(value);
+				} else if (message.type == MENU_ID_COPY_JSON_VALUE) {
+					copyText(JSON.stringify(value));
+				}
+			}
+		}
 	}
 });
 if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
@@ -257,17 +274,7 @@ function onMouseClick(event) {
 
 function onContextMenu(event) {
 	if (event.isTrusted) {
-		const currentListItem = getParentListItem(event.target);
-		let value = jsonObject, path = "";
-		if (currentListItem) {
-			jsonSelector.forEach(propertyName => value = value[propertyName]);
-			path = jsonPath;
-		}
-		chrome.runtime.sendMessage({
-			copyPropertyPath: true,
-			path,
-			value: typeof value == "object" ? JSON.stringify(value) : value
-		});
+		copiedSelector = jsonSelector ? Array.from(jsonSelector) : [];
 	}
 }
 

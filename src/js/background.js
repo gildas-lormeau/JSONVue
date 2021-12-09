@@ -4,22 +4,12 @@ const MENU_ID_COPY_PATH = "copy-path";
 const MENU_ID_COPY_VALUE = "copy-value";
 const MENU_ID_COPY_JSON_VALUE = "copy-json-value";
 
-let extensionReady, copiedPath, copiedValue;
+let extensionReady;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	onMessage(message).then(sendResponse);
 	return true;
 });
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-	if (info.menuItemId == MENU_ID_COPY_PATH && copiedPath !== undefined) {
-		copyText(tab, copiedPath);
-	}
-	if (info.menuItemId == MENU_ID_COPY_VALUE && copiedValue !== undefined) {
-		copyText(tab, copiedValue);
-	}
-	if (info.menuItemId == MENU_ID_COPY_JSON_VALUE && copiedValue !== undefined) {
-		copyText(tab, JSON.stringify(copiedValue));
-	}
-});
+chrome.contextMenus.onClicked.addListener((info, tab) => chrome.tabs.sendMessage(tab.id, { copy: true, type: info.menuItemId }));
 addMenuEntry(true);
 init();
 
@@ -46,10 +36,6 @@ async function initDefaultSettings(settings) {
 		const theme = await getDefaultTheme();
 		await setSetting("theme", theme);
 	}
-}
-
-function copyText(tab, value) {
-	chrome.tabs.sendMessage(tab.id, { copyText: true, value });
 }
 
 async function migrateSettings() {
@@ -87,11 +73,6 @@ async function onMessage(message) {
 	}
 	if (message.init) {
 		return { options: (await getSettings()).options || {} };
-	}
-	if (message.copyPropertyPath) {
-		copiedPath = message.path;
-		copiedValue = message.value;
-		return {};
 	}
 	if (message.jsonToHTML) {
 		const result = await formatHTML(json, message.functionName, message.offset);
