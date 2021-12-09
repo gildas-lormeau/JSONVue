@@ -51,7 +51,7 @@ function extractJsonInfo(rawText) {
 	function detectJson(text) {
 		return (
 			(text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") ||
-			(text.charAt(0) == "{" && text.charAt(1) != "-" && text.charAt(text.length - 1) == "}")
+			(text.charAt(0) == "{" && text.charAt(1) != "-" && text.charAt(1) != "%" && text.charAt(text.length - 1) == "}")
 		);
 	}
 }
