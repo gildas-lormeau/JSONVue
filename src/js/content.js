@@ -22,7 +22,7 @@ if (document.body && (document.body.childNodes[0] && document.body.childNodes[0]
 	const jsonInfo = extractJsonInfo(child.innerText);
 	if (jsonInfo) {
 		originalBody = document.body.cloneNode(true);
-		chrome.runtime.sendMessage({ init: true }, options => processData(jsonInfo, options));
+		chrome.runtime.sendMessage({ init: true }, settings => processData(jsonInfo, settings.options));
 	}
 }
 
@@ -66,7 +66,7 @@ function processData(jsonInfo, options) {
 			offset: jsonInfo.offset
 		}, result => {
 			if (result.html) {
-				displayUI(result.theme, result.html);
+				displayUI(result.theme, result.html, options);
 				try {
 					jsonObject = JSON.parse(json);
 				} catch (error) {
@@ -129,7 +129,7 @@ function displayError(error, loc, offset) {
 	}
 }
 
-function displayUI(theme, html) {
+function displayUI(theme, html, options) {
 	const baseStyleElement = document.createElement("link");
 	const userStyleElement = document.createElement("style");
 	const toolboxElement = document.createElement("div");
@@ -145,6 +145,13 @@ function displayUI(theme, html) {
 	document.head.appendChild(userStyleElement);
 	document.body.innerHTML = html;
 	collapserElements = document.querySelectorAll("#json .collapsible .collapsible");
+	if (options.maxDepthLevelExpanded) {
+		let selectorsCollapsedElements = "#json .collapsible ";
+		for (let indexLevel = 0; indexLevel < options.maxDepthLevelExpanded; indexLevel++) {
+			selectorsCollapsedElements += ".collapsible ";
+		}
+		document.querySelectorAll(selectorsCollapsedElements).forEach(element => element.parentElement.classList.add("collapsed"));
+	}
 	statusElement.className = "status";
 	document.body.appendChild(statusElement);
 	toolboxElement.className = "toolbox";
