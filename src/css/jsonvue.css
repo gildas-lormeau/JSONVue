@@ -1,11 +1,11 @@
 body {
-  white-space: pre;
+  white-space: pre-wrap;
+  word-break: break-word;
   font-family: monospace;
 }
 
 .property {
   font-weight: bold;
-  white-space: pre-wrap;
 }
 
 .type-null {
@@ -22,7 +22,6 @@ body {
 
 .type-string {
   color: green;
-  white-space: pre-wrap;
 }
 
 .callback-function {
