@@ -24,11 +24,11 @@ async function initDefaultSettings(settings) {
 	if (!settings.options) {
 		settings.options = {};
 	}
-	if (settings.options && typeof settings.options.maxDepthLevelExpanded == "undefined") {
+	if (typeof settings.options.maxDepthLevelExpanded == "undefined") {
 		settings.options.maxDepthLevelExpanded = 0;
 		await setSetting("options", settings.options);
 	}
-	if (settings.options && typeof settings.options.addContextMenu == "undefined") {
+	if (typeof settings.options.addContextMenu == "undefined") {
 		settings.options.addContextMenu = true;
 		await setSetting("options", settings.options);
 	}
