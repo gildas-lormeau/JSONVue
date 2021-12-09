@@ -60,3 +60,16 @@ main {
 		max-height: 300px;
 	}
 }
+
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: #282828;
+		color: lightgrey;
+	}
+
+	.CodeMirror {
+		filter: invert(1);
+		background-color: #d7d7d7;
+	}
+}
