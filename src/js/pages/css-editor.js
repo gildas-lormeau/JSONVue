@@ -11,7 +11,7 @@ const previewer = document.getElementById("previewer").contentWindow;
 
 let timeoutOnKey;
 const codemirror = CodeMirror.fromTextArea(editor);
-codemirror.on("keyup", onkeyupEditor);
+codemirror.on("keyup", onKeyUpEditor);
 resetButton.addEventListener("click", resetTheme, false);
 saveButton.addEventListener("click", () => chrome.runtime.sendMessage({ setSetting: true, name: "theme", value: codemirror.getValue() }), false);
 chrome.runtime.sendMessage({ getSettings: true }, init);
@@ -26,7 +26,7 @@ async function resetTheme() {
 	updatePreview();
 }
 
-function onkeyupEditor(editor, event) {
+function onKeyUpEditor(editor, event) {
 	if (PASSIVE_KEYS.indexOf(event.code) == -1) {
 		if (timeoutOnKey) {
 			clearTimeout(timeoutOnKey);
