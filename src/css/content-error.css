@@ -1,13 +1,12 @@
 .error-position {
 	display: inline-block;
 	vertical-align: middle;
+}
+
+.error-position .error-icon {
 	color: fireBrick;
 	padding-left: 3px;
 	padding-right: 3px;
-}
-
-.error-position img {
-	height: .8em;
 }
 
 .container {
@@ -28,10 +27,9 @@
 	box-shadow: #888 3px 3px 5px;
 }
 
-.close-error {
-	background-image: url("/resources/close-icon.gif");
+.close-error::after {
+	content: "✖";
 	width: 16px;
-	height: 16px;
 	position: absolute;
 	top: 3px;
 	right: 3px;
