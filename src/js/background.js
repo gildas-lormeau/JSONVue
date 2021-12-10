@@ -166,7 +166,6 @@ async function getTheme() {
 	return (await Promise.all([
 		(await fetch("/css/content-error.css")).text(),
 		(await fetch("/css/jsonvue-core.css")).text(),
-		(await fetch("/css/jsonvue.css")).text(),
 		(await getSettings()).theme
 	])).join("\n");
 }
