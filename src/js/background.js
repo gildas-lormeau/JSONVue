@@ -1,8 +1,11 @@
-/* global chrome, fetch, Worker, localStorage */
+/* global chrome, fetch, Worker, localStorage, importScripts, formatter, linter */
 
 const MENU_ID_COPY_PATH = "copy-path";
 const MENU_ID_COPY_VALUE = "copy-value";
 const MENU_ID_COPY_JSON_VALUE = "copy-json-value";
+
+importScripts("/js/workers/formatter.js");
+importScripts("/js/workers/linter.js");
 
 let extensionReady;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -85,10 +88,20 @@ async function onMessage(message) {
 
 function formatHTML(json, functionName, offset) {
 	return new Promise(resolve => {
-		const workerFormatter = new Worker("js/workers/formatter.js");
-		let workerLinter;
-		workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
-		workerFormatter.postMessage({ json: json, functionName });
+		let workerFormatter, workerLinter;
+		if (typeof Worker == "undefined") {
+			try {
+				const html = formatter.format(json, functionName);
+				resolve({ html });
+			} catch (error) {
+				const result = linter.lint(json);
+				resolve({ error: result.error, loc: result.loc, offset });
+			}
+		} else {
+			workerFormatter = new Worker("js/workers/formatter.js");
+			workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
+			workerFormatter.postMessage({ json: json, functionName });
+		}
 
 		function onWorkerFormatterMessage(event) {
 			const message = event.data;
