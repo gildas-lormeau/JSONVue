@@ -122,7 +122,7 @@ function formatHTML(json, functionName, offset) {
 		}
 
 		function onWorkerLinterMessage(event) {
-			const message = JSON.parse(event.data);
+			const message = event.data;
 			workerLinter.removeEventListener("message", onWorkerLinterMessage, false);
 			workerLinter.terminate();
 			resolve({ error: message.error, loc: message.loc, offset });
