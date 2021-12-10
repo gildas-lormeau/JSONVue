@@ -51,7 +51,6 @@ li {
 	position: fixed;
 	left: 0px;
 	bottom: 0px;
-	min-width: 628px;
 	border-color: #c2c2c2;
 	border-top-width: 1px;
 	border-right-width: 1px;
@@ -121,5 +120,11 @@ li {
 	.toolbox {
 		background-color: #484848;
 		border-color: #242424;
+	}
+
+	.status {
+		background-color: #484848;
+		border-color: #242424;
+		color: lightgrey;
 	}
 }
