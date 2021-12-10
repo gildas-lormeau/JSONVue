@@ -41,7 +41,7 @@ if (document.body && (document.body.childNodes[0] && document.body.childNodes[0]
 	const jsonInfo = extractJsonInfo(child.innerText);
 	if (jsonInfo) {
 		originalBody = document.body.cloneNode(true);
-		chrome.runtime.sendMessage({ init: true }, settings => processData(jsonInfo, settings.options));
+		chrome.runtime.sendMessage({ init: true }, response => processData(jsonInfo, response.options, response.theme));
 	}
 }
 
@@ -75,7 +75,7 @@ function extractJsonInfo(rawText) {
 	}
 }
 
-function processData(jsonInfo, options) {
+function processData(jsonInfo, options, theme) {
 	if ((window == top || options.injectInFrame) && jsonInfo && jsonInfo.text) {
 		const json = jsonInfo.text;
 		chrome.runtime.sendMessage({
@@ -85,7 +85,7 @@ function processData(jsonInfo, options) {
 			offset: jsonInfo.offset
 		}, result => {
 			if (result.html) {
-				displayUI(result.theme, result.html, options);
+				displayUI(theme, result.html, options);
 				try {
 					jsonObject = JSON.parse(json);
 				} catch (error) {
@@ -93,17 +93,17 @@ function processData(jsonInfo, options) {
 				}
 			}
 			if (result.error) {
-				displayError(result.error, result.loc, result.offset);
+				displayError(theme, result.error, result.loc, result.offset);
 			}
 		});
 	}
 }
 
-function displayError(error, loc, offset) {
-	const linkElement = document.createElement("link");
+function displayError(theme, error, loc, offset) {
+	const userStyleElement = document.createElement("style");
 	const preElement = document.body.firstChild.firstChild;
 	const textElement = preElement.textContent.substring(offset);
-	const iconElement = document.createElement("img");
+	const iconElement = document.createElement("span");
 	const contentElement = document.createElement("div");
 	const errorPositionElement = document.createElement("span");
 	const containerElement = document.createElement("div");
@@ -111,10 +111,8 @@ function displayError(error, loc, offset) {
 	const range = document.createRange();
 	const ranges = [];
 	let startRange = 0, indexRange = 0;
-	linkElement.rel = "stylesheet";
-	linkElement.type = "text/css";
-	linkElement.href = chrome.runtime.getURL("css/content-error.css");
-	document.head.appendChild(linkElement);
+	userStyleElement.appendChild(document.createTextNode(theme));
+	document.head.appendChild(userStyleElement);
 	while (indexRange != -1) {
 		indexRange = textElement.indexOf("\n", startRange);
 		ranges.push(startRange);
@@ -130,7 +128,8 @@ function displayError(error, loc, offset) {
 	}
 	errorPositionElement.className = "error-position";
 	range.surroundContents(errorPositionElement);
-	iconElement.src = chrome.runtime.getURL("resources/error-icon.gif");
+	iconElement.className = "error-icon";
+	iconElement.textContent = "⚠";
 	errorPositionElement.insertBefore(iconElement, errorPositionElement.firstChild);
 	contentElement.className = "content";
 	closeButtonElement.className = "close-error";
@@ -149,17 +148,12 @@ function displayError(error, loc, offset) {
 }
 
 function displayUI(theme, html, options) {
-	const baseStyleElement = document.createElement("link");
 	const userStyleElement = document.createElement("style");
 	const toolboxElement = document.createElement("div");
 	const openCollapsiblesElement = document.createElement("span");
 	const viewSourceElement = document.createElement("a");
 	const closeCollapsiblesElement = document.createElement("span");
 	statusElement = document.createElement("div");
-	baseStyleElement.rel = "stylesheet";
-	baseStyleElement.type = "text/css";
-	baseStyleElement.href = chrome.runtime.getURL("css/jsonvue-core.css");
-	document.head.appendChild(baseStyleElement);
 	userStyleElement.appendChild(document.createTextNode(theme));
 	document.head.appendChild(userStyleElement);
 	document.body.innerHTML = html;

@@ -33,13 +33,6 @@
       "all_frames": true
     }
   ],
-  "web_accessible_resources": [
-    "css/jsonvue.css",
-    "css/jsonvue-core.css",
-    "css/content-error.css",
-    "resources/close-icon.gif",
-    "resources/error-icon.gif"
-  ],
   "permissions": [
     "contextMenus",
     "storage"

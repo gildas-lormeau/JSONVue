@@ -75,13 +75,13 @@ async function onMessage(message) {
 		return {};
 	}
 	if (message.init) {
-		return { options: (await getSettings()).options || {} };
+		return {
+			options: (await getSettings()).options || {},
+			theme: await getTheme()
+		};
 	}
 	if (message.jsonToHTML) {
 		const result = await formatHTML(json, message.functionName, message.offset);
-		if (result.html) {
-			result.theme = (await getSettings()).theme;
-		}
 		return result;
 	}
 }
@@ -157,7 +157,16 @@ function addMenuEntry(removeAll) {
 }
 
 async function getDefaultTheme() {
-	return (await fetch("css/jsonvue.css")).text();
+	return (await fetch("/css/jsonvue.css")).text();
+}
+
+async function getTheme() {
+	return (await Promise.all([
+		(await fetch("/css/content-error.css")).text(),
+		(await fetch("/css/jsonvue-core.css")).text(),
+		(await fetch("/css/jsonvue.css")).text(),
+		(await getSettings()).theme
+	])).join("\n");
 }
 
 async function getSettings() {
