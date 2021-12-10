@@ -113,15 +113,15 @@ async function formatHTML(json, functionName, offset) {
 
 function executeWorker(path, message) {
 	return new Promise((resolve, reject) => {
-		const workerFormatter = new Worker(path);
-		workerFormatter.addEventListener("message", onMessage, false);
-		workerFormatter.addEventListener("error", onError, false);
-		workerFormatter.postMessage(message);
+		const worker = new Worker(path);
+		worker.addEventListener("message", onMessage, false);
+		worker.addEventListener("error", onError, false);
+		worker.postMessage(message);
 
 		function onMessage(event) {
-			workerFormatter.removeEventListener("message", onMessage, false);
-			workerFormatter.addEventListener("error", onError, false);
-			workerFormatter.terminate();
+			worker.removeEventListener("message", onMessage, false);
+			worker.addEventListener("error", onError, false);
+			worker.terminate();
 			resolve(event.data);
 		}
 
