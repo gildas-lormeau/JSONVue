@@ -426,5 +426,5 @@ function lint(json) {
 if (typeof postMessage == "undefined") {
 	globalThis.linter = { lint };
 } else {
-	addEventListener("message", event => postMessage(lint(JSON.stringify(event.data))), false);
+	addEventListener("message", event => postMessage(JSON.stringify(lint(event.data))), false);
 }

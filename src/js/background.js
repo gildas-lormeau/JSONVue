@@ -4,8 +4,10 @@ const MENU_ID_COPY_PATH = "copy-path";
 const MENU_ID_COPY_VALUE = "copy-value";
 const MENU_ID_COPY_JSON_VALUE = "copy-json-value";
 
-importScripts("/js/workers/formatter.js");
-importScripts("/js/workers/linter.js");
+if (typeof Worker == "undefined") {
+	importScripts("/js/workers/formatter.js");
+	importScripts("/js/workers/linter.js");
+}
 
 let extensionReady;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
