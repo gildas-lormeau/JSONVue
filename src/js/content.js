@@ -41,7 +41,7 @@ if (document.body && (document.body.childNodes[0] && document.body.childNodes[0]
 	const jsonInfo = extractJsonInfo(child.innerText);
 	if (jsonInfo) {
 		originalBody = document.body.cloneNode(true);
-		chrome.runtime.sendMessage({ init: true }, response => processData(jsonInfo, response.options, response.theme));
+		chrome.runtime.sendMessage({ init: true }, response => processData(jsonInfo, response.options));
 	}
 }
 
@@ -75,7 +75,7 @@ function extractJsonInfo(rawText) {
 	}
 }
 
-function processData(jsonInfo, options, theme) {
+function processData(jsonInfo, options) {
 	if ((window == top || options.injectInFrame) && jsonInfo && jsonInfo.text) {
 		const json = jsonInfo.text;
 		chrome.runtime.sendMessage({
@@ -85,7 +85,7 @@ function processData(jsonInfo, options, theme) {
 			offset: jsonInfo.offset
 		}, result => {
 			if (result.html) {
-				displayUI(theme, result.html, options);
+				displayUI(result.stylesheet, result.html, options);
 				try {
 					jsonObject = JSON.parse(json);
 				} catch (error) {
@@ -93,7 +93,7 @@ function processData(jsonInfo, options, theme) {
 				}
 			}
 			if (result.error) {
-				displayError(theme, result.error, result.loc, result.offset);
+				displayError(result.stylesheet, result.error, result.loc, result.offset);
 			}
 		});
 	}
@@ -147,14 +147,14 @@ function displayError(theme, error, loc, offset) {
 	}
 }
 
-function displayUI(theme, html, options) {
+function displayUI(stylesheet, html, options) {
 	const userStyleElement = document.createElement("style");
 	const toolboxElement = document.createElement("div");
 	const openCollapsiblesElement = document.createElement("span");
 	const viewSourceElement = document.createElement("a");
 	const closeCollapsiblesElement = document.createElement("span");
 	statusElement = document.createElement("div");
-	userStyleElement.appendChild(document.createTextNode(theme));
+	userStyleElement.appendChild(document.createTextNode(stylesheet));
 	document.head.appendChild(userStyleElement);
 	document.body.innerHTML = html;
 	collapserElements = document.querySelectorAll("#json .collapsible .collapsible");

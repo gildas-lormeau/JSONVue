@@ -74,10 +74,7 @@ async function onMessage(message) {
 		await refreshMenuEntry();
 	}
 	if (message.init) {
-		result = {
-			options: (await getSettings()).options || {},
-			theme: await getTheme()
-		};
+		result = (await getSettings()).options || {};
 	}
 	if (message.jsonToHTML) {
 		result = formatHTML(message.json, message.functionName, message.offset);
@@ -86,21 +83,27 @@ async function onMessage(message) {
 }
 
 async function formatHTML(json, functionName, offset) {
+	const result = await Promise.all([formatHTMLAsync(json, functionName, offset), getContentStylesheet()]);
+	result[0].stylesheet = result[1];
+	return result[0];
+}
+
+async function formatHTMLAsync(json, functionName, offset) {
 	if (WORKER_API_AVAILABLE) {
 		const response = await executeWorker("js/workers/formatter.js", { json: json, functionName });
 		if (response.html) {
 			return { html: response.html };
 		}
 		if (response.error) {
-			const message = await executeWorker("js/workers/linter.js", json);
-			return { error: message.error, loc: message.loc, offset };
+			const response = await executeWorker("js/workers/linter.js", json);
+			return { error: response.error, loc: response.loc, offset };
 		}
 	} else {
 		try {
 			return { html: formatter.format(json, functionName) };
 		} catch (error) {
-			const result = linter.lint(json);
-			return { error: result.error, loc: result.loc, offset };
+			const response = linter.lint(json);
+			return { error: response.error, loc: response.loc, offset };
 		}
 	}
 }
@@ -158,7 +161,7 @@ async function getDefaultTheme() {
 	return (await fetch("/css/jsonvue.css")).text();
 }
 
-async function getTheme() {
+async function getContentStylesheet() {
 	return (await Promise.all([
 		(await fetch("/css/jsonvue-error.css")).text(),
 		(await fetch("/css/jsonvue-core.css")).text(),
