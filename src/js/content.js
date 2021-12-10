@@ -41,7 +41,7 @@ if (document.body && (document.body.childNodes[0] && document.body.childNodes[0]
 	const jsonInfo = extractJsonInfo(child.innerText);
 	if (jsonInfo) {
 		originalBody = document.body.cloneNode(true);
-		chrome.runtime.sendMessage({ init: true }, response => processData(jsonInfo, response.options));
+		chrome.runtime.sendMessage({ init: true }, options => processData(jsonInfo, options));
 	}
 }
 
