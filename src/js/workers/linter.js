@@ -138,7 +138,7 @@ var jsonlint = (function () {
 							errStr = "Parse error on line " + (yylineno + 1) + ":\n" + this.lexer.showPosition() + "\nExpecting " + expected.join(", ") + ", got '" + this.terminals_[symbol] + "'";
 						} else {
 							errStr = "Parse error on line " + (yylineno + 1) + ": Unexpected " +
-                                (symbol == 1 /*EOF*/ ? "end of input" : ("'" + (this.terminals_[symbol] || symbol) + "'"));
+								(symbol == 1 /*EOF*/ ? "end of input" : ("'" + (this.terminals_[symbol] || symbol) + "'"));
 						}
 						this.parseError(errStr,
 							{ text: this.lexer.match, token: this.terminals_[symbol] || symbol, line: this.lexer.yylineno, loc: yyloc, expected: expected });
@@ -387,7 +387,7 @@ var jsonlint = (function () {
 			switch ($avoiding_name_collisions) {
 				case 0:/* skip whitespace */
 					break;
-				case 1: return 6;					
+				case 1: return 6;
 				case 2: yy_.yytext = yy_.yytext.substr(1, yy_.yyleng - 2); return 4;
 				case 3: return 17;
 				case 4: return 18;
