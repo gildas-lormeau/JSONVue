@@ -90,42 +90,43 @@ async function onMessage(message) {
 	}
 }
 
-function formatHTML(json, functionName, offset) {
-	return new Promise(resolve => {
-		let workerFormatter, workerLinter;
-		if (WORKER_API_AVAILABLE) {
-			workerFormatter = new Worker("js/workers/formatter.js");
-			workerFormatter.addEventListener("message", onWorkerFormatterMessage, false);
-			workerFormatter.postMessage({ json: json, functionName });
-		} else {
-			try {
-				const html = formatter.format(json, functionName);
-				resolve({ html });
-			} catch (error) {
-				const result = linter.lint(json);
-				resolve({ error: result.error, loc: result.loc, offset });
-			}
+async function formatHTML(json, functionName, offset) {
+	if (WORKER_API_AVAILABLE) {
+		const response = await executeWorker("js/workers/formatter.js", { json: json, functionName });
+		if (response.html) {
+			return { html: response.html };
 		}
+		if (response.error) {
+			const message = await executeWorker("js/workers/linter.js", json);
+			return { error: message.error, loc: message.loc, offset };
+		}
+	} else {
+		try {
+			const html = formatter.format(json, functionName);
+			return { html };
+		} catch (error) {
+			const result = linter.lint(json);
+			return { error: result.error, loc: result.loc, offset };
+		}
+	}
+}
 
-		function onWorkerFormatterMessage(event) {
-			const message = event.data;
-			workerFormatter.removeEventListener("message", onWorkerFormatterMessage, false);
+function executeWorker(path, message) {
+	return new Promise((resolve, reject) => {
+		const workerFormatter = new Worker(path);
+		workerFormatter.addEventListener("message", onMessage, false);
+		workerFormatter.addEventListener("error", onError, false);
+		workerFormatter.postMessage(message);
+
+		function onMessage(event) {
+			workerFormatter.removeEventListener("message", onMessage, false);
+			workerFormatter.addEventListener("error", onError, false);
 			workerFormatter.terminate();
-			if (message.html) {
-				resolve({ html: message.html });
-			}
-			if (message.error) {
-				workerLinter = new Worker("js/workers/linter.js");
-				workerLinter.addEventListener("message", onWorkerLinterMessage, false);
-				workerLinter.postMessage(json);
-			}
+			resolve(event.data);
 		}
 
-		function onWorkerLinterMessage(event) {
-			const message = event.data;
-			workerLinter.removeEventListener("message", onWorkerLinterMessage, false);
-			workerLinter.terminate();
-			resolve({ error: message.error, loc: message.loc, offset });
+		function onError(event) {
+			reject(event.detail.error);
 		}
 	});
 }
