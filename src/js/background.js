@@ -22,8 +22,7 @@ init();
 
 async function init() {
 	extensionReady = migrateSettings();
-	const settings = await getSettings();
-	await initDefaultSettings(settings);
+	await initDefaultSettings(await getSettings());
 	await refreshMenuEntry();
 }
 
@@ -64,7 +63,6 @@ async function migrateSettings() {
 }
 
 async function onMessage(message) {
-	const json = message.json;
 	if (message.setSetting) {
 		await setSetting(message.name, message.value);
 		return {};
@@ -83,7 +81,7 @@ async function onMessage(message) {
 		};
 	}
 	if (message.jsonToHTML) {
-		return formatHTML(json, message.functionName, message.offset);
+		return formatHTML(message.json, message.functionName, message.offset);
 	}
 }
 
