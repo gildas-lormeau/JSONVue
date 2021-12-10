@@ -120,7 +120,7 @@ function executeWorker(path, message) {
 
 		function onMessage(event) {
 			worker.removeEventListener("message", onMessage, false);
-			worker.addEventListener("error", onError, false);
+			worker.removeEventListener("error", onError, false);
 			worker.terminate();
 			resolve(event.data);
 		}
