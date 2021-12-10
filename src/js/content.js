@@ -47,7 +47,7 @@ if (document.body && (document.body.childNodes[0] && document.body.childNodes[0]
 
 function extractJsonInfo(rawText) {
 	const initialRawText = rawText;
-	rawText = rawText.trim().replace(/^(\)]}', |\)]}',\n)/, "");
+	rawText = rawText.trim().replace(/^\)]}'(,|\n)/, "").trim();
 	let tokens;
 	if (detectJson(rawText)) {
 		return {
