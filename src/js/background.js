@@ -63,26 +63,26 @@ async function migrateSettings() {
 }
 
 async function onMessage(message) {
+	let result;
 	if (message.setSetting) {
 		await setSetting(message.name, message.value);
-		return {};
 	}
 	if (message.getSettings) {
-		return getSettings();
+		result = getSettings();
 	}
 	if (message.refreshMenuEntry) {
 		await refreshMenuEntry();
-		return {};
 	}
 	if (message.init) {
-		return {
+		result = {
 			options: (await getSettings()).options || {},
 			theme: await getTheme()
 		};
 	}
 	if (message.jsonToHTML) {
-		return formatHTML(message.json, message.functionName, message.offset);
+		result = formatHTML(message.json, message.functionName, message.offset);
 	}
+	return result || {};
 }
 
 async function formatHTML(json, functionName, offset) {
