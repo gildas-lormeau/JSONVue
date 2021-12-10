@@ -1,4 +1,4 @@
-/* global addEventListener, postMessage */
+/* global globalThis, addEventListener, postMessage */
 
 /*
    MIT License
@@ -414,10 +414,17 @@ var jsonlint = (function () {
 	return parser;
 })();
 
-addEventListener("message", function (event) {
+function lint(json) {
 	try {
-		jsonlint.parse(event.data);
+		jsonlint.parse(json);
+		return {};
 	} catch (errorMessage) {
-		postMessage(JSON.stringify({ error: errorMessage.toString(), loc: jsonlint.lexer.yylloc }));
+		return { error: errorMessage.toString(), loc: jsonlint.lexer.yylloc };
 	}
-}, false);
+}
+
+if (typeof postMessage == "undefined") {
+	globalThis.linter = { lint };
+} else {
+	addEventListener("message", event => postMessage(lint(JSON.stringify(event.data))), false);
+}

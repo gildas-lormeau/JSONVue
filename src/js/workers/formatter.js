@@ -1,4 +1,4 @@
-/* global addEventListener, postMessage */
+/* global globalThis, addEventListener, postMessage */
 
 /**
  * Adapted the code in to order to run in a web worker. 
@@ -82,18 +82,25 @@ function jsonToHTML(json, functionName) {
 	return output;
 }
 
-addEventListener("message", event => {
+function format(json, functionName) {
 	let object;
-	try {
-		object = JSON.parse(event.data.json);
-	} catch (error) {
-		postMessage({
-			error: true
-		});
-		return;
-	}
-	postMessage({
-		onjsonToHTML: true,
-		html: jsonToHTML(object, event.data.functionName)
-	});
-}, false);
+	object = JSON.parse(json);
+	return jsonToHTML(object, functionName);
+}
+
+if (typeof postMessage == "undefined") {
+	globalThis.formatter = { format };
+} else {
+	addEventListener("message", event => {
+		try {
+			postMessage({
+				onjsonToHTML: true,
+				html: format(event.data.json, event.data.functionName)
+			});
+		} catch (error) {
+			postMessage({ error: true });
+			return;
+		}
+	}, false);
+}
+
