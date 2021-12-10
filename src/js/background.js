@@ -164,7 +164,7 @@ async function getDefaultTheme() {
 
 async function getTheme() {
 	return (await Promise.all([
-		(await fetch("/css/content-error.css")).text(),
+		(await fetch("/css/jsonvue-error.css")).text(),
 		(await fetch("/css/jsonvue-core.css")).text(),
 		(await getSettings()).theme
 	])).join("\n");
