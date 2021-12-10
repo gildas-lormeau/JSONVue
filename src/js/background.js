@@ -40,8 +40,7 @@ async function initDefaultSettings(settings) {
 		await setSetting("options", settings.options);
 	}
 	if (!settings.theme) {
-		const theme = await getDefaultTheme();
-		await setSetting("theme", theme);
+		await setSetting("theme", await getDefaultTheme());
 	}
 }
 
@@ -71,8 +70,7 @@ async function onMessage(message) {
 		return {};
 	}
 	if (message.getSettings) {
-		const settings = await getSettings();
-		return settings;
+		return getSettings();
 	}
 	if (message.refreshMenuEntry) {
 		await refreshMenuEntry();
@@ -85,8 +83,7 @@ async function onMessage(message) {
 		};
 	}
 	if (message.jsonToHTML) {
-		const result = await formatHTML(json, message.functionName, message.offset);
-		return result;
+		return formatHTML(json, message.functionName, message.offset);
 	}
 }
 
@@ -102,8 +99,7 @@ async function formatHTML(json, functionName, offset) {
 		}
 	} else {
 		try {
-			const html = formatter.format(json, functionName);
-			return { html };
+			return { html: formatter.format(json, functionName) };
 		} catch (error) {
 			const result = linter.lint(json);
 			return { error: result.error, loc: result.loc, offset };
@@ -133,9 +129,8 @@ function executeWorker(path, message) {
 
 async function refreshMenuEntry() {
 	const settings = await getSettings();
-	const options = (settings).options;
 	chrome.contextMenus.removeAll();
-	if (options.addContextMenu) {
+	if (settings.options.addContextMenu) {
 		addMenuEntry();
 	}
 }
