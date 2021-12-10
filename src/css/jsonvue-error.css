@@ -5,8 +5,9 @@
 
 .error-position .error-icon {
 	color: fireBrick;
-	padding-left: 3px;
-	padding-right: 3px;
+    width: 21px;
+    display: inline-block;
+    text-align: center;
 }
 
 .container {
