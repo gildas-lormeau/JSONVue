@@ -31,6 +31,25 @@ async function init() {
 	await refreshMenuEntry();
 }
 
+async function migrateSettings() {
+	const promises = [];
+	if (LOCAL_STORAGE_API_AVAILABLE) {
+		if (localStorage.options) {
+			promises.push(new Promise(resolve => {
+				chrome.storage.local.set({ options: JSON.parse(localStorage.options) }, () => resolve());
+				delete localStorage.options;
+			}));
+		}
+		if (localStorage.theme) {
+			promises.push(new Promise(resolve => {
+				chrome.storage.local.set({ theme: localStorage.theme }, () => resolve());
+				delete localStorage.theme;
+			}));
+		}
+	}
+	await Promise.all(promises);
+}
+
 async function initDefaultSettings(settings) {
 	if (!settings.options) {
 		settings.options = {};
@@ -56,25 +75,6 @@ async function initDefaultSettings(settings) {
 	if (!settings.theme) {
 		await setSetting("theme", await getDefaultTheme());
 	}
-}
-
-async function migrateSettings() {
-	const promises = [];
-	if (LOCAL_STORAGE_API_AVAILABLE) {
-		if (localStorage.options) {
-			promises.push(new Promise(resolve => {
-				chrome.storage.local.set({ options: JSON.parse(localStorage.options) }, () => resolve());
-				delete localStorage.options;
-			}));
-		}
-		if (localStorage.theme) {
-			promises.push(new Promise(resolve => {
-				chrome.storage.local.set({ theme: localStorage.theme }, () => resolve());
-				delete localStorage.theme;
-			}));
-		}
-	}
-	await Promise.all(promises);
 }
 
 async function onMessage(message) {
