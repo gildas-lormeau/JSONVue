@@ -47,6 +47,10 @@ li {
 	user-select: none;
 }
 
+.collapser::after {
+	cursor: pointer;
+}
+
 .status {
 	position: fixed;
 	left: 0px;
