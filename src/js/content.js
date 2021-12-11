@@ -41,7 +41,7 @@ init();
 async function init() {
 	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
 		const textElement = document.body.children.length ? document.body.childNodes[0] : document.body;
-		const options = await sendMessage({ init: true });
+		const options = await sendMessage({ getOptions: true });
 		const jsonInfo = extractJsonInfo(textElement.innerText, options);
 		if (jsonInfo) {
 			originalBody = document.body.cloneNode(true);

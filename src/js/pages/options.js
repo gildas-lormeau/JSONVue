@@ -15,8 +15,7 @@ document.getElementById("resetButton").addEventListener("click", event => {
 init();
 
 function init() {
-	chrome.runtime.sendMessage({ getSettings: true }, settings => {
-		const options = settings.options;
+	chrome.runtime.sendMessage({ getOptions: true }, options => {
 		injectInFrameInput.checked = options.injectInFrame;
 		addContextMenuInput.checked = options.addContextMenu;
 		maxDepthLevelExpandedInput.valueAsNumber = options.maxDepthLevelExpanded;

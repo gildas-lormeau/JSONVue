@@ -14,10 +14,10 @@ const codemirror = CodeMirror.fromTextArea(editor);
 codemirror.on("keyup", onKeyUpEditor);
 resetButton.addEventListener("click", resetTheme, false);
 saveButton.addEventListener("click", () => chrome.runtime.sendMessage({ setSetting: true, name: "theme", value: codemirror.getValue() }), false);
-chrome.runtime.sendMessage({ getSettings: true }, init);
+chrome.runtime.sendMessage({ getTheme: true }, init);
 
-function init(settings) {
-	codemirror.setValue(settings.theme);
+function init(theme) {
+	codemirror.setValue(theme);
 	updatePreview();
 }
 

@@ -34,6 +34,7 @@ async function init() {
 async function initDefaultSettings(settings) {
 	if (!settings.options) {
 		settings.options = {};
+		optionsChanged = true;
 	}
 	const options = settings.options;
 	let optionsChanged;
@@ -78,23 +79,23 @@ async function migrateSettings() {
 
 async function onMessage(message) {
 	let result;
+	if (message.getTheme) {
+		result = (await getSettings()).theme;
+	}
+	if (message.getOptions) {
+		result = (await getSettings()).options;
+	}
 	if (message.setSetting) {
 		await setSetting(message.name, message.value);
-	}
-	if (message.getSettings) {
-		result = getSettings();
-	}
-	if (message.refreshMenuEntry) {
-		await refreshMenuEntry();
-	}
-	if (message.init) {
-		result = (await getSettings()).options || {};
 	}
 	if (message.jsonToHTML) {
 		result = formatHTML(message.json, message.functionName);
 	}
 	if (message.resetOptions) {
 		await setSetting("options", DEFAULT_SETTINGS);
+	}
+	if (message.refreshMenuEntry) {
+		await refreshMenuEntry();
 	}
 	return result || {};
 }
