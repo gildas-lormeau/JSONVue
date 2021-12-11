@@ -28,15 +28,15 @@ body {
   color: gray;
 }
 
-.collapser:after {
+.collapser::after {
   content: "-";
 }
 
-.collapsed>.collapser:after {
+.collapsed>.collapser::after {
   content: "+";
 }
 
-.ellipsis:after {
+.ellipsis::after {
   content: " … ";
 }
 
