@@ -36,16 +36,20 @@ chrome.runtime.onMessage.addListener(message => {
 		}
 	}
 });
-if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
-	const textElement = document.body.children.length ? document.body.childNodes[0] : document.body;
-	chrome.runtime.sendMessage({ init: true }, options => {
+init();
+
+async function init() {
+	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
+		const textElement = document.body.children.length ? document.body.childNodes[0] : document.body;
+		const options = await sendMessage({ init: true });
 		const jsonInfo = extractJsonInfo(textElement.innerText, options);
 		if (jsonInfo) {
 			originalBody = document.body.cloneNode(true);
-			processData(jsonInfo, options);
+			await processData(jsonInfo, options);
 		}
-	});
+	}
 }
+
 
 function extractJsonInfo(rawText, options) {
 	const initialRawText = rawText;
@@ -77,27 +81,26 @@ function extractJsonInfo(rawText, options) {
 	}
 }
 
-function processData(jsonInfo, options) {
+async function processData(jsonInfo, options) {
 	if ((window == top || options.injectInFrame) && jsonInfo && jsonInfo.text) {
 		const json = jsonInfo.text;
-		chrome.runtime.sendMessage({
+		const result = await sendMessage({
 			jsonToHTML: true,
 			json,
 			functionName: jsonInfo.functionName,
 			offset: jsonInfo.offset
-		}, result => {
-			if (result.html) {
-				displayUI(result.stylesheet, result.html, options);
-				try {
-					jsonObject = JSON.parse(json);
-				} catch (error) {
-					// ignored
-				}
-			}
-			if (result.error) {
-				displayError(result.stylesheet, result.error, result.loc, result.offset);
-			}
 		});
+		if (result.html) {
+			displayUI(result.stylesheet, result.html, options);
+			try {
+				jsonObject = JSON.parse(json);
+			} catch (error) {
+				// ignored
+			}
+		}
+		if (result.error) {
+			displayError(result.stylesheet, result.error, result.loc, result.offset);
+		}
 	}
 }
 
@@ -301,4 +304,8 @@ function copyText(value) {
 		event.clipboardData.setData("text/plain", value);
 		event.preventDefault();
 	}
+}
+
+function sendMessage(message) {
+	return new Promise(resolve => chrome.runtime.sendMessage(message, result => resolve(result)));
 }
