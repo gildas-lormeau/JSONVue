@@ -5,6 +5,11 @@ const LOCAL_STORAGE_API_AVAILABLE = typeof localStorage != "undefined";
 const MENU_ID_COPY_PATH = "copy-path";
 const MENU_ID_COPY_VALUE = "copy-value";
 const MENU_ID_COPY_JSON_VALUE = "copy-json-value";
+const DEFAULT_SETTINGS = {
+	maxDepthLevelExpanded: 0,
+	addContextMenu: true,
+	jsonPrefix: "^\\)]}',|for\\s*\\(;;\\);|while\\s*(1);"
+};
 
 if (!WORKER_API_AVAILABLE) {
 	importScripts("/js/workers/formatter.js");
@@ -30,13 +35,22 @@ async function initDefaultSettings(settings) {
 	if (!settings.options) {
 		settings.options = {};
 	}
-	if (typeof settings.options.maxDepthLevelExpanded == "undefined") {
-		settings.options.maxDepthLevelExpanded = 0;
-		await setSetting("options", settings.options);
+	const options = settings.options;
+	let optionsChanged;
+	if (typeof options.maxDepthLevelExpanded == "undefined") {
+		options.maxDepthLevelExpanded = DEFAULT_SETTINGS.maxDepthLevelExpanded;
+		optionsChanged = true;
 	}
-	if (typeof settings.options.addContextMenu == "undefined") {
-		settings.options.addContextMenu = true;
-		await setSetting("options", settings.options);
+	if (typeof options.addContextMenu == "undefined") {
+		options.addContextMenu = DEFAULT_SETTINGS.addContextMenu;
+		optionsChanged = true;
+	}
+	if (typeof options.jsonPrefix == "undefined") {
+		options.jsonPrefix = DEFAULT_SETTINGS.jsonPrefix;
+		optionsChanged = true;
+	}
+	if (optionsChanged) {
+		await setSetting("options", options);
 	}
 	if (!settings.theme) {
 		await setSetting("theme", await getDefaultTheme());
@@ -78,6 +92,9 @@ async function onMessage(message) {
 	}
 	if (message.jsonToHTML) {
 		result = formatHTML(message.json, message.functionName, message.offset);
+	}
+	if (message.resetOptions) {
+		await setSetting("options", DEFAULT_SETTINGS);
 	}
 	return result || {};
 }

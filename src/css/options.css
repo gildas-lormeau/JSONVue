@@ -14,13 +14,31 @@ fieldset {
 
 section {
 	display: flex;
-	margin-top: 10px;
-	align-items: center;
+	align-items: end;
 }
 
-label {
+section.vertical {
+	align-items: flex-start;
+	flex-direction: column;
+}
+
+section:last-child {
+	flex-direction: column;
+	margin-top: 20px;
+}
+
+section label {
 	flex-grow: 1;
 	user-select: none;
+	margin-bottom: 5px;
+}
+
+section:not(:first-child) label {
+	margin-top: 10px;
+}
+
+input {
+	margin-bottom: 5px;
 }
 
 legend {
@@ -31,9 +49,18 @@ legend {
 	margin-bottom: 5px;
 }
 
+input[type=checkbox] {
+	margin-right: 0px;
+}
+
 input[type=number] {
 	width: 35px;
 	text-align: right;
+}
+
+input[type=text] {
+	width: 100%;
+	width: calc(100% - 8px);
 }
 
 button {

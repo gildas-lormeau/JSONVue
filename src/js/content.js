@@ -37,17 +37,19 @@ chrome.runtime.onMessage.addListener(message => {
 	}
 });
 if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
-	const child = document.body.children.length ? document.body.childNodes[0] : document.body;
-	const jsonInfo = extractJsonInfo(child.innerText);
-	if (jsonInfo) {
-		originalBody = document.body.cloneNode(true);
-		chrome.runtime.sendMessage({ init: true }, options => processData(jsonInfo, options));
-	}
+	const textElement = document.body.children.length ? document.body.childNodes[0] : document.body;
+	chrome.runtime.sendMessage({ init: true }, options => {
+		const jsonInfo = extractJsonInfo(textElement.innerText, options);
+		if (jsonInfo) {
+			originalBody = document.body.cloneNode(true);
+			processData(jsonInfo, options);
+		}
+	});
 }
 
-function extractJsonInfo(rawText) {
+function extractJsonInfo(rawText, options) {
 	const initialRawText = rawText;
-	rawText = rawText.trim().replace(/^\)]}'(,|\n)/, "").trim();
+	rawText = rawText.trim().replace(new RegExp(options.jsonPrefix), "").trim();
 	let tokens;
 	if (detectJson(rawText)) {
 		return {

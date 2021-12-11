@@ -15,16 +15,23 @@
 				<input type="checkbox" id="addContextMenuInput">
 			</section>
 			<section>
+				<label for="injectInFrameInput">Inject into frames</label>
+				<input type="checkbox" id="injectInFrameInput">
+			</section>
+			<section class="vertical">
+				<label for="jsonPrefixInput">Regular expression for removing JSON prefix</label>
+				<input type="text" id="jsonPrefixInput">
+			</section>
+			<section>
 				<label for="maxDepthLevelExpandedInput">Maximum depth level of initially expanded elements</label>
 				<input type="number" id="maxDepthLevelExpandedInput" min="0">
 			</section>
 			<section>
-				<label for="injectInFrameInput">Inject into frames</label>
-				<input type="checkbox" id="injectInFrameInput">
-			</section>
-			<section>
 				<label>Open the style editor</label>
 				<button id="openEditorButton">Open</button>
+			</section>
+			<section>
+				<button id="resetButton">Reset options</button>
 			</section>
 		</fieldset>
 	</form>

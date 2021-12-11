@@ -3,25 +3,39 @@
 const injectInFrameInput = document.getElementById("injectInFrameInput");
 const addContextMenuInput = document.getElementById("addContextMenuInput");
 const maxDepthLevelExpandedInput = document.getElementById("maxDepthLevelExpandedInput");
+const jsonPrefixInput = document.getElementById("jsonPrefixInput");
 document.getElementById("openEditorButton").addEventListener("click", event => {
 	open("css-editor.html", "jsonvue-css-editor");
 	event.stopPropagation();
 }, false);
-chrome.runtime.sendMessage({ getSettings: true }, settings => {
-	const options = settings.options;
-	injectInFrameInput.checked = options.injectInFrame;
-	addContextMenuInput.checked = options.addContextMenu;
-	maxDepthLevelExpandedInput.valueAsNumber = options.maxDepthLevelExpanded;
-	injectInFrameInput.addEventListener("change", () => {
-		options.injectInFrame = injectInFrameInput.checked;
-		chrome.runtime.sendMessage({ setSetting: true, name: "options", value: options });
+document.getElementById("resetButton").addEventListener("click", event => {
+	chrome.runtime.sendMessage({ resetOptions: true }, init);
+	event.stopPropagation();
+}, false);
+init();
+
+function init() {
+	chrome.runtime.sendMessage({ getSettings: true }, settings => {
+		const options = settings.options;
+		injectInFrameInput.checked = options.injectInFrame;
+		addContextMenuInput.checked = options.addContextMenu;
+		maxDepthLevelExpandedInput.valueAsNumber = options.maxDepthLevelExpanded;
+		jsonPrefixInput.value = options.jsonPrefix;
+		injectInFrameInput.onchange = () => {
+			options.injectInFrame = injectInFrameInput.checked;
+			chrome.runtime.sendMessage({ setSetting: true, name: "options", value: options });
+		};
+		addContextMenuInput.onchange = () => {
+			options.addContextMenu = addContextMenuInput.checked;
+			chrome.runtime.sendMessage({ setSetting: true, refreshMenuEntry: true, name: "options", value: options });
+		};
+		maxDepthLevelExpandedInput.onchange = () => {
+			options.maxDepthLevelExpanded = maxDepthLevelExpandedInput.valueAsNumber;
+			chrome.runtime.sendMessage({ setSetting: true, name: "options", value: options });
+		};
+		jsonPrefixInput.onchange = () => {
+			options.jsonPrefix = jsonPrefixInput.value;
+			chrome.runtime.sendMessage({ setSetting: true, name: "options", value: options });
+		};
 	});
-	addContextMenuInput.addEventListener("change", () => {
-		options.addContextMenu = addContextMenuInput.checked;
-		chrome.runtime.sendMessage({ setSetting: true, refreshMenuEntry: true, name: "options", value: options });
-	});
-	maxDepthLevelExpandedInput.addEventListener("change", () => {
-		options.maxDepthLevelExpanded = maxDepthLevelExpandedInput.valueAsNumber;
-		chrome.runtime.sendMessage({ setSetting: true, name: "options", value: options });
-	});
-});
+}
