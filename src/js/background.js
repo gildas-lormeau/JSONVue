@@ -5,7 +5,7 @@ const LOCAL_STORAGE_API_AVAILABLE = typeof localStorage != "undefined";
 const MENU_ID_COPY_PATH = "copy-path";
 const MENU_ID_COPY_VALUE = "copy-value";
 const MENU_ID_COPY_JSON_VALUE = "copy-json-value";
-const DEFAULT_SETTINGS = {
+const DEFAULT_OPTIONS = {
 	maxDepthLevelExpanded: 0,
 	addContextMenu: true,
 	jsonPrefix: "^\\)]}',|for\\s*\\(;;\\);|while\\s*(1);"
@@ -58,15 +58,15 @@ async function initDefaultSettings(settings) {
 	const options = settings.options;
 	let optionsChanged;
 	if (typeof options.maxDepthLevelExpanded == "undefined") {
-		options.maxDepthLevelExpanded = DEFAULT_SETTINGS.maxDepthLevelExpanded;
+		options.maxDepthLevelExpanded = DEFAULT_OPTIONS.maxDepthLevelExpanded;
 		optionsChanged = true;
 	}
 	if (typeof options.addContextMenu == "undefined") {
-		options.addContextMenu = DEFAULT_SETTINGS.addContextMenu;
+		options.addContextMenu = DEFAULT_OPTIONS.addContextMenu;
 		optionsChanged = true;
 	}
 	if (typeof options.jsonPrefix == "undefined") {
-		options.jsonPrefix = DEFAULT_SETTINGS.jsonPrefix;
+		options.jsonPrefix = DEFAULT_OPTIONS.jsonPrefix;
 		optionsChanged = true;
 	}
 	if (optionsChanged) {
@@ -92,7 +92,7 @@ async function onMessage(message) {
 		result = formatHTML(message.json, message.functionName);
 	}
 	if (message.resetOptions) {
-		await setSetting("options", DEFAULT_SETTINGS);
+		await setSetting("options", DEFAULT_OPTIONS);
 	}
 	if (message.refreshMenuEntry) {
 		await refreshMenuEntry();
