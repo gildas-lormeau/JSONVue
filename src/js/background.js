@@ -91,7 +91,7 @@ async function onMessage(message) {
 		result = (await getSettings()).options || {};
 	}
 	if (message.jsonToHTML) {
-		result = formatHTML(message.json, message.functionName, message.offset);
+		result = formatHTML(message.json, message.functionName);
 	}
 	if (message.resetOptions) {
 		await setSetting("options", DEFAULT_SETTINGS);
@@ -99,13 +99,13 @@ async function onMessage(message) {
 	return result || {};
 }
 
-async function formatHTML(json, functionName, offset) {
-	const result = await Promise.all([formatHTMLAsync(json, functionName, offset), getContentStylesheet()]);
+async function formatHTML(json, functionName) {
+	const result = await Promise.all([formatHTMLAsync(json, functionName), getContentStylesheet()]);
 	result[0].stylesheet = result[1];
 	return result[0];
 }
 
-async function formatHTMLAsync(json, functionName, offset) {
+async function formatHTMLAsync(json, functionName) {
 	if (WORKER_API_AVAILABLE) {
 		const response = await executeWorker("js/workers/formatter.js", { json: json, functionName });
 		if (response.html) {
@@ -113,14 +113,14 @@ async function formatHTMLAsync(json, functionName, offset) {
 		}
 		if (response.error) {
 			const response = await executeWorker("js/workers/linter.js", json);
-			return { error: response.error, loc: response.loc, offset };
+			return { error: response.error, loc: response.loc };
 		}
 	} else {
 		try {
 			return { html: formatter.format(json, functionName) };
 		} catch (error) {
 			const response = linter.lint(json);
-			return { error: response.error, loc: response.loc, offset };
+			return { error: response.error, loc: response.loc };
 		}
 	}
 }

@@ -57,7 +57,7 @@ function extractJsonInfo(rawText, options) {
 	if (detectJson(rawText)) {
 		return {
 			text: rawText,
-			offset: 0
+			offset: initialRawText.indexOf(rawText)
 		};
 	} else {
 		tokens = rawText.match(/^([^\s(]*)\s*\(([\s\S]*)\)\s*;?$/);
@@ -86,8 +86,7 @@ async function processData(jsonInfo, options) {
 		const result = await sendMessage({
 			jsonToHTML: true,
 			json,
-			functionName: jsonInfo.functionName,
-			offset: jsonInfo.offset
+			functionName: jsonInfo.functionName
 		});
 		if (result.html) {
 			displayUI(result.stylesheet, result.html, options);
@@ -98,7 +97,7 @@ async function processData(jsonInfo, options) {
 			}
 		}
 		if (result.error) {
-			displayError(result.stylesheet, result.error, result.loc, result.offset);
+			displayError(result.stylesheet, result.error, result.loc, jsonInfo.offset);
 		}
 	}
 }
