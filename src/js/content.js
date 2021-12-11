@@ -50,7 +50,6 @@ async function init() {
 	}
 }
 
-
 function extractJsonInfo(rawText, options) {
 	const initialRawText = rawText;
 	rawText = rawText.trim().replace(new RegExp(options.jsonPrefix), "").trim();
