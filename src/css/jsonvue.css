@@ -48,7 +48,7 @@ body {
   border-width: 0;
   border-left: #d3d3d3 .1em dashed;
   content: " ";
-  max-width: 1px;
+  max-width: .1em;
   position: absolute;
   height: calc(100% - 3.4em);
   left: .4em;
