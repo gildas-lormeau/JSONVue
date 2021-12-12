@@ -223,7 +223,7 @@ function onMouseMove(event) {
 	if (event.isTrusted) {
 		jsonPath = "";
 		let element = getParentListItem(event.target);
-		if (element) {
+		if (element && event.target.tagName != TAG_LIST_ITEM) {
 			jsonSelector = [];
 			if (hoveredListItem) {
 				hoveredListItem.firstChild.classList.remove(CLASS_HOVERED);
