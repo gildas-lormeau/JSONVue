@@ -1,4 +1,4 @@
-/* global chrome, fetch, Worker, localStorage, importScripts, formatter, linter */
+/* global chrome, fetch, Worker, localStorage, importScripts, formatter, linter, TextEncoder, crypto */
 
 const WORKER_API_AVAILABLE = typeof Worker != "undefined";
 const LOCAL_STORAGE_API_AVAILABLE = typeof localStorage != "undefined";
@@ -10,6 +10,7 @@ const DEFAULT_OPTIONS = {
 	addContextMenu: true,
 	jsonPrefix: "^\\)]}',|for\\s*\\(;;\\);|while\\s*(1);"
 };
+const LEGACY_STYLESHEET_HASH = "[217,103,31,97,255,43,250,60,65,196,134,101,148,173,69,129,51,72,223,43]";
 
 if (!WORKER_API_AVAILABLE) {
 	importScripts("/js/workers/formatter.js");
@@ -72,7 +73,13 @@ async function initDefaultSettings(settings) {
 	if (optionsChanged) {
 		await setSetting("options", options);
 	}
-	if (!settings.theme) {
+	if (settings.theme) {
+		const encoder = new TextEncoder();
+		const hash = JSON.stringify(Array.from(new Uint8Array(await crypto.subtle.digest("SHA-1", encoder.encode(settings.theme)))));
+		if (hash == LEGACY_STYLESHEET_HASH) {
+			await setSetting("theme", await getDefaultTheme());
+		}
+	} else {
 		await setSetting("theme", await getDefaultTheme());
 	}
 }
