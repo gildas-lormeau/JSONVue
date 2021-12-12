@@ -44,6 +44,17 @@ body {
   margin-left: 2em;
 }
 
+.collapsible .collapsible::before {
+  border-width: 0;
+  border-left: #d3d3d3 .1em dashed;
+  content: " ";
+  max-width: 1px;
+  position: absolute;
+  height: calc(100% - 3.4em);
+  left: .4em;
+  top: 1.8em;
+}
+
 .hoverable {
   padding-top: 1px;
   padding-bottom: 1px;
@@ -93,10 +104,14 @@ body {
   }
 
   .type-string {
-    color: yellowgreen;    
+    color: yellowgreen;
   }
 
   a {
     color: dodgerblue;
+  }
+
+  .collapsible .collapsible::before {
+    border-color: #484848;
   }
 }
