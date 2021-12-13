@@ -56,11 +56,7 @@ body {
 }
 
 .hoverable {
-  padding-top: 1px;
-  padding-bottom: 1px;
-  padding-left: 2px;
-  padding-right: 2px;
-  border-radius: 2px;
+  padding: .1em;
   transition: background-color .2s ease-out 0s;
 }
 
@@ -71,17 +67,17 @@ body {
 
 .collapser {
   position: absolute;
-  top: 1px;
+  top: .1em;
   left: -1.3em;
   cursor: default;
   user-select: none;
-  padding-right: 6px;
-  padding-left: 6px;
+  padding-right: .5em;
+  padding-left: .5em;
 }
 
 .selected {
   outline-style: solid;
-  outline-width: 1px;
+  outline-width: .1em;
   outline-style: dotted;
 }
 

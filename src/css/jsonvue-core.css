@@ -4,8 +4,8 @@ body {
 
 ul {
 	list-style-type: none;
-	padding: 0px;
-	margin: 0px 0px 0px 26px;
+	padding: 0;
+	margin: 0 0 0 2em;
 }
 
 li {
@@ -23,7 +23,7 @@ li {
 
 .selected {
 	outline-style: solid;
-	outline-width: 1px;
+	outline-width: .1em;
 	outline-style: dotted;
 }
 
@@ -41,7 +41,7 @@ li {
 
 .collapser {
 	position: absolute;
-	top: 1px;
+	top: .1em;
 	left: -1.3em;
 	cursor: default;
 	user-select: none;
@@ -53,8 +53,8 @@ li {
 
 .status {
 	position: fixed;
-	left: 0px;
-	bottom: 0px;
+	left: 0;
+	bottom: 0;
 	border-color: #c2c2c2;
 	border-top-width: 1px;
 	border-right-width: 1px;
