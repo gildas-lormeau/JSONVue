@@ -42,7 +42,7 @@ li {
 .collapser {
 	position: absolute;
 	top: .1em;
-	left: -1.3em;
+	left: -1.4em;
 	cursor: default;
 	user-select: none;
 }
