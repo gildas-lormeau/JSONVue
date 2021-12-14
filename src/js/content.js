@@ -965,6 +965,7 @@ function displayError(theme, error, loc, offset) {
 	containerElement.className = "container";
 	containerElement.appendChild(contentElement);
 	errorPositionElement.parentNode.insertBefore(containerElement, errorPositionElement.nextSibling);
+	displayToolbox(true);
 
 	function onCloseError(event) {
 		if (event.isTrusted) {
@@ -975,10 +976,6 @@ function displayError(theme, error, loc, offset) {
 
 function displayUI(stylesheet, html, options) {
 	const userStyleElement = document.createElement("style");
-	const toolboxElement = document.createElement("div");
-	const openCollapsiblesElement = document.createElement("span");
-	const viewSourceElement = document.createElement("a");
-	const closeCollapsiblesElement = document.createElement("span");
 	statusElement = document.createElement("div");
 	userStyleElement.appendChild(document.createTextNode(stylesheet));
 	document.head.appendChild(userStyleElement);
@@ -993,24 +990,37 @@ function displayUI(stylesheet, html, options) {
 	}
 	statusElement.className = "status";
 	document.body.appendChild(statusElement);
-	toolboxElement.className = "toolbox";
-	openCollapsiblesElement.title = TITLE_OPEN_COLLAPSIBLES;
-	openCollapsiblesElement.innerText = LABEL_OPEN_COLLAPSIBLES;
-	viewSourceElement.title = TITLE_VIEW_SOURCE;
-	viewSourceElement.innerText = LABEL_VIEW_SOURCE;
-	closeCollapsiblesElement.title = TITLE_CLOSE_COLLAPSIBLES;
-	closeCollapsiblesElement.innerText = LABEL_CLOSE_COLLAPSIBLES;
-	toolboxElement.appendChild(openCollapsiblesElement);
-	toolboxElement.appendChild(viewSourceElement);
-	toolboxElement.appendChild(closeCollapsiblesElement);
-	document.body.appendChild(toolboxElement);
-	document.body.addEventListener("click", onToggleCollapsible, false);
 	document.body.addEventListener("mouseover", onMouseMove, false);
 	document.body.addEventListener("click", onMouseClick, false);
 	document.body.addEventListener("contextmenu", onContextMenu, false);
-	openCollapsiblesElement.addEventListener("click", onOpenCollapsibles, false);
+	document.body.addEventListener("click", onToggleCollapsible, false);
+	displayToolbox();
+}
+
+function displayToolbox(onlyViewSource) {
+	const viewSourceElement = document.createElement("a");
+	const toolboxElement = document.createElement("div");
+	let openCollapsiblesElement, closeCollapsiblesElement;
+	if (!onlyViewSource) {
+		openCollapsiblesElement = document.createElement("span");
+		closeCollapsiblesElement = document.createElement("span");
+		closeCollapsiblesElement.title = TITLE_CLOSE_COLLAPSIBLES;
+		closeCollapsiblesElement.innerText = LABEL_CLOSE_COLLAPSIBLES;
+		openCollapsiblesElement.title = TITLE_OPEN_COLLAPSIBLES;
+		openCollapsiblesElement.innerText = LABEL_OPEN_COLLAPSIBLES;
+		openCollapsiblesElement.addEventListener("click", onOpenCollapsibles, false);
+		closeCollapsiblesElement.addEventListener("click", onCloseCollapsibles, false);
+		toolboxElement.appendChild(openCollapsiblesElement);
+	}
+	toolboxElement.appendChild(viewSourceElement);
+	if (!onlyViewSource) {
+		toolboxElement.appendChild(closeCollapsiblesElement);
+	}
+	document.body.appendChild(toolboxElement);
+	toolboxElement.className = "toolbox";
+	viewSourceElement.title = TITLE_VIEW_SOURCE;
+	viewSourceElement.innerText = LABEL_VIEW_SOURCE;
 	viewSourceElement.addEventListener("click", onViewSource, false);
-	closeCollapsiblesElement.addEventListener("click", onCloseCollapsibles, false);
 }
 
 function onToggleCollapsible(event) {
