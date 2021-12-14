@@ -96,7 +96,7 @@ async function onMessage(message) {
 		await setSetting(message.name, message.value);
 	}
 	if (message.jsonToHTML) {
-		result = formatHTML(message.json, message.functionName);
+		result = formatHTML(message.json, message.functionName, message.supportBigInt);
 	}
 	if (message.resetOptions) {
 		await setSetting("options", DEFAULT_OPTIONS);
@@ -107,15 +107,15 @@ async function onMessage(message) {
 	return result || {};
 }
 
-async function formatHTML(json, functionName) {
-	const result = await Promise.all([formatHTMLAsync(json, functionName), getContentStylesheet()]);
+async function formatHTML(json, functionName, supportBigInt) {
+	const result = await Promise.all([formatHTMLAsync(json, functionName, supportBigInt), getContentStylesheet()]);
 	result[0].stylesheet = result[1];
 	return result[0];
 }
 
-async function formatHTMLAsync(json, functionName) {
+async function formatHTMLAsync(json, functionName, supportBigInt) {
 	if (WORKER_API_AVAILABLE) {
-		const response = await executeWorker("js/workers/formatter.js", { json: json, functionName });
+		const response = await executeWorker("js/workers/formatter.js", { json: json, functionName, supportBigInt });
 		if (response.html) {
 			return { html: response.html };
 		}
@@ -125,7 +125,7 @@ async function formatHTMLAsync(json, functionName) {
 		}
 	} else {
 		try {
-			return { html: formatter.format(json, functionName) };
+			return { html: formatter.format(json, functionName, supportBigInt) };
 		} catch (error) {
 			const response = linter.lint(json);
 			return { error: response.error, loc: response.loc };

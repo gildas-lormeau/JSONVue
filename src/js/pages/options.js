@@ -1,6 +1,7 @@
 /* global document, chrome, open */
 
 const injectInFrameInput = document.getElementById("injectInFrameInput");
+const supportBigIntInput = document.getElementById("supportBigIntInput");
 const addContextMenuInput = document.getElementById("addContextMenuInput");
 const maxDepthLevelExpandedInput = document.getElementById("maxDepthLevelExpandedInput");
 const jsonPrefixInput = document.getElementById("jsonPrefixInput");
@@ -17,11 +18,16 @@ init();
 function init() {
 	chrome.runtime.sendMessage({ getOptions: true }, options => {
 		injectInFrameInput.checked = options.injectInFrame;
+		supportBigIntInput.checked = options.supportBigInt;
 		addContextMenuInput.checked = options.addContextMenu;
 		maxDepthLevelExpandedInput.valueAsNumber = options.maxDepthLevelExpanded;
 		jsonPrefixInput.value = options.jsonPrefix;
 		injectInFrameInput.onchange = () => {
 			options.injectInFrame = injectInFrameInput.checked;
+			chrome.runtime.sendMessage({ setSetting: true, name: "options", value: options });
+		};
+		supportBigIntInput.onchange = () => {
+			options.supportBigInt = supportBigIntInput.checked;
 			chrome.runtime.sendMessage({ setSetting: true, name: "options", value: options });
 		};
 		addContextMenuInput.onchange = () => {

@@ -86,7 +86,8 @@ async function processData(jsonInfo, options) {
 		const result = await sendMessage({
 			jsonToHTML: true,
 			json,
-			functionName: jsonInfo.functionName
+			functionName: jsonInfo.functionName,
+			supportBigInt: options.supportBigInt
 		});
 		if (result.html) {
 			displayUI(result.stylesheet, result.html, options);
