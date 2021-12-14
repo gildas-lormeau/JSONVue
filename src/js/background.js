@@ -22,7 +22,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	onMessage(message).then(sendResponse);
 	return true;
 });
-chrome.contextMenus.onClicked.addListener((info, tab) => chrome.tabs.sendMessage(tab.id, { copy: true, type: info.menuItemId }));
+chrome.contextMenus.onClicked.addListener(async (info, tab) => chrome.tabs.sendMessage(tab.id, { 
+	copy: true, 
+	type: info.menuItemId,
+	options: (await getSettings()).options
+}));
 addMenuEntry(true);
 init();
 
