@@ -831,7 +831,7 @@ const jsonStringify = (function () {
 
 const parseJson = json_parse();
 
-let collapserElements, statusElement, jsonObject, copiedSelector, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody;
+let collapserElements, statusElement, jsonObject, copiedSelector, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody, supportBigInt;
 chrome.runtime.onMessage.addListener(message => {
 	if (message.copy) {
 		if (message.type == MENU_ID_COPY_PATH && jsonPath) {
@@ -840,7 +840,7 @@ chrome.runtime.onMessage.addListener(message => {
 			let value = jsonObject;
 			copiedSelector.forEach(propertyName => value = value[propertyName]);
 			if (value) {
-				if (message.options.supportBigInt) {
+				if (supportBigInt) {
 					value = jsonStringify(value);
 				} else {
 					value = JSON.stringify(value);
@@ -860,6 +860,7 @@ async function init() {
 	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
 		const textElement = document.body.children.length ? document.body.childNodes[0] : document.body;
 		const options = await sendMessage({ getOptions: true });
+		supportBigInt = options.supportBigInt;
 		const jsonInfo = extractJsonInfo(textElement.innerText, options);
 		if (jsonInfo) {
 			originalBody = document.body.cloneNode(true);
@@ -905,12 +906,12 @@ async function processData(jsonInfo, options) {
 			jsonToHTML: true,
 			json,
 			functionName: jsonInfo.functionName,
-			supportBigInt: options.supportBigInt
+			supportBigInt
 		});
 		if (result.html) {
 			displayUI(result.stylesheet, result.html, options);
 			try {
-				if (options.supportBigInt) {
+				if (supportBigInt) {
 					jsonObject = parseJson(json);
 				} else {
 					jsonObject = JSON.parse(json);
