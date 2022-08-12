@@ -22,8 +22,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	onMessage(message).then(sendResponse);
 	return true;
 });
-chrome.contextMenus.onClicked.addListener((info, tab) => chrome.tabs.sendMessage(tab.id, { 
-	copy: true, 
+chrome.contextMenus.onClicked.addListener((info, tab) => chrome.tabs.sendMessage(tab.id, {
+	copy: true,
 	type: info.menuItemId
 }));
 addMenuEntry(true);
@@ -55,12 +55,12 @@ async function migrateSettings() {
 }
 
 async function initDefaultSettings(settings) {
+	let optionsChanged;
 	if (!settings.options) {
 		settings.options = {};
 		optionsChanged = true;
 	}
 	const options = settings.options;
-	let optionsChanged;
 	if (typeof options.maxDepthLevelExpanded == "undefined") {
 		options.maxDepthLevelExpanded = DEFAULT_OPTIONS.maxDepthLevelExpanded;
 		optionsChanged = true;
