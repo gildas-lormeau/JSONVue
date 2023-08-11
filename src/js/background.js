@@ -79,7 +79,7 @@ async function initDefaultSettings(settings) {
 	if (settings.theme) {
 		const encoder = new TextEncoder();
 		const hash = JSON.stringify(Array.from(new Uint8Array(await crypto.subtle.digest("SHA-1", encoder.encode(settings.theme)))));
-		if (hash == LEGACY_STYLESHEET_HASH) {
+		if (hash === LEGACY_STYLESHEET_HASH) {
 			await setSetting("theme", await getDefaultTheme());
 		}
 	} else {
