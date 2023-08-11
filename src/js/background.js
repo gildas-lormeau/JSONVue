@@ -79,7 +79,7 @@ async function initDefaultSettings(settings) {
 	if (settings.theme) {
 		const encoder = new TextEncoder();
 		const hash = JSON.stringify(Array.from(new Uint8Array(await crypto.subtle.digest("SHA-1", encoder.encode(settings.theme)))));
-		if (hash == LEGACY_STYLESHEET_HASH) {
+		if (hash === LEGACY_STYLESHEET_HASH) {
 			await setSetting("theme", await getDefaultTheme());
 		}
 	} else {
@@ -171,17 +171,17 @@ function addMenuEntry(removeAll) {
 	chrome.contextMenus.create({
 		id: MENU_ID_COPY_PATH,
 		title: "Copy path",
-		contexts: ["page", "link"]
+		contexts: ["page", "link", "selection"]
 	});
 	chrome.contextMenus.create({
 		id: MENU_ID_COPY_VALUE,
 		title: "Copy value",
-		contexts: ["page", "link"]
+		contexts: ["page", "link", "selection"]
 	});
 	chrome.contextMenus.create({
 		id: MENU_ID_COPY_JSON_VALUE,
 		title: "Copy JSON value",
-		contexts: ["page", "link"]
+		contexts: ["page", "link", "selection"]
 	});
 }
 

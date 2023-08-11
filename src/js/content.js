@@ -86,7 +86,7 @@ const suspectConstructorRx = /(?:c|\\u0063)(?:o|\\u006[Ff])(?:n|\\u006[Ee])(?:s|
 	hasOwnProperty, message, n, name, prototype, push, r, t, text
 */
 
-var json_parse = function (options) {
+const json_parse = function (options) {
 	"use strict";
 
 	// This is a function that can parse a JSON text, producing a JavaScript
@@ -98,7 +98,7 @@ var json_parse = function (options) {
 	// global variables.
 
 	// Default options one can override by passing options to the parse()
-	var _options = {
+	let _options = {
 		strict: false, // not being strict means do not generate syntax errors for "duplicate key"
 		storeAsString: false, // toggles whether the values should be stored as BigNumber (default) or a string
 		alwaysParseAsBig: false, // toggles whether all numbers should be Big
@@ -149,7 +149,7 @@ var json_parse = function (options) {
 		}
 	}
 
-	var at, // The index of the current character
+	let at, // The index of the current character
 		ch, // The current character
 		escapee = {
 			"\"": "\"",
@@ -189,7 +189,7 @@ var json_parse = function (options) {
 		number = function () {
 			// Parse a number value.
 
-			var number,
+			let number,
 				string = "";
 
 			if (ch === "-") {
@@ -239,7 +239,7 @@ var json_parse = function (options) {
 		string = function () {
 			// Parse a string value.
 
-			var hex,
+			let hex,
 				i,
 				string = "",
 				uffff;
@@ -247,7 +247,7 @@ var json_parse = function (options) {
 			// When parsing for string values, we must look for " and \ characters.
 
 			if (ch === "\"") {
-				var startAt = at;
+				let startAt = at;
 				while (next()) {
 					if (ch === "\"") {
 						if (at - 1 > startAt) string += text.substring(startAt, at - 1);
@@ -315,7 +315,7 @@ var json_parse = function (options) {
 		array = function () {
 			// Parse an array value.
 
-			var array = [];
+			let array = [];
 
 			if (ch === "[") {
 				next("[");
@@ -340,7 +340,7 @@ var json_parse = function (options) {
 		object = function () {
 			// Parse an object value.
 
-			var key,
+			let key,
 				object = Object.create(null);
 
 			if (ch === "{") {
@@ -416,7 +416,7 @@ var json_parse = function (options) {
 	// functions and variables.
 
 	return function (source, reviver) {
-		var result;
+		let result;
 
 		text = source + "";
 		at = 0;
@@ -435,7 +435,7 @@ var json_parse = function (options) {
 
 		return typeof reviver === "function"
 			? (function walk(holder, key) {
-				var v,
+				let v,
 					value = holder[key];
 				if (value && typeof value === "object") {
 					Object.keys(value).forEach(function (k) {
@@ -618,7 +618,7 @@ const jsonStringify = (function () {
 	"use strict";
 
 	// eslint-disable-next-line
-	var escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+	let escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
 		gap,
 		indent,
 		meta = {    // table of character substitutions
@@ -642,7 +642,7 @@ const jsonStringify = (function () {
 
 		escapable.lastIndex = 0;
 		return escapable.test(string) ? "\"" + string.replace(escapable, function (a) {
-			var c = meta[a];
+			let c = meta[a];
 			return typeof c === "string"
 				? c
 				: "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
@@ -654,7 +654,7 @@ const jsonStringify = (function () {
 
 		// Produce a string from holder[key].
 
-		var i,          // The loop counter.
+		let i,          // The loop counter.
 			k,          // The member key.
 			v,          // The member value.
 			length,
@@ -762,7 +762,7 @@ const jsonStringify = (function () {
 					// Otherwise, iterate through all of the keys in the object.
 
 					Object.keys(value).forEach(function (k) {
-						var v = str(k, value);
+						let v = str(k, value);
 						if (v) {
 							partial.push(quote(k) + (gap ? ": " : ":") + v);
 						}
@@ -792,7 +792,7 @@ const jsonStringify = (function () {
 		// A default replacer method can be provided. Use of the space parameter can
 		// produce text that is more easily readable.
 
-		var i;
+		let i;
 		gap = "";
 		indent = "";
 
@@ -830,12 +830,12 @@ const jsonStringify = (function () {
 
 const parseJson = json_parse();
 
-let collapserElements, statusElement, jsonObject, copiedSelector, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody, supportBigInt;
+let collapserElements, statusElement, jsonObject, copiedSelector, jsonSelector, jsonPath, frozenJsonPath, selectedListItem, hoveredListItem, originalBody, supportBigInt;
 chrome.runtime.onMessage.addListener(message => {
 	if (message.copy) {
-		if (message.type == MENU_ID_COPY_PATH && jsonPath) {
-			copyText(jsonPath);
-		} else if (message.type == MENU_ID_COPY_VALUE || message.type == MENU_ID_COPY_JSON_VALUE) {
+		if (message.type === MENU_ID_COPY_PATH && frozenJsonPath) {
+			copyText(frozenJsonPath);
+		} else if (message.type === MENU_ID_COPY_VALUE || message.type === MENU_ID_COPY_JSON_VALUE) {
 			let value = jsonObject;
 			copiedSelector.forEach(propertyName => value = value[propertyName]);
 			if (value) {
@@ -844,9 +844,9 @@ chrome.runtime.onMessage.addListener(message => {
 				} else {
 					value = JSON.stringify(value);
 				}
-				if (message.type == MENU_ID_COPY_VALUE) {
+				if (message.type === MENU_ID_COPY_VALUE) {
 					copyText(value);
-				} else if (message.type == MENU_ID_COPY_JSON_VALUE) {
+				} else if (message.type === MENU_ID_COPY_JSON_VALUE) {
 					copyText(JSON.stringify(value));
 				}
 			}
@@ -856,7 +856,7 @@ chrome.runtime.onMessage.addListener(message => {
 init();
 
 async function init() {
-	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName == "PRE" || document.body.children.length == 0)) {
+	if (document.body && (document.body.childNodes[0] && document.body.childNodes[0].tagName === "PRE" || document.body.children.length === 0)) {
 		const textElement = document.body.children.length ? document.body.childNodes[0] : document.body;
 		const options = await sendMessage({ getOptions: true });
 		supportBigInt = options.supportBigInt;
@@ -892,14 +892,14 @@ function extractJsonInfo(rawText, options) {
 
 	function detectJson(text) {
 		return (
-			(text.charAt(0) == "[" && text.charAt(text.length - 1) == "]") ||
-			(text.charAt(0) == "{" && text.charAt(1) != "-" && text.charAt(1) != "%" && text.charAt(text.length - 1) == "}")
+			(text.charAt(0) === "[" && text.charAt(text.length - 1) === "]") ||
+			(text.charAt(0) === "{" && text.charAt(1) !== "-" && text.charAt(1) !== "%" && text.charAt(text.length - 1) === "}")
 		);
 	}
 }
 
 async function processData(jsonInfo, options) {
-	if ((window == top || options.injectInFrame) && jsonInfo && jsonInfo.text) {
+	if ((window === top || options.injectInFrame) && jsonInfo && jsonInfo.text) {
 		const json = jsonInfo.text;
 		const result = await sendMessage({
 			jsonToHTML: true,
@@ -939,7 +939,7 @@ function displayError(theme, error, loc, offset) {
 	let startRange = 0, indexRange = 0;
 	userStyleElement.appendChild(document.createTextNode(theme));
 	document.head.appendChild(userStyleElement);
-	while (indexRange != -1) {
+	while (indexRange !== -1) {
 		indexRange = textElement.indexOf("\n", startRange);
 		ranges.push(startRange);
 		startRange = indexRange + 1;
@@ -947,7 +947,7 @@ function displayError(theme, error, loc, offset) {
 	startRange = ranges[loc.first_line - 1] + loc.first_column + offset;
 	const endRange = ranges[loc.last_line - 1] + loc.last_column + offset;
 	range.setStart(preElement, startRange);
-	if (startRange == endRange - 1) {
+	if (startRange === endRange - 1) {
 		range.setEnd(preElement, startRange);
 	} else {
 		range.setEnd(preElement, endRange);
@@ -1026,7 +1026,7 @@ function displayToolbox(onlyViewSource) {
 function onToggleCollapsible(event) {
 	if (event.isTrusted) {
 		const target = event.target;
-		if (target.className == "collapser") {
+		if (target.className === "collapser") {
 			const collapsed = target.parentNode.getElementsByClassName("collapsible")[0];
 			collapsed.parentNode.classList.toggle(CLASS_COLLAPSED);
 			event.stopImmediatePropagation();
@@ -1053,10 +1053,10 @@ function onViewSource(event) {
 }
 
 function onMouseMove(event) {
-	if (event.isTrusted) {
+	if (event.isTrusted && event?.target?.className !== 'hoverable') {
 		jsonPath = "";
 		let element = getParentListItem(event.target);
-		if (element && event.target.tagName != TAG_LIST_ITEM) {
+		if (element && event.target.tagName !== TAG_LIST_ITEM) {
 			jsonSelector = [];
 			if (hoveredListItem) {
 				hoveredListItem.firstChild.classList.remove(CLASS_HOVERED);
@@ -1079,8 +1079,8 @@ function onMouseMove(event) {
 					jsonSelector.unshift(key);
 				}
 				element = element.parentNode.parentNode.parentNode;
-			} while (element.tagName == TAG_LIST_ITEM);
-			if (jsonPath.charAt(0) == ".") {
+			} while (element.tagName === TAG_LIST_ITEM);
+			if (jsonPath.charAt(0) === ".") {
 				jsonPath = jsonPath.substring(1);
 			}
 			statusElement.innerText = jsonPath;
@@ -1101,7 +1101,7 @@ function onMouseClick(event) {
 			selectedListItem = null;
 		}
 		const newSelectedListItem = getParentListItem(event.target);
-		if (newSelectedListItem && previousSelectedListItem != newSelectedListItem) {
+		if (newSelectedListItem && previousSelectedListItem !== newSelectedListItem) {
 			selectedListItem = newSelectedListItem;
 			selectedListItem.firstChild.classList.add(CLASS_SELECTED);
 		}
@@ -1109,18 +1109,19 @@ function onMouseClick(event) {
 }
 
 function onContextMenu(event) {
+	frozenJsonPath = jsonPath;
 	if (event.isTrusted) {
 		copiedSelector = jsonSelector ? Array.from(jsonSelector) : [];
 	}
 }
 
 function getParentListItem(element) {
-	if (element.tagName != TAG_LIST_ITEM) {
-		while (element && element.tagName != TAG_LIST_ITEM) {
+	if (element.tagName !== TAG_LIST_ITEM) {
+		while (element && element.tagName !== TAG_LIST_ITEM) {
 			element = element.parentNode;
 		}
 	}
-	if (element && element.tagName == TAG_LIST_ITEM) {
+	if (element && element.tagName === TAG_LIST_ITEM) {
 		return element;
 	}
 }
