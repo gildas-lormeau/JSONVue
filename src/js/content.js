@@ -830,7 +830,7 @@ const jsonStringify = (function () {
 
 const parseJson = json_parse();
 
-let collapserElements, statusElement, jsonObject, copiedSelector, jsonSelector, jsonPath, selectedListItem, hoveredListItem, originalBody, supportBigInt;
+let collapserElements, statusElement, jsonObject, copiedSelector, jsonSelector, jsonPath, frozenJsonPath, selectedListItem, hoveredListItem, originalBody, supportBigInt;
 chrome.runtime.onMessage.addListener(message => {
 	if (message.copy) {
 		if (message.type == MENU_ID_COPY_PATH && jsonPath) {
@@ -1053,7 +1053,7 @@ function onViewSource(event) {
 }
 
 function onMouseMove(event) {
-	if (event.isTrusted) {
+	if (event.isTrusted && event?.target?.className !== 'hoverable') {
 		jsonPath = "";
 		let element = getParentListItem(event.target);
 		if (element && event.target.tagName != TAG_LIST_ITEM) {
@@ -1109,6 +1109,7 @@ function onMouseClick(event) {
 }
 
 function onContextMenu(event) {
+	frozenJsonPath = jsonPath;
 	if (event.isTrusted) {
 		copiedSelector = jsonSelector ? Array.from(jsonSelector) : [];
 	}

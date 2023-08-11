@@ -171,17 +171,17 @@ function addMenuEntry(removeAll) {
 	chrome.contextMenus.create({
 		id: MENU_ID_COPY_PATH,
 		title: "Copy path",
-		contexts: ["page", "link"]
+		contexts: ["page", "link", "selection"]
 	});
 	chrome.contextMenus.create({
 		id: MENU_ID_COPY_VALUE,
 		title: "Copy value",
-		contexts: ["page", "link"]
+		contexts: ["page", "link", "selection"]
 	});
 	chrome.contextMenus.create({
 		id: MENU_ID_COPY_JSON_VALUE,
 		title: "Copy JSON value",
-		contexts: ["page", "link"]
+		contexts: ["page", "link", "selection"]
 	});
 }
 
