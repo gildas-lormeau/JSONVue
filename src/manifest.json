@@ -13,10 +13,7 @@
     "open_in_tab": false
   },
   "background": {
-    "scripts": [
-      "js/background.js"
-    ],
-    "persistent": false
+    "service_worker": "js/background.js"
   },
   "content_scripts": [
     {
@@ -37,5 +34,5 @@
     "contextMenus",
     "storage"
   ],
-  "manifest_version": 2
+  "manifest_version": 3
 }
