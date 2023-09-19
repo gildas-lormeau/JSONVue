@@ -979,6 +979,7 @@ function displayError(theme, error, loc, offset) {
 }
 
 function displayUI(stylesheet, html, options) {
+	document.body.removeAttribute("style");
 	const userStyleElement = document.createElement("style");
 	statusElement = document.createElement("div");
 	userStyleElement.appendChild(document.createTextNode(stylesheet));
