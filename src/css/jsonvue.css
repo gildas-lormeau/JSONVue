@@ -33,6 +33,9 @@ body {
 }
 
 .collapser {
+  position: absolute;
+  top: .1em;
+  left: -2ch;
   cursor: default;
   user-select: none;
   padding-inline: 0.5ch;

@@ -39,6 +39,10 @@ li {
 	cursor: pointer;
 }
 
+.collapsible .collapsible::before {
+	top: 1.8em;
+}
+
 .status {
 	position: fixed;
 	left: 0;
