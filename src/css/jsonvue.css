@@ -28,57 +28,51 @@ body {
   color: gray;
 }
 
-.collapser::after {
-  content: "-";
-}
-
-.collapsed>.collapser::after {
-  content: "+";
-}
-
 .ellipsis::after {
   content: " … ";
 }
 
+.collapser {
+  cursor: default;
+  user-select: none;
+  padding-inline: 0.5ch;
+}
+
+.collapser::after {
+  cursor: pointer;
+  content: "-";
+}
+
+.collapsed > .collapser::after {
+  content: "+";
+}
+
 .collapsible {
-  margin-left: 2em;
+  margin-inline-start: 4ch;
 }
 
 .collapsible .collapsible::before {
-  border-width: 0;
-  border-left: #d3d3d3 .1em dashed;
-  content: " ";
-  max-width: .1em;
+  content: "";
   position: absolute;
-  height: calc(100% - 3.4em);
-  left: .4em;
+  left: 0.5ch;
   top: 1.8em;
+  height: calc(100% - 3.6em);
+  border: 0;
+  border-inline-start: #d3d3d3 0.2ch dashed;
 }
 
 .hoverable {
-  padding: .1em;
-  transition: background-color .2s ease-out 0s;
+  padding: 0.1em;
+  transition: background-color 0.2s ease-out 0s;
 }
 
 .hovered {
   background-color: rgba(235, 238, 249, 1);
-  transition-delay: .2s;
-}
-
-.collapser {
-  position: absolute;
-  top: .1em;
-  left: -1.4em;
-  cursor: default;
-  user-select: none;
-  padding-right: .5em;
-  padding-left: .5em;
+  transition-delay: 0.2s;
 }
 
 .selected {
-  outline-style: solid;
-  outline-width: .1em;
-  outline-style: dotted;
+  outline: dotted 0.1ch;
 }
 
 @media (prefers-color-scheme: dark) {

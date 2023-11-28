@@ -13,18 +13,7 @@ li {
 }
 
 .hoverable {
-	transition: background-color .2s ease-out 0s;
 	display: inline-block;
-}
-
-.hovered {
-	transition-delay: .2s;
-}
-
-.selected {
-	outline-style: solid;
-	outline-width: .1em;
-	outline-style: dotted;
 }
 
 .collapsed>.collapsible {
@@ -44,7 +33,6 @@ li {
 	top: .1em;
 	left: -1.4em;
 	cursor: default;
-	user-select: none;
 }
 
 .collapser::after {
